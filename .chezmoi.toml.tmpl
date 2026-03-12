@@ -1,6 +1,8 @@
 [git]
     autoCommit = true
     autoPush = true
+    # Explicitly target origin HEAD to bypass pushRemote = no_push set in .gitconfig for main/master branches
+    pushArgs = ["origin", "HEAD"]
 
 [data]
     git_name = {{ promptString "Git name" | quote }}
