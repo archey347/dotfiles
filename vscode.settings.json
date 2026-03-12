@@ -1,0 +1,29 @@
+{
+    "editor.fontFamily": "Iosevka",
+    "editor.rulers": [
+        80, 120
+    ],
+    "window.titleSeparator": ";",
+    "workbench.activityBar.orientation": "vertical",
+    "editor.renderFinalNewline": "on",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "git.autofetch": true,
+    "go.survey.prompt": false,
+    "go.toolsManagement.autoUpdate": true,
+    "gopls": {
+        "usePlaceholders": true,
+        "ui.diagnostic.analyses": {
+            "nilness": true,
+            "unusedwrite": true
+        },
+        "ui.semanticTokens": true
+    },
+    "go.testFlags": ["-race"],
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fix", 
+        "--sort-results", 
+        "--max-issues-per-linter=0",
+        "--max-same-issues=0"
+    ],
+}
