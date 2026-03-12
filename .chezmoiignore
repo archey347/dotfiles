@@ -1,0 +1,6 @@
+README.md
+{{- if not .is_hyprland }}
+.config/hypr
+.config/waybar
+.config/wofi
+{{- end }}

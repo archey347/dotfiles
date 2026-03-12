@@ -6,3 +6,4 @@
     git_name = {{ promptString "Git name" | quote }}
     git_email = {{ promptString "Git email" | quote }}
     git_signingkey = {{ promptString "Git signing key" | quote }}
+    is_hyprland = {{ promptBoolOnce . "is_hyprland" "Is this a Hyprland system" }}
