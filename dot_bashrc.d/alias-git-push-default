@@ -1,0 +1,1 @@
+alias git-push-default='git push origin $(git symbolic-ref --short HEAD)'
