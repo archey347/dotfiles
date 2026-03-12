@@ -1,0 +1,2 @@
+Match Final Exec "echo $TERM | grep -q xterm-ghostty"
+        SetEnv TERM=xterm-256color
