@@ -1,0 +1,5 @@
+font-family = Iosevka
+font-size = 10
+
+# Allows ctrl+shirt+r history search
+keybind = ctrl+shift+r=text:\x12
