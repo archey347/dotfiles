@@ -22,14 +22,16 @@
 [branch "master"]
 	; Prevent pushes to common default branch
 	pushRemote = "no_push"
+[submodule]
+        recurse = true
 
 [core]
     autocrlf = input
     editor = /usr/bin/vim
 
 [alias]
-	; Draws pretty git graphs
-	; from https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#34467298
+    ; Draws pretty git graphs
+    ; from https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#34467298
     lg = lg1
     lg1 = lg1-specific --all
     lg2 = lg2-specific --all
