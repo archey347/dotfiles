@@ -1,0 +1,6 @@
+# Workaround for Cursor/vscode history restore keeping stale SSH_AUTH_SOCK
+# Only update if we're already using a vscode socket
+if [[ "$SSH_AUTH_SOCK" == *vscode* ]] && ls /run/user/$UID/vscode-ssh-auth-sock-* 1>/dev/null 2>&1; then
+    export SSH_AUTH_SOCK=$(ls -t /run/user/$UID/vscode-ssh-auth-sock-* | head -1)
+fi
+
