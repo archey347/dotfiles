@@ -1,0 +1,11 @@
+# Git branch function for prompt
+__git_branch() {
+    local branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+
+    if [[ -n "$branch" ]]; then
+        echo " ($branch)"
+    fi
+}
+
+# Set my preferred prompt string
+export PS1='\n\[$(tput setaf 39)\]\u\[$(tput setaf 81)\]@\[$(tput setaf 77)\]\h\[$(tput setaf 226)\]:\w\[$(tput setaf 245)\]$(__git_branch)\[$(tput sgr0)\]\n$ '
