@@ -10,9 +10,6 @@ README.md
 {{- if not (lookPath "code") }}
 vscode.settings.json
 {{- end }}
-{{- if not (or (lookPath "cursor") (lookPath "code")) }}
-.bashrc.d/ssh-vscode
-{{- end }}
 {{- if not (lookPath "zed") }}
 .config/zed
 {{- end }}
