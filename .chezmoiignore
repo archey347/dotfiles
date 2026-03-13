@@ -17,6 +17,6 @@ vscode.settings.json
 .config/ghostty
 .ssh/config.d/00-ghostty-workaround
 {{- end }}
-{{- if not (or (lookPath "cursor") (lookPath "code") (lookPath "zed") (lookPath "ghostty")) }}
+{{- if ne .chezmoi.osRelease.id "fedora" }}
 run_once_install-fonts.sh
 {{- end }}
