@@ -1,7 +1,10 @@
 # Tell GPG which terminal to use for passphrase prompts and PIN entry
 export GPG_TTY=$(tty)
-# Route SSH authentication through GPG agent instead of the default ssh-agent
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+# Only route SSH through GPG agent on local sessions - SSH sessions have their
+# own forwarded agent
+if [ -z "$SSH_CONNECTION" ]; then
+    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+fi
 # Start the GPG agent if it isn't already running
 gpgconf --launch gpg-agent
 # Notify the agent of the current terminal so prompts appear in the right window
