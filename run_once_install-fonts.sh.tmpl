@@ -1,5 +1,5 @@
 #!/bin/bash
-{{ if lookPath "dnf" -}}
+{{ if and (lookPath "dnf") (or (lookPath "cursor") (lookPath "code") (lookPath "zed") (lookPath "ghostty")) -}}
 sudo dnf copr enable -y peterwu/iosevka
 sudo dnf install -y iosevka-fonts iosevka-term-fonts
 {{ end -}}
