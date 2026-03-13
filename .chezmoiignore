@@ -4,3 +4,19 @@ README.md
 .config/waybar
 .config/wofi
 {{- end }}
+{{- if not (lookPath "cursor") }}
+.config/Cursor
+{{- end }}
+{{- if not (lookPath "code") }}
+vscode.settings.json
+{{- end }}
+{{- if not (or (lookPath "cursor") (lookPath "code")) }}
+.bashrc.d/ssh-vscode
+{{- end }}
+{{- if not (lookPath "zed") }}
+.config/zed
+{{- end }}
+{{- if not (lookPath "ghostty") }}
+.config/ghostty
+.ssh/config.d/00-ghostty-workaround
+{{- end }}
