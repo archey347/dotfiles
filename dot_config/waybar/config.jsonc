@@ -27,6 +27,7 @@
         "backlight",
         "power-profiles-daemon",
         "battery",
+        "mpris",
         "clock",
         "tray",
         "custom/power"
@@ -216,4 +217,18 @@
 			"hibernate": "systemctl hibernate"
 		}
     }
+
+    "mpris": {
+        "format": "{status_icon} {title}",
+        "format-paused": "{status_icon} <i>{title}</i>",
+        "status-icons": {
+            "playing": "",
+            "paused": ""
+        },
+        "on-click": "playerctl play-pause",
+        "on-click-right": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "max-length": 35,
+        "tooltip-format": "{player}: {artist} — {title}"
+    },
 }
