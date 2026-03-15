@@ -94,6 +94,7 @@ button:hover {
 /* Battery */
 #battery {
     color: rgba(255, 255, 255, 0.88);
+    padding: 0 4px;
 }
 
 #battery.charging,
