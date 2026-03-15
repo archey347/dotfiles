@@ -219,8 +219,8 @@
     },
 
     "mpris": {
-        "format": "{title}   {status_icon}",
-        "format-paused": "<i>{title}</i>   {status_icon}",
+        "format": "{title:.28}   {status_icon}",
+        "format-paused": "<i>{title:.28}</i>   {status_icon}",
         "status-icons": {
             "playing": "⏸",
             "paused": "▶"
@@ -228,7 +228,6 @@
         "on-click": "playerctl play-pause",
         "on-click-right": "playerctl next",
         "on-scroll-down": "playerctl previous",
-        "max-length": 35,
         "tooltip-format": "{player}: {artist} — {title}"
     }
 }
