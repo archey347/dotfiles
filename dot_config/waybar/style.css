@@ -1,5 +1,5 @@
 * {
-    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
+    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif;
     font-size: 13px;
     min-height: 0;
 }
@@ -12,6 +12,7 @@ window#waybar {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
     transition-property: background-color;
     transition-duration: .5s;
+    padding: 0 8px;
 }
 
 window#waybar.hidden {
@@ -21,7 +22,6 @@ window#waybar.hidden {
 button {
     box-shadow: none;
     border: none;
-    border-radius: 6px;
 }
 
 button:hover {
@@ -34,8 +34,7 @@ button:hover {
     padding: 0 7px;
     background-color: transparent;
     color: rgba(255, 255, 255, 0.45);
-    border-radius: 6px;
-    margin: 3px 1px;
+    margin: 0 1px;
     min-width: 18px;
 }
 
@@ -77,6 +76,26 @@ button:hover {
     padding: 0 8px;
     color: rgba(255, 255, 255, 0.88);
     background-color: transparent;
+    margin: 0 1px;
+}
+
+#clock:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#wireplumber:hover,
+#custom-media:hover,
+#tray:hover,
+#mode:hover,
+#idle_inhibitor:hover,
+#scratchpad:hover,
+#power-profiles-daemon:hover,
+#mpd:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 #window,
@@ -94,7 +113,6 @@ button:hover {
 /* Battery */
 #battery {
     color: rgba(255, 255, 255, 0.88);
-    padding: 0 4px;
 }
 
 #battery.charging,
@@ -127,7 +145,6 @@ button:hover {
 
 #pulseaudio:hover {
     background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
 }
 
 /* Temperature */
@@ -141,15 +158,18 @@ button:hover {
 }
 
 #power-profiles-daemon.performance {
-    color: #ff453a;
+    background-color: #ff453a;
+    color: #ffffff;
 }
 
 #power-profiles-daemon.balanced {
-    color: rgba(255, 255, 255, 0.88);
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }
 
 #power-profiles-daemon.power-saver {
-    color: #30d158;
+    background-color: #30d158;
+    color: #ffffff;
 }
 
 /* Tray */
@@ -160,14 +180,12 @@ button:hover {
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: rgba(255, 69, 58, 0.4);
-    border-radius: 6px;
 }
 
 /* Idle inhibitor */
 #idle_inhibitor.activated {
     background-color: rgba(255, 255, 255, 0.15);
     color: #ffffff;
-    border-radius: 6px;
 }
 
 /* Scratchpad */
@@ -178,7 +196,6 @@ button:hover {
 /* Mode indicator */
 #mode {
     background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
 }
 
 label:focus {
@@ -188,14 +205,12 @@ label:focus {
 /* Custom power button */
 #custom-power {
     color: rgba(255, 255, 255, 0.6);
-    padding: 0 12px;
-    min-width: 0;
+    padding-right: 12px;
 }
 
 #custom-power:hover {
     color: #ff453a;
     background-color: rgba(255, 69, 58, 0.1);
-    border-radius: 6px;
 }
 
 /* Privacy indicators */
@@ -206,7 +221,6 @@ label:focus {
 #privacy-item {
     padding: 0 5px;
     color: white;
-    border-radius: 6px;
 }
 
 #privacy-item.screenshare {
@@ -249,31 +263,13 @@ label:focus {
     min-width: 100px;
 }
 
-/* MPRIS media controls */
-#mpris {
-    color: rgba(255, 255, 255, 0.88);
-    padding: 0 8px;
-}
-
-#mpris.playing {
-    color: #ffffff;
-}
-
-#mpris.paused {
-    color: rgba(255, 255, 255, 0.45);
-}
-
-#mpris.stopped {
-    color: transparent;
-}
-
 /* Power menu popup */
 menu {
     background-color: rgba(28, 28, 28, 0.96);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 4px;
-    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Font Awesome 6 Free', sans-serif;
+    font-family: 'SF Pro Display', 'Inter', 'Cantarell', sans-serif;
     font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -283,6 +279,12 @@ menuitem {
     border-radius: 8px;
     padding: 6px 12px;
     color: rgba(255, 255, 255, 0.9);
+}
+
+menu menuitem check,
+menu menuitem radio {
+    min-width: 0;
+    min-height: 0;
 }
 
 menuitem:hover {
