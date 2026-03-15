@@ -216,7 +216,7 @@
 			"suspend": "systemctl suspend",
 			"hibernate": "systemctl hibernate"
 		}
-    }
+    },
 
     "mpris": {
         "format": "{status_icon} {title}",
@@ -230,5 +230,5 @@
         "on-scroll-down": "playerctl previous",
         "max-length": 35,
         "tooltip-format": "{player}: {artist} — {title}"
-    },
+    }
 }
