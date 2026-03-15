@@ -52,6 +52,7 @@ exec-once = mako
 exec-once = nm-applet --indicator
 exec-once = blueman-applet
 exec-once = hyprpaper
+exec-once = ~/.config/hypr/wallpaper-slideshow.sh
 
 
 #############################
@@ -111,17 +112,17 @@ env = HYPRCURSOR_SIZE,24
 
 # https://wiki.hypr.land/Configuring/Variables/#general
 general {
-    gaps_in = 0
-    gaps_out = 0
+    gaps_in = 1
+    gaps_out = 1
 
-    border_size = 2
+    border_size = 3
 
     # https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
-    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
-    col.inactive_border = rgba(595959aa)
+    col.active_border = rgba(00000011)
+    col.inactive_border = rgba(59595911)
 
     # Set to true enable resizing windows by clicking and dragging on borders and gaps
-    resize_on_border = false
+    resize_on_border = true
 
     # Please see https://wiki.hypr.land/Configuring/Tearing/ before you turn this on
     allow_tearing = false
@@ -131,18 +132,18 @@ general {
 
 # https://wiki.hypr.land/Configuring/Variables/#decoration
 decoration {
-    rounding = 3
-    rounding_power = 2
+    rounding = 5
+    rounding_power = 3
 
     # Change transparency of focused and unfocused windows
     active_opacity = 1.0
     inactive_opacity = 1.0
 
     shadow {
-        enabled = true
+        enabled = false
         range = 4
         render_power = 3
-        color = rgba(1a1a1aee)
+        color = rgba(1a1a1a11)
     }
 
     # https://wiki.hypr.land/Configuring/Variables/#blur
