@@ -249,6 +249,24 @@ label:focus {
     min-width: 100px;
 }
 
+/* MPRIS media controls */
+#mpris {
+    color: rgba(255, 255, 255, 0.88);
+    padding: 0 8px;
+}
+
+#mpris.playing {
+    color: #ffffff;
+}
+
+#mpris.paused {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+#mpris.stopped {
+    color: transparent;
+}
+
 /* Power menu popup */
 menu {
     background-color: rgba(28, 28, 28, 0.96);
