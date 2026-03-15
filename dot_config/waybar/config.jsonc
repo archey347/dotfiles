@@ -222,8 +222,8 @@
         "format": "{status_icon} {title}",
         "format-paused": "{status_icon} <i>{title}</i>",
         "status-icons": {
-            "playing": "",
-            "paused": ""
+            "playing": "▶",
+            "paused": "⏸"
         },
         "on-click": "playerctl play-pause",
         "on-click-right": "playerctl next",
