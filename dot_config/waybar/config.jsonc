@@ -25,6 +25,7 @@
         "memory",
         "temperature",
         "backlight",
+        "power-profiles-daemon",
         "battery",
         "clock",
         "tray",
