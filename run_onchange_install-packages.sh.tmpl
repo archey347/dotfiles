@@ -1,7 +1,11 @@
 {{ if lookPath "dnf" -}}
 #!/bin/bash
 
-{{ $enabled := dict "fonts" true "hyprland" .is_hyprland -}}
+{{ $enabled := dict
+    "fonts"              true
+    "hyprland"           .is_hyprland
+    "hyprland_fedora_43" (and .is_hyprland (eq .chezmoi.osRelease.versionID "43"))
+-}}
 
 {{ range $group, $pkgs := .packages.fedora -}}
 {{   if hasKey $enabled $group | and (index $enabled $group) -}}

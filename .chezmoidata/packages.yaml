@@ -16,8 +16,10 @@ packages:
         - "mako"
         - "network-manager-applet"
         - "pavucontrol"
-        - "polkit-gnome"
-        - "power-profiles-daemon"
         - "slurp"
         - "waybar"
         - "wl-clipboard"
+    hyprland_fedora_43:
+      dnf:
+        - "polkit-gnome"
+        - "power-profiles-daemon"
