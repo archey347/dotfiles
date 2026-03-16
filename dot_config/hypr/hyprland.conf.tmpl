@@ -79,6 +79,13 @@ env = MOZ_ENABLE_WAYLAND,1
 # In Steam launch options: prime-run %command%
 # mpv: prime-run mpv <file>  (hwdec=nvdec, vo=gpu-next, gpu-api=vulkan set in ~/.config/mpv/mpv.conf)
 {{ else }}
+{{- if and (hasKey . "aq_drm_devices") .aq_drm_devices }}
+env = AQ_DRM_DEVICES,{{ .aq_drm_devices }}
+{{- end }}
+{{- if and (hasKey . "libva_driver_name") .libva_driver_name }}
+env = LIBVA_DRIVER_NAME,{{ .libva_driver_name }}
+{{- end }}
+
 # Wayland hint for apps that still check this
 env = MOZ_ENABLE_WAYLAND,1
 {{ end }}
