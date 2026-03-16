@@ -4,6 +4,7 @@
 {{ $enabled := dict
     "fonts"              true
     "hyprland"           .is_hyprland
+    "hyprland_fedora_42" (and .is_hyprland (eq .chezmoi.osRelease.versionID "42"))
     "hyprland_fedora_43" (and .is_hyprland (eq .chezmoi.osRelease.versionID "43"))
 -}}
 

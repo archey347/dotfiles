@@ -19,6 +19,11 @@ packages:
         - "slurp"
         - "waybar"
         - "wl-clipboard"
+    hyprland_fedora_42:
+      coprs:
+        - "solopasha/hyprland"
+      dnf:
+        - "hyprpaper"
     hyprland_fedora_43:
       dnf:
         - "polkit-gnome"
