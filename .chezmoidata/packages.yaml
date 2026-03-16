@@ -1,0 +1,23 @@
+packages:
+  fedora:
+    fonts:
+      coprs:
+        - "peterwu/iosevka"
+      dnf:
+        - "iosevka-fonts"
+        - "iosevka-term-fonts"
+    hyprland:
+      dnf:
+        - "blueman"
+        - "dolphin"
+        - "grim"
+        - "hyprland"
+        - "jq"
+        - "mako"
+        - "network-manager-applet"
+        - "pavucontrol"
+        - "polkit-gnome"
+        - "power-profiles-daemon"
+        - "slurp"
+        - "waybar"
+        - "wl-clipboard"

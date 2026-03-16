@@ -1,0 +1,20 @@
+{{ if lookPath "dnf" -}}
+#!/bin/bash
+
+{{ $enabled := dict "fonts" true "hyprland" .is_hyprland -}}
+
+{{ range $group, $pkgs := .packages.fedora -}}
+{{   if hasKey $enabled $group | and (index $enabled $group) -}}
+# --- group: {{ $group }} ---
+# hash: {{ $pkgs | toJson | sha256sum }}
+{{     if hasKey $pkgs "coprs" -}}
+{{       range $pkgs.coprs -}}
+sudo dnf copr enable -y {{ . | quote }}
+{{       end -}}
+{{     end -}}
+{{     if hasKey $pkgs "dnf" -}}
+sudo dnf install -y{{ range $pkgs.dnf }} {{ . | quote }}{{ end }}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ end -}}
