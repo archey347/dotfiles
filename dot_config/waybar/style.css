@@ -89,7 +89,6 @@ button:hover {
 #network:hover,
 #wireplumber:hover,
 #custom-media:hover,
-#tray:hover,
 #mode:hover,
 #idle_inhibitor:hover,
 #scratchpad:hover,
@@ -173,6 +172,15 @@ button:hover {
 }
 
 /* Tray */
+#tray > widget {
+    border-radius: 4px;
+    margin: 0 1px;
+}
+
+#tray > widget:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 #tray > .passive {
     -gtk-icon-effect: dim;
 }
