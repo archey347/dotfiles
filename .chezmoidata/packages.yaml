@@ -12,6 +12,7 @@ packages:
         - "dolphin"
         - "grim"
         - "hyprland"
+        - "lxpolkit"
         - "jq"
         - "mako"
         - "network-manager-applet"
@@ -26,5 +27,4 @@ packages:
         - "hyprpaper"
     hyprland_fedora_43:
       dnf:
-        - "polkit-gnome"
-        - "power-profiles-daemon"
+        - "hyprpaper"
