@@ -1,0 +1,7 @@
+# Given a log line of the form
+# 
+# [some date] { ... }
+#
+# it will print out just the json. any non-json lines are ignored
+
+alias jgrep="grep -oP '\{.*'"
