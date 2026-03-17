@@ -7,24 +7,20 @@ packages:
         - "iosevka-fonts"
         - "iosevka-term-fonts"
     hyprland:
+      coprs:
+        - "solopasha/hyprland"
       dnf:
         - "blueman"
         - "dolphin"
         - "grim"
         - "hyprland"
+        - "hyprpaper"
         - "lxpolkit"
         - "jq"
         - "mako"
         - "network-manager-applet"
         - "pavucontrol"
         - "slurp"
+        - "swaylock"
         - "waybar"
         - "wl-clipboard"
-    hyprland_fedora_42:
-      coprs:
-        - "solopasha/hyprland"
-      dnf:
-        - "hyprpaper"
-    hyprland_fedora_43:
-      dnf:
-        - "hyprpaper"
