@@ -14,18 +14,9 @@
 ################
 
 # See https://wiki.hypr.land/Configuring/Monitors/
-{{ if eq .chezmoi.hostname "bolt" -}}
-# System: Intel UHD (TigerLake-H, 00:02.0) iGPU + NVIDIA RTX A4000 Mobile (01:00.0)
-# Strategy: iGPU renders everything; use `prime-run <app>` to offload to NVIDIA.
-monitor=DP-4,1600x900@60,0x414,1
-monitor=DP-6,3840x2160@60,1600x0,1.25
-monitor=eDP-1,1920x1080@60,4672x324,1
-{{- else -}}
 {{- range (splitList "|" .monitors) }}
 monitor={{ . }}
 {{- end }}
-{{- end }}
-
 
 ###################
 ### MY PROGRAMS ###
@@ -61,25 +52,13 @@ exec-once = ~/.config/hypr/wallpaper-slideshow.sh
 #############################
 
 # See https://wiki.hypr.land/Configuring/Environment-variables/
-{{ if eq .chezmoi.hostname "bolt" }}
-# --- GPU: Intel iGPU primary, NVIDIA for offload only ---
-# Use stable by-path symlinks so card numbers don't shuffle on reboot.
-# Intel iGPU first = primary renderer; NVIDIA second = available for prime-run offload.
-env = AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
-
-# Intel VA-API video acceleration (iHD driver). Do NOT set to "nvidia" here
-# or video decode will try to use the dGPU and may break on iGPU-only sessions.
-env = LIBVA_DRIVER_NAME,iHD
-
-# Wayland hint for apps that still check this
-env = MOZ_ENABLE_WAYLAND,1
 
 # NOTE: Do NOT set GBM_BACKEND=nvidia-drm or __GLX_VENDOR_LIBRARY_NAME=nvidia
 # globally — those force dGPU rendering and will break this iGPU-primary setup.
 # Per-app NVIDIA offload: prime-run <app>
 # In Steam launch options: prime-run %command%
 # mpv: prime-run mpv <file>  (hwdec=nvdec, vo=gpu-next, gpu-api=vulkan set in ~/.config/mpv/mpv.conf)
-{{ else }}
+
 {{- if and (hasKey . "aq_drm_devices") .aq_drm_devices }}
 env = AQ_DRM_DEVICES,{{ .aq_drm_devices }}
 {{- end }}
@@ -89,7 +68,7 @@ env = LIBVA_DRIVER_NAME,{{ .libva_driver_name }}
 
 # Wayland hint for apps that still check this
 env = MOZ_ENABLE_WAYLAND,1
-{{ end }}
+
 # --- Cursor ---
 env = XCURSOR_SIZE,24
 env = HYPRCURSOR_SIZE,24
