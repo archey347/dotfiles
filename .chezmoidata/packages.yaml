@@ -21,6 +21,7 @@ packages:
         - "network-manager-applet"
         - "pavucontrol"
         - "slurp"
+        - "swayidle"
         - "swaylock"
         - "waybar"
         - "wl-clipboard"

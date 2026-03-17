@@ -47,6 +47,7 @@ $menu = wofi --show drun
 # Or execute your favorite apps at launch like this:
 
 # exec-once = $terminal
+exec-once = swayidle -w timeout {{ .lock_timeout | default 300 }} 'swaylock' before-sleep 'swaylock'
 exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
