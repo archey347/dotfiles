@@ -3,11 +3,12 @@
 # - aws-$profile
 # alias for convenience
 
+alias aws-login="aws sso login --no-browser"
+
 if [[ -f ~/.aws/config ]]; then
     while IFS= read -r _profile; do
         [[ "$_profile" == ecr* ]] && continue
         alias "aws-${_profile}=aws --profile ${_profile}"
-        alias "aws-${_profile}-login=aws sso login --no-browser --profile ${_profile}"
     done < <(grep -oP '^\[profile \K[^\]]+' ~/.aws/config)
     unset _profile
 fi
