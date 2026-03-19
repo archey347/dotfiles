@@ -1,11 +1,12 @@
-# For every aws profile defined in config, it creates a:
-# - aws-$profile-login
-# - aws-$profile
-# alias for convenience
-
-alias aws-login="aws sso login --no-browser"
+# For every sso-session defined in config, create an aws-login-$session function.
+# For every aws profile defined in config, create an aws-$profile alias.
 
 if [[ -f ~/.aws/config ]]; then
+    while IFS= read -r _session; do
+        alias "aws-login-${_session}=aws sso login --sso-session ${_session} --use-device-code"
+    done < <(grep -oP '^\[sso-session \K[^\]]+' ~/.aws/config)
+    unset _session
+
     while IFS= read -r _profile; do
         [[ "$_profile" == ecr* ]] && continue
         alias "aws-${_profile}=aws --profile ${_profile}"
