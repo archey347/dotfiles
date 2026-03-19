@@ -18,6 +18,4 @@ vscode.settings.json
 .config/ghostty
 .ssh/config.d/00-ghostty-workaround
 {{- end }}
-{{- if ne .chezmoi.osRelease.id "fedora" }}
-run_once_install-fonts.sh
-{{- end }}
+

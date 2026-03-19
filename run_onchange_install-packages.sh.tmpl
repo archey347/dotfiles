@@ -2,7 +2,7 @@
 #!/bin/bash
 
 {{ $enabled := dict
-    "fonts"              true
+    "fonts"              (eq .chezmoi.osRelease.id "fedora")
     "hyprland"           .is_hyprland
 -}}
 
