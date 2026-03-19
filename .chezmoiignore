@@ -3,6 +3,7 @@ README.md
 .config/hypr
 .config/waybar
 .config/wofi
+.config/swaylock
 {{- end }}
 {{- if not (lookPath "cursor") }}
 .config/Cursor
