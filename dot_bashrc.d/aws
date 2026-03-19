@@ -1,5 +1,20 @@
 # For every sso-session defined in config, create an aws-login-$session function.
-# For every aws profile defined in config, create an aws-$profile alias.
+# For every aws profile defined in config, create:
+#   aws-$profile              - run aws with --profile
+#   aws-profile-env-$profile  - export AWS_PROFILE into the current shell
+
+aws-profile-env() {
+    if [[ -z "$1" ]]; then
+        if [[ -n "$AWS_PROFILE" ]]; then
+            echo "Current AWS_PROFILE: $AWS_PROFILE"
+        else
+            echo "AWS_PROFILE is not set"
+        fi
+        return
+    fi
+    export AWS_PROFILE="$1"
+    echo "AWS_PROFILE set to $1"
+}
 
 if [[ -f ~/.aws/config ]]; then
     while IFS= read -r _session; do
@@ -10,6 +25,7 @@ if [[ -f ~/.aws/config ]]; then
     while IFS= read -r _profile; do
         [[ "$_profile" == ecr* ]] && continue
         alias "aws-${_profile}=aws --profile ${_profile}"
+        alias "aws-profile-env-${_profile}=aws-profile-env ${_profile}"
     done < <(grep -oP '^\[profile \K[^\]]+' ~/.aws/config)
     unset _profile
 fi
