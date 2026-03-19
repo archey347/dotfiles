@@ -16,6 +16,8 @@ aws-profile-env() {
     echo "AWS_PROFILE set to $1"
 }
 
+alias aws-configure-sso="unset AWS_PROFILE && aws configure sso"
+
 if [[ -f ~/.aws/config ]]; then
     while IFS= read -r _session; do
         alias "aws-login-${_session}=aws sso login --sso-session ${_session} --use-device-code"
