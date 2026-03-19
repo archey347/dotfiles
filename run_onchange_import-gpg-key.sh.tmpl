@@ -1,0 +1,9 @@
+#!/bin/bash
+# Import my GPG key into the keyring with ultimate trust
+# gpg-public-key.asc hash: {{ joinPath .chezmoi.sourceDir "gpg-public-key.asc" | include | sha256sum }}
+
+KEY_FILE="{{ joinPath .chezmoi.sourceDir "gpg-public-key.asc" }}"
+
+gpg --import "$KEY_FILE" 2>/dev/null
+
+echo "30795E649CE80861560A2A937B82434F29738AB5:6:" | gpg --import-ownertrust 2>/dev/null
