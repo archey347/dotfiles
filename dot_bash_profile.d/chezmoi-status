@@ -1,0 +1,8 @@
+# Warn if there are unapplied chezmoi changes
+if command -v chezmoi &> /dev/null; then
+    _chezmoi_changes=$(chezmoi status 2>/dev/null | wc -l)
+    if [[ "$_chezmoi_changes" -gt 0 ]]; then
+        echo "chezmoi: $_chezmoi_changes unapplied change(s). Run \`chezmoi apply\` to apply."
+    fi
+    unset _chezmoi_changes
+fi
