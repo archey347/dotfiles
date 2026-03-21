@@ -1,0 +1,10 @@
+[Unit]
+Description=Update chezmoi source from remote
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/chezmoi git pull
+
+[Install]
+WantedBy=default.target
