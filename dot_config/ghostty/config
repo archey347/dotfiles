@@ -1,3 +1,5 @@
+command = bash -l
+
 font-family = Iosevka
 font-size = 10
 
