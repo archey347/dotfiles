@@ -1,0 +1,10 @@
+[Unit]
+Description=Update chezmoi source every 6 hours
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=6h
+Unit=chezmoi-update.service
+
+[Install]
+WantedBy=timers.target
