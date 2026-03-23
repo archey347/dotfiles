@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Monitor layout profiles. Each entry is a pipe-separated list of Hyprland
+# monitor rules. Baked in by chezmoi at apply time — actual monitor descriptors
+# live in ~/.config/chezmoi/chezmoi.toml, not in the dotfiles repo.
+PROFILES=(
+{{- range .monitor_profiles }}
+    {{ . | quote }}
+{{- end }}
+)
+
+# Selects a profile whose desc: entries exactly match the connected monitor set,
+# then applies each rule in that profile via hyprctl keyword.
+# If no profile matches, hyprland.conf's fallback (preferred,auto,1) stays in effect.
+apply_layout() {
+    local connected connected_count
+    connected=$(hyprctl monitors all -j 2>/dev/null | jq -r '.[].description' 2>/dev/null)
+    [[ -z "$connected" ]] && return
+    connected_count=$(echo "$connected" | wc -l)
+
+    local profile
+    for profile in "${PROFILES[@]}"; do
+        local rule desc matched
+        local -a rules desc_rules
+
+        IFS='|' read -ra rules <<< "$profile"
+
+        desc_rules=()
+        for rule in "${rules[@]}"; do
+            if [[ "$rule" == desc:* ]]; then
+                desc="${rule#desc:}"
+                desc="${desc%%,*}"
+                desc_rules+=("$desc")
+            fi
+        done
+
+        # Exact set match: same number of monitors as connected
+        [[ "${#desc_rules[@]}" -ne "$connected_count" ]] && continue
+
+        matched=true
+        for desc in "${desc_rules[@]}"; do
+            if ! echo "$connected" | grep -qF "$desc"; then
+                matched=false
+                break
+            fi
+        done
+
+        if [[ "$matched" == true ]]; then
+            for rule in "${rules[@]}"; do
+                hyprctl keyword monitor "$rule"
+            done
+            return
+        fi
+    done
+}
+
+apply_layout
+
+socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+socat - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
+    if [[ "$line" == monitoradded* ]] || [[ "$line" == monitorremoved* ]]; then
+        sleep 1
+        apply_layout
+    fi
+done
