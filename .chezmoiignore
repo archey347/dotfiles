@@ -1,4 +1,6 @@
 README.md
+CLAUDE.md
+.cursor
 {{- if not .is_hyprland }}
 .config/hypr
 .config/waybar

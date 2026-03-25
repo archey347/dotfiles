@@ -8,7 +8,7 @@
   "margin-bottom": 1,
   "margin-left": 3,
   "margin-right": 3,
-  "spacing": 2, // Gaps between modules
+  "spacing": 0, // Gaps between modules
   // Choose the order of the modules
   "modules-left": [
     "hyprland/workspaces",
@@ -17,7 +17,7 @@
   ],
   "modules-center": [],
   "modules-right": [
-    "idle_inwhibitor",
+    "idle_inhibitor",
     "pulseaudio",
     "network",
     "cpu",
@@ -102,7 +102,7 @@
   },
   "tray": {
     // "icon-size": 21,
-    "spacing": 10,
+    "spacing": 4,
     // "icons": {
     //   "blueman": "bluetooth",
     //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
@@ -110,29 +110,29 @@
   },
   "clock": {
     // "timezone": "America/New_York",
-    "format": "{:%a %d %b  %H:%M}",
+    "format": "{:%a %d %b %H:%M}",
     "format-alt": "{:%Y-%m-%d}",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
   },
   "cpu": {
-    "format": "{usage}% ",
+    "format": " {usage}%",
     "tooltip": false,
   },
   "memory": {
-    "format": "{}% ",
+    "format": " {}%",
   },
   "temperature": {
     // "thermal-zone": 2,
     // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
-    // "format-critical": "{temperatureC}°C {icon}",
-    "format": "{temperatureC}°C {icon}",
+    // "format-critical": "{icon} {temperatureC}°",
+    "format": "{icon} {temperatureC}°",
     "format-icons": ["", "", ""],
   },
   "backlight": {
     // "device": "acpi_video1",
-    "format": "{percent}% {icon}",
-    "format-icons": ["🌑", "🌘", "🌗", "🌖", "🌕"],
+    "format": "{icon} {percent}%",
+    "format-icons": ["", "", "", "", ""],
   },
   "battery": {
     "states": {
@@ -140,11 +140,11 @@
       "warning": 30,
       "critical": 15,
     },
-    "format": "{capacity}% {icon}",
-    "format-full": "{capacity}% {icon}",
-    "format-charging": "{capacity}% ",
-    "format-plugged": "{capacity}% ",
-    "format-alt": "{time} {icon}",
+    "format": "{icon} {capacity}%",
+    "format-full": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{icon} {time}",
     // "format-good": "", // An empty format will hide the module
     // "format-full": "",
     "format-icons": ["", "", "", "", ""],
@@ -165,21 +165,21 @@
   },
   "network": {
     // "interface": "wlp2*", // (Optional) To force the use of this interface
-    "format-wifi": "{essid} ({signalStrength}%) ",
-    "format-ethernet": "{ipaddr}/{cidr} ",
+    "format-wifi": " {essid} {signalStrength}%",
+    "format-ethernet": "",
     "tooltip-format": "{ifname} via {gwaddr} ",
-    "format-linked": "{ifname} (No IP) ",
-    "format-disconnected": "Disconnected ⚠",
+    "format-linked": " No IP",
+    "format-disconnected": "⚠ Disconnected",
     "format-alt": "{ifname}: {ipaddr}/{cidr}",
     "on-click": "$HOME/.config/waybar/wifi-menu.sh",
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
-    "format": "{volume}% {icon}   {format_source}",
+    "format": "{icon} {volume}% {format_source}",
     "format-bluetooth": "{volume}% {icon} {format_source}",
     "format-bluetooth-muted": " {icon} {format_source}",
     "format-muted": " {format_source}",
-    "format-source": "{volume}% ",
+    "format-source": " {volume}%",
     "format-source-muted": "",
     "format-icons": {
       "headphone": "",
@@ -218,8 +218,8 @@
   },
 
   "mpris": {
-    "format": "{title:.28}   {status_icon}",
-    "format-paused": "<i>{title:.28}</i>   {status_icon}",
+    "format": "{title:.28} {status_icon}",
+    "format-paused": "<i>{title:.28}</i> {status_icon}",
     "status-icons": {
       "playing": "⏸",
       "paused": "▶",

@@ -1,18 +1,18 @@
 * {
-    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif;
-    font-size: 13px;
+    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif, 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
+    font-size: 12px;
     min-height: 0;
 }
 
 window#waybar {
-    background-color: rgba(24, 24, 24, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    color: #ffffff;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    background-color: rgba(18, 18, 22, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    color: #e0e0e0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
     transition-property: background-color;
-    transition-duration: .5s;
-    padding: 0 8px;
+    transition-duration: .3s;
+    padding: 0 6px;
 }
 
 window#waybar.hidden {
@@ -22,6 +22,8 @@ window#waybar.hidden {
 button {
     box-shadow: none;
     border: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 button:hover {
@@ -29,32 +31,34 @@ button:hover {
     box-shadow: none;
 }
 
-/* Workspaces */
+/* ── Workspaces ─────────────────────────────────── */
 #workspaces button {
-    padding: 0 7px;
+    padding: 0 6px;
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.45);
-    margin: 0 1px;
-    min-width: 18px;
+    color: rgba(255, 255, 255, 0.35);
+    margin: 3px 1px;
+    min-width: 20px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #workspaces button.focused,
 #workspaces button.active {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.14);
     color: #ffffff;
 }
 
 #workspaces button.urgent {
-    background-color: rgba(255, 69, 58, 0.5);
+    background-color: rgba(255, 69, 58, 0.45);
     color: #ffffff;
 }
 
-/* Shared module defaults — no colored blocks */
+/* ── Shared module defaults ─────────────────────── */
 #clock,
 #battery,
 #cpu,
@@ -72,11 +76,14 @@ button:hover {
 #scratchpad,
 #power-profiles-daemon,
 #mpd,
+#mpris,
 #custom-power {
-    padding: 0 8px;
-    color: rgba(255, 255, 255, 0.88);
+    padding: 0 6px;
+    color: rgba(255, 255, 255, 0.75);
     background-color: transparent;
-    margin: 0 1px;
+    margin: 3px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 #clock:hover,
@@ -87,31 +94,52 @@ button:hover {
 #temperature:hover,
 #backlight:hover,
 #network:hover,
+#pulseaudio:hover,
 #wireplumber:hover,
 #custom-media:hover,
 #mode:hover,
 #idle_inhibitor:hover,
 #scratchpad:hover,
 #power-profiles-daemon:hover,
-#mpd:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+#mpd:hover,
+#mpris:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.95);
 }
 
 #window,
 #workspaces {
-    margin: 0 4px;
+    margin: 0 2px;
 }
 
-/* Clock */
+/* ── Visual group separators via margin ─────────── */
+/* audio/net | sys stats | power | media | clock | tray */
+#cpu {
+    margin-left: 8px;
+}
+#backlight {
+    margin-left: 8px;
+}
+#mpris {
+    margin-left: 8px;
+}
 #clock {
-    font-weight: 500;
-    color: #ffffff;
-    letter-spacing: 0.02em;
+    margin-left: 8px;
+}
+#tray {
+    margin-left: 8px;
 }
 
-/* Battery */
+/* ── Clock ──────────────────────────────────────── */
+#clock {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.03em;
+}
+
+/* ── Battery ────────────────────────────────────── */
 #battery {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 #battery.charging,
@@ -132,53 +160,53 @@ button:hover {
     animation-direction: alternate;
 }
 
-/* Network */
+/* ── Network ────────────────────────────────────── */
+#network {
+    color: rgba(255, 255, 255, 0.75);
+}
+
 #network.disconnected {
     color: #ff453a;
 }
 
-/* Pulseaudio */
+/* ── Pulseaudio ─────────────────────────────────── */
 #pulseaudio.muted {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.25);
 }
 
-#pulseaudio:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-}
-
-/* Temperature */
+/* ── Temperature ────────────────────────────────── */
 #temperature.critical {
     color: #ff453a;
 }
 
-/* Power profiles */
+/* ── Power profiles ─────────────────────────────── */
 #power-profiles-daemon {
-    padding-right: 10px;
+    padding: 0 5px;
 }
 
 #power-profiles-daemon.performance {
-    background-color: #ff453a;
-    color: #ffffff;
+    background-color: rgba(255, 69, 58, 0.35);
+    color: #ff6961;
 }
 
 #power-profiles-daemon.balanced {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 #power-profiles-daemon.power-saver {
-    background-color: #30d158;
-    color: #ffffff;
+    background-color: rgba(48, 209, 88, 0.25);
+    color: #30d158;
 }
 
-/* Tray */
+/* ── Tray ───────────────────────────────────────── */
 #tray > widget {
-    border-radius: 4px;
+    border-radius: 6px;
     margin: 0 1px;
 }
 
 #tray > widget:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 #tray > .passive {
@@ -187,41 +215,42 @@ button:hover {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: rgba(255, 69, 58, 0.4);
+    background-color: rgba(255, 69, 58, 0.3);
 }
 
-/* Idle inhibitor */
+/* ── Idle inhibitor ─────────────────────────────── */
 #idle_inhibitor.activated {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.1);
     color: #ffffff;
 }
 
-/* Scratchpad */
+/* ── Scratchpad ─────────────────────────────────── */
 #scratchpad.empty {
     background-color: transparent;
 }
 
-/* Mode indicator */
+/* ── Mode indicator ─────────────────────────────── */
 #mode {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.12);
 }
 
 label:focus {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Custom power button */
+/* ── Custom power button ────────────────────────── */
 #custom-power {
-    color: rgba(255, 255, 255, 0.6);
-    padding-right: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0 8px 0 4px;
+    transition: all 0.2s ease;
 }
 
 #custom-power:hover {
     color: #ff453a;
-    background-color: rgba(255, 69, 58, 0.1);
+    background-color: rgba(255, 69, 58, 0.12);
 }
 
-/* Privacy indicators */
+/* ── Privacy indicators ─────────────────────────── */
 #privacy {
     padding: 0;
 }
@@ -232,53 +261,56 @@ label:focus {
 }
 
 #privacy-item.screenshare {
-    background-color: rgba(207, 87, 0, 0.7);
+    background-color: rgba(207, 87, 0, 0.6);
 }
 
 #privacy-item.audio-in {
-    background-color: rgba(28, 160, 0, 0.7);
+    background-color: rgba(28, 160, 0, 0.6);
 }
 
 #privacy-item.audio-out {
-    background-color: rgba(0, 105, 212, 0.7);
+    background-color: rgba(0, 105, 212, 0.6);
 }
 
-/* Wireplumber */
+/* ── Wireplumber ────────────────────────────────── */
 #wireplumber {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 #wireplumber.muted {
     color: #ff453a;
 }
 
-/* MPD */
+/* ── MPD ────────────────────────────────────────── */
 #mpd {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.75);
 }
 
-#mpd.disconnected {
-    color: rgba(255, 255, 255, 0.35);
-}
-
+#mpd.disconnected,
 #mpd.stopped {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.25);
 }
 
-/* Custom media */
+/* ── Custom media ───────────────────────────────── */
 #custom-media {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.75);
     min-width: 100px;
 }
 
-/* Power menu popup */
+/* ── MPRIS ──────────────────────────────────────── */
+#mpris {
+    color: rgba(255, 255, 255, 0.65);
+    font-style: italic;
+}
+
+/* ── Power menu popup ───────────────────────────── */
 menu {
-    background-color: rgba(28, 28, 28, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(22, 22, 26, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 4px;
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
@@ -286,7 +318,8 @@ menu {
 menuitem {
     border-radius: 8px;
     padding: 6px 12px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.15s ease;
 }
 
 menu menuitem check,
