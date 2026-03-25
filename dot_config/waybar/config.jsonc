@@ -17,7 +17,7 @@
   ],
   "modules-center": [],
   "modules-right": [
-    "idle_inhibitor",
+    "mpris",
     "pulseaudio",
     "network",
     "cpu",
@@ -26,8 +26,8 @@
     "backlight",
     "power-profiles-daemon",
     "battery",
-    "mpris",
     "clock",
+    "idle_inhibitor",
     "tray",
     "custom/power",
   ],
@@ -218,8 +218,8 @@
   },
 
   "mpris": {
-    "format": "{title:.28} {status_icon}",
-    "format-paused": "<i>{title:.28}</i> {status_icon}",
+    "format": "{status_icon} {title:.28}",
+    "format-paused": "{status_icon} <i>{title:.28}</i>",
     "status-icons": {
       "playing": "⏸",
       "paused": "▶",

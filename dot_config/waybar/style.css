@@ -113,20 +113,20 @@ button:hover {
 }
 
 /* ── Visual group separators via margin ─────────── */
-/* audio/net | sys stats | power | media | clock | tray */
+/* mpris | audio+net | sys stats | power | clock | controls */
+#pulseaudio {
+    margin-left: 8px;
+}
 #cpu {
     margin-left: 8px;
 }
 #backlight {
     margin-left: 8px;
 }
-#mpris {
-    margin-left: 8px;
-}
 #clock {
     margin-left: 8px;
 }
-#tray {
+#idle_inhibitor {
     margin-left: 8px;
 }
 
@@ -299,8 +299,7 @@ label:focus {
 
 /* ── MPRIS ──────────────────────────────────────── */
 #mpris {
-    color: rgba(255, 255, 255, 0.65);
-    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* ── Power menu popup ───────────────────────────── */
