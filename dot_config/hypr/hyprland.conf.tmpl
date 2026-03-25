@@ -44,7 +44,7 @@ exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
 exec-once = blueman-applet
-exec-once = hyprpaper
+exec-once = bash -c 'sleep 2 && hyprpaper'
 exec-once = ~/.config/hypr/wallpaper-slideshow.sh
 
 
@@ -206,6 +206,10 @@ master {
 misc {
     force_default_wallpaper = -1 # Set to 0 or 1 to disable the anime mascot wallpapers
     disable_hyprland_logo = false # If true disables the random hyprland logo / anime girl background. :(
+}
+
+debug {
+    disable_logs = false
 }
 
 
