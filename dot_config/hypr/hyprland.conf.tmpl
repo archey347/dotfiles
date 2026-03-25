@@ -336,5 +336,14 @@ bind = $mainMod, Sys_Req, exec, hyprshot -m window                 # pick a wind
 # Ignore maximize requests from apps. You'll probably like this.
 windowrule = suppressevent maximize, class:.*
 
+# Float audio/bluetooth control windows
+windowrule = float, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
+windowrule = size 800 500, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
+windowrule = center, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
+
+windowrule = float, class:^(blueman-manager|.blueman-manager-wrapped)$
+windowrule = size 800 500, class:^(blueman-manager|.blueman-manager-wrapped)$
+windowrule = center, class:^(blueman-manager|.blueman-manager-wrapped)$
+
 # Fix some dragging issues with XWayland
 windowrule = nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0
