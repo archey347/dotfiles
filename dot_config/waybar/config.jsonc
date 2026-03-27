@@ -20,6 +20,7 @@
     "mpris",
     "pulseaudio",
     "network",
+    "custom/vpn",
     "cpu",
     "memory",
     "temperature",
@@ -204,6 +205,14 @@
     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null", // Script in resources folder
     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
   },
+  "custom/vpn": {
+    "exec": "$HOME/.config/waybar/vpn.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "$HOME/.config/waybar/vpn-menu.sh",
+    "tooltip": true,
+  },
+
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
