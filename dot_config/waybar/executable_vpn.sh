@@ -23,7 +23,8 @@ while IFS= read -r conn; do
     fi
 done <<< "$connections"
 
-tooltip=$(printf '%s\n' "${tooltip_lines[@]}")
+tooltip=$(printf '%s\n' "${tooltip_lines[@]}" | head -c -1)  # trim trailing newline
+tooltip="${tooltip//$'\n'/\\n}"
 
 if [ ${#active_names[@]} -eq 0 ]; then
     printf '{"text":"%s VPN","tooltip":"%s","class":"disconnected"}\n' \
