@@ -1,0 +1,34 @@
+# Appearance — matches Waybar pill aesthetic
+font=SF Pro Display 11
+background-color=#285577F0
+text-color=#FFFFFFD9
+border-color=#4C7899CC
+border-size=1
+border-radius=14
+padding=14
+margin=8
+width=360
+max-icon-size=48
+icons=1
+markup=1
+actions=1
+format=<b>%s</b>\n%b
+progress-color=over #1A8D3A66
+
+# Layout
+max-visible=4
+layer=overlay
+anchor=top-right
+
+# Behavior
+default-timeout=20000
+on-button-left=dismiss
+on-button-right=dismiss-all
+group-by=app-name
+
+[urgency=low]
+border-color=#4C789999
+
+[urgency=critical]
+border-color=#FF453ACC
+default-timeout=0

@@ -6,6 +6,7 @@ CLAUDE.md
 .config/waybar
 .config/wofi
 .config/swaylock
+.config/mako
 {{- end }}
 {{- if not (lookPath "cursor") }}
 .config/Cursor
