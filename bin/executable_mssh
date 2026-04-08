@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# mssh - Multi-SSH with synchronized input
+#
+# Opens a tmux session with one pane per host, all with synchronized
+# input enabled so keystrokes are sent to every pane at once.
+#
+# Usage: mssh host1 [host2 host3 ...]
+#
+# Toggle sync on/off:  Ctrl+b then :setw synchronize-panes
+# Switch panes:        Ctrl+b then arrow keys
+# Detach:              Ctrl+b then d
+
+if [ $# -lt 1 ]; then
+    echo "Usage: mssh host1 [host2 host3 ...]"
+    exit 1
+fi
+
+session="mssh-$$"
+tmux new-session -d -s "$session" ssh "$1"
+shift
+
+for host in "$@"; do
+    tmux split-window -t "$session" ssh "$host"
+    tmux select-layout -t "$session" tiled
+done
+
+tmux setw -t "$session" synchronize-panes on
+tmux attach -t "$session"
