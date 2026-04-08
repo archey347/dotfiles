@@ -15,6 +15,7 @@ packages:
         - "grim"
         - "hyprland"
         - "hyprpaper"
+        - "libdnf5-plugin-actions"
         - "lxpolkit"
         - "jq"
         - "mako"

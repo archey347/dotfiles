@@ -1,0 +1,12 @@
+{{ if .is_hyprland -}}
+#!/bin/bash
+
+ACTIONS_DIR=/etc/dnf/libdnf5-plugins/actions.d
+SCRIPT={{ .chezmoi.homeDir }}/bin/replace-hypr-wallpapers
+
+sudo mkdir -p "$ACTIONS_DIR"
+printf 'post_transaction:hyprland:in::%s\n' "$SCRIPT" \
+    | sudo tee "$ACTIONS_DIR/replace-hypr-wallpapers.actions" > /dev/null
+
+sudo "$SCRIPT"
+{{ end -}}

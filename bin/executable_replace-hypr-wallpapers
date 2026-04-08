@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HYPR_DIR=/usr/share/hypr
+MIN_SIZE=1024
+BLACK_PNG_B64="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC"
+
+for f in "$HYPR_DIR"/wall*.png "$HYPR_DIR"/lockdead*.png; do
+    [ -f "$f" ] || continue
+    size=$(stat -c%s "$f")
+    if [ "$size" -gt "$MIN_SIZE" ]; then
+        echo "$BLACK_PNG_B64" | base64 -d > "$f"
+        echo "Replaced $f (was ${size} bytes)"
+    fi
+done
