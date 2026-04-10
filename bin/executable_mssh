@@ -5,24 +5,42 @@
 # Opens a tmux session with one pane per host, all with synchronized
 # input enabled so keystrokes are sent to every pane at once.
 #
-# Usage: mssh host1 [host2 host3 ...]
+# Usage: mssh [-l layout] host1 [host2 host3 ...]
+#
+# Layouts: tiled (default), even-horizontal, even-vertical
 #
 # Toggle sync on/off:  Ctrl+b then :setw synchronize-panes
 # Switch panes:        Ctrl+b then arrow keys
 # Detach:              Ctrl+b then d
 
+layout="tiled"
+split_flag=""
+
+while getopts "l:" opt; do
+    case "$opt" in
+        l) layout="$OPTARG" ;;
+        *) echo "Usage: mssh [-l layout] host1 [host2 host3 ...]"; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
 if [ $# -lt 1 ]; then
-    echo "Usage: mssh host1 [host2 host3 ...]"
+    echo "Usage: mssh [-l layout] host1 [host2 host3 ...]"
     exit 1
 fi
+
+case "$layout" in
+    even-horizontal) split_flag="-h" ;;
+    even-vertical)   split_flag="-v" ;;
+esac
 
 session="mssh-$$"
 tmux new-session -d -s "$session" ssh "$1"
 shift
 
 for host in "$@"; do
-    tmux split-window -t "$session" ssh "$host"
-    tmux select-layout -t "$session" tiled
+    tmux split-window $split_flag -t "$session" ssh "$host"
+    tmux select-layout -t "$session" "$layout"
 done
 
 tmux setw -t "$session" synchronize-panes on

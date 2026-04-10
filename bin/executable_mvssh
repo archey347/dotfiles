@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mvssh - Multi-SSH with vertical splits (side-by-side panes)
+exec mssh -l even-horizontal "$@"
