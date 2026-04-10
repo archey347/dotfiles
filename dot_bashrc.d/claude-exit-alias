@@ -1,0 +1,1 @@
+trap '[[ "$BASH_COMMAND" == "/exit" ]] && exit' DEBUG
