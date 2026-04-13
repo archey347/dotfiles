@@ -351,3 +351,7 @@ windowrule = center, class:^(blueman-manager|.blueman-manager-wrapped)$
 
 # Fix some dragging issues with XWayland
 windowrule = nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0
+
+# Layer blur — apply backdrop blur to wofi launcher
+layerrule = blur, wofi
+layerrule = ignorezero, wofi
