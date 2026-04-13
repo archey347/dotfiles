@@ -1,28 +1,40 @@
 window {
   margin: 0px;
-  border: 2px solid #89b4fa;
-  border-radius: 12px;
-  background-color: #1e1e2e;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background-color: rgba(12, 12, 14, 0.70);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  font-family: 'Noto Serif', 'Liberation Serif', serif;
+  font-size: 15px;
+  font-weight: 400;
 }
 
 #input {
-  margin: 8px;
-  border: 2px solid #313244;
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: #cdd6f4;
-  background-color: #313244;
+  margin: 0px;
+  border: none;
+  border-bottom: 1px solid #3a3a3a;
+  border-radius: 0px;
+  padding: 14px 18px;
+  color: #ffffff;
+  background-color: transparent;
   outline: none;
+  box-shadow: none;
 }
 
 #input:focus {
-  border-color: #89b4fa;
+  border: none;
+  border-bottom: 1px solid #3a3a3a;
+  outline: none;
+  box-shadow: none;
+}
+
+#input image {
+  color: #6c7086;
+  margin-right: 8px;
 }
 
 #inner-box {
-  margin: 0px 8px 8px 8px;
+  margin: 4px 8px 8px 8px;
   border: none;
   background-color: transparent;
 }
@@ -39,20 +51,26 @@ window {
 }
 
 #text {
-  color: #cdd6f4;
-  margin: 4px 0px;
+  color: #ffffff;
+  margin: 0px 0px 0px 10px;
 }
 
 #entry {
-  padding: 6px 12px;
+  padding: 8px 12px;
+  margin: 2px 4px;
   border-radius: 8px;
-  spacing: 12px;
+  background-color: transparent;
+  transition: background-color 120ms ease;
 }
 
 #entry:selected {
-  background-color: #313244;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 #entry:selected #text {
-  color: #89b4fa;
+  color: #ffffff;
+}
+
+#entry image {
+  -gtk-icon-transform: scale(0.9);
 }

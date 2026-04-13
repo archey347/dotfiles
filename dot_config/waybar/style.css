@@ -35,8 +35,8 @@ button:hover {
 
 /* ── Workspaces ─────────────────────────────────── */
 #workspaces {
-    background-color: rgba(18, 18, 22, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background-color: rgba(12, 12, 14, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     margin: 3px 3px;
@@ -71,8 +71,8 @@ button:hover {
 
 /* ── Window title ───────────────────────────────── */
 #window {
-    background-color: rgba(18, 18, 22, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background-color: rgba(12, 12, 14, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     margin: 3px 3px;
@@ -103,8 +103,8 @@ button:hover {
 #custom-vpn {
     padding: 0 10px;
     color: rgba(255, 255, 255, 0.75);
-    background-color: rgba(18, 18, 22, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background-color: rgba(12, 12, 14, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     margin: 3px 3px;
@@ -128,7 +128,7 @@ button:hover {
 #power-profiles-daemon:hover,
 #mpd:hover,
 #mpris:hover {
-    background-color: rgba(40, 40, 48, 0.88);
+    background-color: rgba(34, 34, 38, 0.98);
     color: rgba(255, 255, 255, 0.95);
 }
 
@@ -192,7 +192,7 @@ button:hover {
 }
 
 #power-profiles-daemon.balanced {
-    background-color: rgba(18, 18, 22, 0.94);
+    background-color: rgba(12, 12, 14, 0.98);
     color: rgba(255, 255, 255, 0.75);
 }
 
@@ -257,7 +257,7 @@ label:focus {
 }
 
 #custom-vpn:hover {
-    background-color: rgba(40, 40, 48, 0.88);
+    background-color: rgba(34, 34, 38, 0.98);
     color: rgba(255, 255, 255, 0.95);
 }
 
@@ -331,7 +331,7 @@ label:focus {
 
 /* ── Power menu popup ───────────────────────────── */
 menu {
-    background-color: rgba(22, 22, 26, 0.96);
+    background-color: rgba(12, 12, 14, 0.98);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 4px;

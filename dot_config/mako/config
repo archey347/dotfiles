@@ -1,5 +1,5 @@
 # Appearance — matches Waybar pill aesthetic
-font=SF Pro Display 11
+font=Noto Serif, Liberation Serif 11
 background-color=#285577F0
 text-color=#FFFFFFD9
 border-color=#4C7899CC
