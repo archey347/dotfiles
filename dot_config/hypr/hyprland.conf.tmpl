@@ -239,12 +239,14 @@ input {
 gesture = 3, horizontal, workspace
 {{ end -}}
 
-# Example per-device config
+# Per-device config
 # See https://wiki.hypr.land/Configuring/Keywords/#per-device-input-configs for more
+{{- range $name, $layout := (.kb_devices | default dict) }}
 device {
-    name = epic-mouse-v1
-    sensitivity = -0.5
+    name = {{ $name }}
+    kb_layout = {{ $layout }}
 }
+{{- end }}
 
 
 ###################

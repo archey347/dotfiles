@@ -12,4 +12,11 @@
     libva_driver_name = {{ promptStringOnce . "libva_driver_name" "LIBVA_DRIVER_NAME (e.g. iHD, radeonsi, blank to skip)" | quote }}
     kb_layout         = {{ promptStringOnce . "kb_layout" "Keyboard layout (e.g. us, gb, de)" | quote }}
     monitor_profiles  = {{ if hasKey . "monitor_profiles" }}{{ .monitor_profiles | toJson }}{{ else }}[]{{ end }}
+{{- if hasKey . "kb_devices" }}
+
+[data.kb_devices]
+{{- range $name, $layout := .kb_devices }}
+    {{ $name | quote }} = {{ $layout | quote }}
+{{- end }}
+{{- end }}
 {{- end }}
