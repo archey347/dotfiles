@@ -1,5 +1,4 @@
 {
-  "model": "opus",
   "permissions": {
     "allow": [
       "Read(~/dev/**)",
@@ -32,5 +31,9 @@
       "Bash(git blame:*)",
       "Bash(git branch)"
     ]
+  },
+  "model": "opus",
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
   }
 }
