@@ -51,5 +51,6 @@
     "remote.SSH.configFile": "~/.ssh/config",
     "workbench.editor.enablePreview": false,
     "editor.stickyScroll.enabled": true,
-    "telemetry.telemetryLevel": "off"
+    "telemetry.telemetryLevel": "off",
+    "editor.fontSize": 13
 }
