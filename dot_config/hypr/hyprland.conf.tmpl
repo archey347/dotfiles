@@ -39,7 +39,7 @@ $menu = wofi --show drun
 
 # exec-once = $terminal
 exec-once = ~/.config/hypr/monitor-setup.sh
-exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} 'swaylock' before-sleep 'swaylock'
+exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} '{{ .chezmoi.homeDir }}/bin/swaylock-random' before-sleep '{{ .chezmoi.homeDir }}/bin/swaylock-random'
 exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
@@ -258,7 +258,7 @@ $mainMod = SUPER # Sets "Windows" key as main modifier
 
 # Example binds, see https://wiki.hypr.land/Configuring/Binds/ for more
 bind = $mainMod, Q, exec, $terminal
-bind = $mainMod, L, exec, swaylock
+bind = $mainMod, L, exec, {{ .chezmoi.homeDir }}/bin/swaylock-random
 bind = $mainMod, C, killactive,
 bind = $mainMod, M, exit,
 bind = $mainMod, E, exec, $fileManager

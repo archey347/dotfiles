@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# swaylock-random: launch swaylock with a harmonised random colour scheme.
+# Overrides only the colour flags; other options come from ~/.config/swaylock/config.
+
+set -euo pipefail
+
+# HSL (h:0-360, s:0-100, l:0-100) -> 6-digit hex
+hsl_to_hex() {
+    awk -v h="$1" -v s="$2" -v l="$3" '
+    function abs(x)    { return x < 0 ? -x : x }
+    function fmod(a,b) { return a - int(a/b) * b }
+    BEGIN {
+        s /= 100; l /= 100
+        c = (1 - abs(2*l - 1)) * s
+        hp = h / 60
+        x = c * (1 - abs(fmod(hp, 2) - 1))
+        if (hp < 1)      { r=c; g=x; b=0 }
+        else if (hp < 2) { r=x; g=c; b=0 }
+        else if (hp < 3) { r=0; g=c; b=x }
+        else if (hp < 4) { r=0; g=x; b=c }
+        else if (hp < 5) { r=x; g=0; b=c }
+        else             { r=c; g=0; b=x }
+        m = l - c/2
+        printf "%02x%02x%02x", (r+m)*255, (g+m)*255, (b+m)*255
+    }'
+}
+
+H=$((RANDOM % 360))
+H2=$(( (H + 40) % 360 ))   # analogous accent, +40°
+
+BG=$(hsl_to_hex "$H"  40  6)    # near-black, subtly tinted
+IN=$(hsl_to_hex "$H"  40 10)    # inside fill
+RG=$(hsl_to_hex "$H"  70 55)    # main ring
+RV=$(hsl_to_hex "$H2" 60 55)    # verifying ring
+KH=$(hsl_to_hex "$H2" 80 70)    # key highlight flash
+
+exec swaylock \
+    --color         "$BG" \
+    --inside-color  "${IN}cc" \
+    --ring-color    "${RG}88" \
+    --ring-ver-color "${RV}cc" \
+    --key-hl-color  "${KH}ff" \
+    "$@"

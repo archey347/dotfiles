@@ -1,0 +1,55 @@
+{
+    "git.autofetch": true,
+    "workbench.colorTheme": "Dark Modern",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "chat.agent.enabled": false,
+    "workbench.sideBar.location": "right",
+    "editor.fontFamily": "Iosevka",
+    "editor.rulers": [
+        80, 120
+    ],
+    "window.titleSeparator": ";",
+    "workbench.activityBar.orientation": "vertical",
+    "editor.renderFinalNewline": "on",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "go.survey.prompt": false,
+    "go.toolsManagement.autoUpdate": true,
+    "gopls": {
+        "usePlaceholders": true,
+        "ui.diagnostic.analyses": {
+            "nilness": true,
+            "unusedwrite": true
+        },
+        "ui.semanticTokens": true,
+        "formatting.gofumpt": true
+    },
+    "go.testFlags": ["-race"],
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fix",
+        "--sort-results",
+        "--max-issues-per-linter=0",
+        "--max-same-issues=0"
+    ],
+    "go.lintOnSave": "workspace",
+    "go.coverOnSave": true,
+    "go.coverageDecorator": {
+        "type": "highlight",
+        "coveredHighlightColor": "rgba(64, 128, 128, 0.1)",
+        "uncoveredHighlightColor": "rgba(128, 64, 64, 0.1)",
+        "coveredGutterStyle": "blockblue",
+        "uncoveredGutterStyle": "slashyellow"
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "terminal.integrated.enablePersistentSessions": false,
+    "terminal.integrated.persistentSessionReviveProcess": "never",
+    "window.zoomLevel": -1,
+    "window.restoreWindows": "none",
+    "git.blame.editorDecoration.enabled": true,
+    "remote.SSH.configFile": "~/.ssh/config",
+    "workbench.editor.enablePreview": false,
+    "editor.stickyScroll.enabled": true,
+    "telemetry.telemetryLevel": "off"
+}
