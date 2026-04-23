@@ -28,15 +28,29 @@ Write out (in your head or in a TaskCreate task list) the sub-tasks. Categorize 
 | Category | Example | Handler |
 |---|---|---|
 | **Exploration** — find files, understand patterns, map the codebase | "where are API routes defined", "how does auth work in this repo" | `Explore` subagent |
-| **Planning** — turn a fuzzy requirement into a concrete implementation plan | "plan how to add SSO to this app" | `Plan` subagent (or discovery-ui-planner for discovery-ui UI work) |
+| **Planning** — turn a fuzzy requirement into a concrete implementation plan | "plan how to add SSO to this app" | `Plan` subagent |
 | **Research** — answer a specific factual/architectural question that needs multiple reads | "does this repo already have a retry helper", "what's the current test framework config" | `Explore` subagent |
 | **Parallel independent work** — two+ questions with no dependency between them | "check if tests pass AND check for lint errors AND summarize recent commits" | multiple subagents in one message |
-| **Implementation from a clear brief** | "build this component at this path with these props" | `discovery-ui-implementer` (if discovery-ui) or general-purpose |
+| **Implementation from a clear brief** | "build this component at this path with these props" | general-purpose |
 | **Direct work** — known file, known change, single edit | "rename this function", "fix this typo", "add this import" | main thread (no subagent) |
 
-### Step 2 — delegate in parallel
+### Step 2 — split by conflict, then delegate
 
-When you have multiple independent sub-tasks, launch them in a **single message with multiple Agent tool calls**. Do not serialize independent work.
+Before launching, assess **conflict potential** between sub-tasks. Two tasks conflict if they're likely to:
+
+- Edit the same files or the same region of code
+- Depend on each other's output (B needs A's answer to proceed)
+- Create/rename the same symbols, routes, or config keys
+- Run the same long-lived process (e.g. two agents both starting the dev server)
+
+Sort sub-tasks accordingly:
+
+- **Parallel batch** — independent, read-only, or touching disjoint files → launch in a **single message with multiple Agent tool calls**.
+- **Sequential** — conflicting or dependent → run one at a time, feeding each result into the next prompt.
+
+It's fine (and common) to mix: e.g. run two read-only exploration agents in parallel, then sequentially run two implementation agents that touch overlapping files. Don't force an all-parallel or all-sequential shape just because it looks cleaner.
+
+Read-only exploration almost never conflicts — default those to parallel. Implementation agents editing nearby code almost always conflict — default those to sequential unless you've verified the file sets are disjoint.
 
 ### Step 3 — synthesize yourself
 
