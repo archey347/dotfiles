@@ -8,6 +8,7 @@ CLAUDE.md
 .config/swaylock
 .config/mako
 bin/replace-hypr-wallpapers
+bin/swaylock-random
 {{- end }}
 {{- if not (lookPath "cursor") }}
 .config/Cursor
