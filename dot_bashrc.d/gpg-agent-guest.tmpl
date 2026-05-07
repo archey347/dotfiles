@@ -1,0 +1,13 @@
+{{- if .gpg_guest }}
+# gpg_guest host: no local gpg-agent runs; the socket is forwarded over SSH.
+# On interactive SSH login, sanity-check the forward so failures aren't silent.
+if [ -n "$SSH_CONNECTION" ] && [[ $- == *i* ]]; then
+    _gpg_sock=$(gpgconf --list-dirs agent-socket 2>/dev/null)
+    if [ -z "$_gpg_sock" ] || [ ! -S "$_gpg_sock" ]; then
+        printf >&2 'WARN: gpg-agent socket %s missing. SSH agent forwarding likely not active; reconnect with -R for gpg.\n' "${_gpg_sock:-?}"
+    elif ! gpg-connect-agent /bye >/dev/null 2>&1; then
+        printf >&2 'WARN: gpg-agent socket %s present but not responsive.\n' "$_gpg_sock"
+    fi
+    unset _gpg_sock
+fi
+{{- end }}
