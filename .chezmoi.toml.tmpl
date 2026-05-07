@@ -6,6 +6,7 @@
     git_name          = {{ promptStringOnce . "git_name" "Git name" | quote }}
     git_email         = {{ promptStringOnce . "git_email" "Git email" | quote }}
     git_signingkey    = {{ promptStringOnce . "git_signingkey" "Git signing key" | quote }}
+    gpg_guest         = {{ promptBoolOnce . "gpg_guest" "Is this a gpg_guest host (no local gpg-agent; socket forwarded over SSH)" }}
     is_hyprland       = {{ promptBoolOnce . "is_hyprland" "Is this a Hyprland system" }}
 {{- if promptBoolOnce . "is_hyprland" "Is this a Hyprland system" }}
     aq_drm_devices    = {{ promptStringOnce . "aq_drm_devices" "AQ_DRM_DEVICES (e.g. /dev/dri/card1:/dev/dri/card0, blank to skip)" | quote }}
