@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# On gpg_guest hosts, mask user gpg-agent systemd units so socket activation
+# can't fight the SSH-forwarded socket. Reversed automatically when
+# gpg_guest flips back to false (run_onchange reruns when content changes).
+set -euo pipefail
+
+if ! command -v systemctl >/dev/null; then
+    exit 0
+fi
+
+units=(
+    gpg-agent.socket
+    gpg-agent-extra.socket
+    gpg-agent-ssh.socket
+    gpg-agent-browser.socket
+)
+
+{{ if .gpg_guest -}}
+systemctl --user stop "${units[@]}" 2>/dev/null || true
+systemctl --user mask "${units[@]}"
+{{- else -}}
+systemctl --user unmask "${units[@]}" 2>/dev/null || true
+{{- end }}
