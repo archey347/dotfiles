@@ -32,7 +32,7 @@
       "Bash(git branch)"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true
   }
