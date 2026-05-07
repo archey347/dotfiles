@@ -1,0 +1,8 @@
+{{- if not .gpg_guest -}}
+enable-ssh-support
+ttyname $GPG_TTY
+default-cache-ttl 120
+max-cache-ttl 120
+pinentry-program /usr/bin/pinentry-gnome3
+extra-socket /run/user/{{ output "id" "-u" | trim }}/gnupg/S.gpg-agent.extra
+{{- end }}
