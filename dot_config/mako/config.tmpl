@@ -1,8 +1,8 @@
 # Appearance — matches Waybar pill aesthetic
 font=Noto Serif, Liberation Serif 11
-background-color=#285577F0
+background-color=#{{ .theme.accent_strong }}
 text-color=#FFFFFFD9
-border-color=#4C7899CC
+border-color=#{{ .theme.accent }}
 border-size=1
 border-radius=14
 padding=14
@@ -13,7 +13,7 @@ icons=1
 markup=1
 actions=1
 format=<b>%s</b>\n%b
-progress-color=over #1A8D3A66
+progress-color=over #{{ .theme.success }}66
 
 # Layout
 max-visible=4
@@ -27,8 +27,8 @@ on-button-right=dismiss-all
 group-by=app-name
 
 [urgency=low]
-border-color=#4C789999
+border-color=#{{ .theme.accent_strong }}
 
 [urgency=critical]
-border-color=#FF453ACC
+border-color=#{{ .theme.error }}CC
 default-timeout=0

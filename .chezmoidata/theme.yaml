@@ -1,0 +1,26 @@
+# Theme palette — change tokens here to reskin mako + waybar.
+# Currently: pastel rose on deep lavender.
+# Hex strings are 6-digit (no '#', no alpha); rgb strings are
+# space/comma triples for use inside rgba().
+theme:
+  # Brand surfaces (waybar pills) — applied at full opacity.
+  surface: "2d2638"
+  surface_rgb: "45, 38, 56"
+  surface_hover: "382f47"
+  surface_hover_rgb: "56, 47, 71"
+
+  # Accent — active workspace, notification border.
+  accent: "f4b8c4"
+  accent_rgb: "244, 184, 196"
+
+  # Strong accent — notification background, low-urgency border.
+  accent_strong: "c89bb0"
+  accent_strong_rgb: "200, 155, 176"
+
+  # Status — templates retain existing alphas for visual layering.
+  error: "f4a6a6"
+  error_rgb: "244, 166, 166"
+  success: "b8e0c2"
+  success_rgb: "184, 224, 194"
+  info: "a6c8e8"
+  info_rgb: "166, 200, 232"

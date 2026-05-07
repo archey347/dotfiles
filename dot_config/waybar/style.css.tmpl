@@ -35,7 +35,7 @@ button:hover {
 
 /* ── Workspaces ─────────────────────────────────── */
 #workspaces {
-    background-color: rgba(12, 12, 14, 0.98);
+    background-color: #{{ .theme.surface }};
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
@@ -60,18 +60,18 @@ button:hover {
 
 #workspaces button.focused,
 #workspaces button.active {
-    background-color: rgba(255, 255, 255, 0.14);
+    background-color: #{{ .theme.accent }};
     color: #ffffff;
 }
 
 #workspaces button.urgent {
-    background-color: rgba(255, 69, 58, 0.45);
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
     color: #ffffff;
 }
 
 /* ── Window title ───────────────────────────────── */
 #window {
-    background-color: rgba(12, 12, 14, 0.98);
+    background-color: #{{ .theme.surface }};
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
@@ -103,7 +103,7 @@ button:hover {
 #custom-vpn {
     padding: 0 10px;
     color: rgba(255, 255, 255, 0.75);
-    background-color: rgba(12, 12, 14, 0.98);
+    background-color: #{{ .theme.surface }};
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
@@ -128,7 +128,7 @@ button:hover {
 #power-profiles-daemon:hover,
 #mpd:hover,
 #mpris:hover {
-    background-color: rgba(34, 34, 38, 0.98);
+    background-color: #{{ .theme.surface_hover }};
     color: rgba(255, 255, 255, 0.95);
 }
 
@@ -146,15 +146,15 @@ button:hover {
 
 #battery.charging,
 #battery.plugged {
-    color: #30d158;
+    color: #{{ .theme.success }};
 }
 
 @keyframes blink {
-    to { color: #ff453a; }
+    to { color: #{{ .theme.error }}; }
 }
 
 #battery.critical:not(.charging) {
-    color: #ff453a;
+    color: #{{ .theme.error }};
     animation-name: blink;
     animation-duration: 1s;
     animation-timing-function: steps(12);
@@ -168,7 +168,7 @@ button:hover {
 }
 
 #network.disconnected {
-    color: #ff453a;
+    color: #{{ .theme.error }};
 }
 
 /* ── Pulseaudio ─────────────────────────────────── */
@@ -178,7 +178,7 @@ button:hover {
 
 /* ── Temperature ────────────────────────────────── */
 #temperature.critical {
-    color: #ff453a;
+    color: #{{ .theme.error }};
 }
 
 /* ── Power profiles ─────────────────────────────── */
@@ -187,17 +187,17 @@ button:hover {
 }
 
 #power-profiles-daemon.performance {
-    background-color: rgba(255, 69, 58, 0.75);
+    background-color: rgba({{ .theme.error_rgb }}, 0.75);
     color: #ffffff;
 }
 
 #power-profiles-daemon.balanced {
-    background-color: rgba(12, 12, 14, 0.98);
+    background-color: #{{ .theme.surface }};
     color: rgba(255, 255, 255, 0.75);
 }
 
 #power-profiles-daemon.power-saver {
-    background-color: rgba(48, 209, 88, 0.65);
+    background-color: rgba({{ .theme.success_rgb }}, 0.65);
     color: #ffffff;
 }
 
@@ -221,7 +221,7 @@ button:hover {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: rgba(255, 69, 58, 0.3);
+    background-color: rgba({{ .theme.error_rgb }}, 0.3);
 }
 
 /* ── Idle inhibitor ─────────────────────────────── */
@@ -253,16 +253,16 @@ label:focus {
 }
 
 #custom-vpn.connected {
-    color: #30d158;
+    color: #{{ .theme.success }};
 }
 
 #custom-vpn:hover {
-    background-color: rgba(34, 34, 38, 0.98);
+    background-color: #{{ .theme.surface_hover }};
     color: rgba(255, 255, 255, 0.95);
 }
 
 #custom-vpn.connected:hover {
-    background-color: rgba(48, 209, 88, 0.45);
+    background-color: rgba({{ .theme.success_rgb }}, 0.45);
 }
 
 /* ── Custom power button ────────────────────────── */
@@ -272,9 +272,9 @@ label:focus {
 }
 
 #custom-power:hover {
-    color: #ff453a;
-    background-color: rgba(255, 69, 58, 0.70);
-    border-color: rgba(255, 69, 58, 0.75);
+    color: #{{ .theme.error }};
+    background-color: rgba({{ .theme.error_rgb }}, 0.70);
+    border-color: rgba({{ .theme.error_rgb }}, 0.75);
 }
 
 /* ── Privacy indicators ─────────────────────────── */
@@ -288,15 +288,15 @@ label:focus {
 }
 
 #privacy-item.screenshare {
-    background-color: rgba(207, 87, 0, 0.6);
+    background-color: rgba({{ .theme.accent_rgb }}, 0.6);
 }
 
 #privacy-item.audio-in {
-    background-color: rgba(28, 160, 0, 0.6);
+    background-color: rgba({{ .theme.success_rgb }}, 0.6);
 }
 
 #privacy-item.audio-out {
-    background-color: rgba(0, 105, 212, 0.6);
+    background-color: rgba({{ .theme.info_rgb }}, 0.6);
 }
 
 /* ── Wireplumber ────────────────────────────────── */
@@ -305,7 +305,7 @@ label:focus {
 }
 
 #wireplumber.muted {
-    color: #ff453a;
+    color: #{{ .theme.error }};
 }
 
 /* ── MPD ────────────────────────────────────────── */
@@ -331,7 +331,7 @@ label:focus {
 
 /* ── Power menu popup ───────────────────────────── */
 menu {
-    background-color: rgba(12, 12, 14, 0.98);
+    background-color: #{{ .theme.surface }};
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 4px;
