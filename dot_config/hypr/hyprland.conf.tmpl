@@ -110,8 +110,8 @@ env = HYPRCURSOR_SIZE,24
 
 # https://wiki.hypr.land/Configuring/Variables/#general
 general {
-    gaps_in = 1
-    gaps_out = 1
+    gaps_in = 0
+    gaps_out = 0
 
     border_size = 3
 
@@ -370,3 +370,7 @@ windowrule = nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned
 # Layer blur — apply backdrop blur to wofi launcher
 layerrule = blur, wofi
 layerrule = ignorezero, wofi
+
+# Layer blur — subtle blurred backdrop behind the entire waybar
+# layerrule = blur, waybar
+# layerrule = ignorealpha 0.1, waybar
