@@ -42,9 +42,10 @@ armor
 use-agent
 # Disable recipient key ID in messages (WARNING: breaks Mailvelope)
 throw-keyids
+{{- if .gpg_guest }}
 # Never auto-spawn gpg-agent — required on gpg_guest hosts where the agent
-# socket is forwarded over SSH; harmless on hosts that explicitly launch via
-# `gpgconf --launch gpg-agent`.
+# socket is forwarded over SSH.
 no-autostart
+{{- end }}
 # Keyserver URL
 keyserver hkps://keys.openpgp.org
