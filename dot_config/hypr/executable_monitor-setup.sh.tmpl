@@ -66,6 +66,21 @@ apply_layout() {
         done
 
         if [[ "$matched" == true ]]; then
+            if [[ "$focus_on" == true ]]; then
+                local has_focus_rule=false
+                local f
+                for f in "${is_focus[@]}"; do
+                    if [[ "$f" -eq 1 ]]; then
+                        has_focus_rule=true
+                        break
+                    fi
+                done
+                if [[ "$has_focus_rule" == false ]]; then
+                    notify-send "Focus mode" "No focus monitor configured for the current display setup"
+                    focus_on=false
+                fi
+            fi
+
             local i
             for i in "${!clean_rules[@]}"; do
                 if [[ "$focus_on" == true && "${is_focus[$i]}" -eq 0 && "${clean_rules[$i]}" == desc:* ]]; then
