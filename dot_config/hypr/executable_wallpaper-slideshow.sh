@@ -44,14 +44,18 @@ while true; do
 
     monitor="${monitors[$((monitor_idx % n))]}"
     img="${images[$((RANDOM % ${#images[@]}))]}"
+    monitor_idx=$(( monitor_idx + 1 ))
+
+    if [ "${prev_img[$monitor]:-}" = "$img" ]; then
+        continue
+    fi
 
     hyprctl hyprpaper preload "$img"
     hyprctl hyprpaper wallpaper "$monitor,$img"
 
-    if [ -n "${prev_img[$monitor]}" ] && [ "${prev_img[$monitor]}" != "$img" ]; then
+    if [ -n "${prev_img[$monitor]:-}" ]; then
         hyprctl hyprpaper unload "${prev_img[$monitor]}"
     fi
 
     prev_img[$monitor]="$img"
-    monitor_idx=$(( monitor_idx + 1 ))
 done
