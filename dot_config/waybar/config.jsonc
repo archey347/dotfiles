@@ -29,6 +29,7 @@
     "battery",
     "clock",
     "idle_inhibitor",
+    "custom/focus",
     "tray",
     "custom/power",
   ],
@@ -210,6 +211,15 @@
     "return-type": "json",
     "interval": 5,
     "on-click": "$HOME/.config/waybar/vpn-menu.sh",
+    "tooltip": true,
+  },
+
+  "custom/focus": {
+    "exec": "$HOME/.config/hypr/focus.sh waybar",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 8,
+    "on-click": "$HOME/.config/hypr/focus.sh toggle",
     "tooltip": true,
   },
 

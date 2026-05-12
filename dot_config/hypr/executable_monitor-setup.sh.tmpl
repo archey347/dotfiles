@@ -2,14 +2,22 @@
 # Monitor layout profiles. Each entry is a pipe-separated list of Hyprland
 # monitor rules. Baked in by chezmoi at apply time — actual monitor descriptors
 # live in ~/.config/chezmoi/chezmoi.toml, not in the dotfiles repo.
+#
+# A rule may be prefixed with `focus:` to mark it as the focus-mode monitor
+# for that profile. When ~/bin/focus turns focus mode on, every other
+# monitor in the matched profile is disabled.
 PROFILES=(
 {{- range .monitor_profiles }}
     {{ . | quote }}
 {{- end }}
 )
 
+FOCUS_STATE="${XDG_RUNTIME_DIR}/hypr-focus"
+
 # Selects a profile whose desc: entries exactly match the connected monitor set,
-# then applies each rule in that profile via hyprctl keyword.
+# then applies each rule in that profile via hyprctl keyword. When the focus
+# state file exists, non-focus monitors in the matched profile are emitted as
+# `desc:<desc>,disable` instead of their normal rule.
 # If no profile matches, hyprland.conf's fallback (preferred,auto,1) stays in effect.
 apply_layout() {
     local connected connected_count
@@ -17,17 +25,30 @@ apply_layout() {
     [[ -z "$connected" ]] && return
     connected_count=$(echo "$connected" | wc -l)
 
+    local focus_on=false
+    [[ -e "$FOCUS_STATE" ]] && focus_on=true
+
     local profile
     for profile in "${PROFILES[@]}"; do
-        local rule desc matched
-        local -a rules desc_rules
+        local rule clean desc matched
+        local -a rules clean_rules is_focus desc_rules
 
         IFS='|' read -ra rules <<< "$profile"
 
+        clean_rules=()
+        is_focus=()
         desc_rules=()
         for rule in "${rules[@]}"; do
-            if [[ "$rule" == desc:* ]]; then
-                desc="${rule#desc:}"
+            if [[ "$rule" == focus:* ]]; then
+                clean="${rule#focus:}"
+                is_focus+=(1)
+            else
+                clean="$rule"
+                is_focus+=(0)
+            fi
+            clean_rules+=("$clean")
+            if [[ "$clean" == desc:* ]]; then
+                desc="${clean#desc:}"
                 desc="${desc%%,*}"
                 desc_rules+=("$desc")
             fi
@@ -45,13 +66,26 @@ apply_layout() {
         done
 
         if [[ "$matched" == true ]]; then
-            for rule in "${rules[@]}"; do
-                hyprctl keyword monitor "$rule"
+            local i
+            for i in "${!clean_rules[@]}"; do
+                if [[ "$focus_on" == true && "${is_focus[$i]}" -eq 0 && "${clean_rules[$i]}" == desc:* ]]; then
+                    desc="${clean_rules[$i]#desc:}"
+                    desc="${desc%%,*}"
+                    hyprctl keyword monitor "desc:${desc},disable"
+                else
+                    hyprctl keyword monitor "${clean_rules[$i]}"
+                fi
             done
             return
         fi
     done
 }
+
+# One-shot mode for ~/bin/focus to re-apply after toggling state.
+if [[ "${1:-}" == "--apply" ]]; then
+    apply_layout
+    exit
+fi
 
 apply_layout
 

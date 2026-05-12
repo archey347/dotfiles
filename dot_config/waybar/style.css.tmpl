@@ -104,7 +104,8 @@ button:hover {
 #mpd,
 #mpris,
 #custom-power,
-#custom-vpn {
+#custom-vpn,
+#custom-focus {
     padding: 0 10px;
     color: rgba(255, 255, 255, 0.75);
     background-color: #{{ .theme.surface }};
@@ -246,6 +247,25 @@ button:hover {
 
 label:focus {
     background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Focus mode ─────────────────────────────────── */
+#custom-focus {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+#custom-focus.on {
+    background-color: #{{ .theme.accent }};
+    color: #ffffff;
+}
+
+#custom-focus:hover {
+    background-color: #{{ .theme.surface_hover }};
+    color: rgba(255, 255, 255, 0.95);
+}
+
+#custom-focus.on:hover {
+    background-color: rgba({{ .theme.accent_rgb }}, 0.75);
 }
 
 /* ── VPN ────────────────────────────────────────── */
