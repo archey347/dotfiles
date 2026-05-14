@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Override the global pushRemote = no_push rule for the chezmoi source repo
 # so that chezmoi autoPush works without hitting the no_push guard on main/master
+
+if [[ -f "$CHEZMOI_SOURCE_DIR/.git/disable-remote-config" ]]; then
+  exit 0
+fi
+
 git -C "$CHEZMOI_SOURCE_DIR" config branch.main.pushRemote origin
 
 # Use HTTPS for fetch (no SSH key needed) and SSH for push
