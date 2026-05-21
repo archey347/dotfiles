@@ -1,6 +1,10 @@
 README.md
 CLAUDE.md
 .cursor
+{{- if .is_work_machine }}
+.claude/settings.local.json
+configure-chezmoi-git.sh
+{{- end }}
 {{- if not .is_hyprland }}
 .config/hypr
 .config/waybar

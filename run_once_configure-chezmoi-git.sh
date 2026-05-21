@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 # Override the global pushRemote = no_push rule for the chezmoi source repo
-# so that chezmoi autoPush works without hitting the no_push guard on main/master
-
-if [[ -f "$CHEZMOI_SOURCE_DIR/.git/disable-remote-config" ]]; then
-  exit 0
-fi
+# so that chezmoi autoPush works without hitting the no_push guard on main/master.
+# Skipped on work machines via .chezmoiignore (is_work_machine).
 
 git -C "$CHEZMOI_SOURCE_DIR" config branch.main.pushRemote origin
 
