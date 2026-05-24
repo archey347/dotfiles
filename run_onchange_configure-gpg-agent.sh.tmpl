@@ -20,4 +20,8 @@ systemctl --user stop "${units[@]}" 2>/dev/null || true
 systemctl --user mask "${units[@]}"
 {{- else -}}
 systemctl --user unmask "${units[@]}" 2>/dev/null || true
+# Stop the running agent so the additional sockets aren't refused; it'll be
+# socket-activated again on next connection.
+systemctl --user stop gpg-agent.service 2>/dev/null || true
+systemctl --user enable --now "${units[@]}"
 {{- end }}

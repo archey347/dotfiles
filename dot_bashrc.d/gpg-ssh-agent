@@ -8,4 +8,3 @@ if [ -z "$SSH_CONNECTION" ]; then
     gpg-connect-agent updatestartuptty /bye > /dev/null
 fi
 # Remote sessions use the forwarded GPG agent socket via RemoteForward
-

@@ -251,11 +251,13 @@ gesture = 3, horizontal, workspace
 
 # Per-device config
 # See https://wiki.hypr.land/Configuring/Keywords/#per-device-input-configs for more
-{{- range $name, $layout := (.kb_devices | default dict) }}
+{{- if hasKey . "kb_devices" }}
+{{- range $name, $layout := .kb_devices }}
 device {
     name = {{ $name }}
     kb_layout = {{ $layout }}
 }
+{{- end }}
 {{- end }}
 
 

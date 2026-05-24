@@ -17,6 +17,7 @@
   ],
   "modules-center": [],
   "modules-right": [
+    "mpris",
     "pulseaudio",
     "network",
     "custom/vpn",
@@ -235,4 +236,16 @@
     },
   },
 
+  "mpris": {
+    "format": "{status_icon} {title:.28}",
+    "format-paused": "{status_icon} <i>{title:.28}</i>",
+    "status-icons": {
+      "playing": "⏸",
+      "paused": "▶",
+    },
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-scroll-down": "playerctl previous",
+    "tooltip-format": "{player}: {artist} — {title}",
+  },
 }
