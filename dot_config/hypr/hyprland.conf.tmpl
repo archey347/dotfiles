@@ -38,7 +38,7 @@ $menu = wofi --show drun
 # Or execute your favorite apps at launch like this:
 
 # exec-once = $terminal
-exec-once = ~/.config/hypr/monitor-setup.sh
+exec = ~/.config/hypr/monitor-setup.sh
 exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} '{{ .chezmoi.homeDir }}/bin/swaylock-random' before-sleep '{{ .chezmoi.homeDir }}/bin/swaylock-random'
 exec-once = waybar
 exec-once = mako
