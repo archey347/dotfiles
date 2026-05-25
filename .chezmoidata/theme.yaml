@@ -11,9 +11,9 @@ theme:
   surface_hover_rgb: "58, 58, 60"
 
   # Accent — active workspace, notification border.
-  # Softened systemPink.
-  accent: "ff6482"
-  accent_rgb: "255, 100, 130"
+  # Softened systemGreen.
+  accent: "22c55e"
+  accent_rgb: "34, 197, 94"
 
   # Strong accent — notification background, low-urgency border.
   # systemGray3 (dark) — macOS-style elevated material panel.

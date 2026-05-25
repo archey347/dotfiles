@@ -1,12 +1,12 @@
 * {
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif, 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
-    font-size: 12px;
+    font-size: 13px;
     min-height: 0;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 window#waybar {
-    background-color: rgba(40, 40, 50, 0.65);
+    background-color: rgba(40, 40, 50, 0.72);
     border: none;
     border-radius: 0;
     color: #e0e0e0;
@@ -37,56 +37,11 @@ button:hover {
     box-shadow: none;
 }
 
-/* ── Pill mixin ─────────────────────────────────── */
-/* Applied to all pill-style containers             */
-
-/* ── Workspaces ─────────────────────────────────── */
-#workspaces {
-    background-color: transparent;
-    border: none;
-    border-radius: 20px;
-    margin: 3px 1px;
-    padding: 0 3px;
-}
-
-#workspaces button {
-    padding: 0 6px;
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.55);
-    margin: 3px 1px;
-    min-width: 20px;
-    border-radius: 14px;
-    transition: all 0.2s ease;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-#workspaces button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.9);
-}
-
-#workspaces button.focused,
-#workspaces button.active {
-    background-color: #{{ .theme.accent }};
-    color: #ffffff;
-}
-
-#workspaces button.urgent {
-    background-color: rgba({{ .theme.error_rgb }}, 0.45);
-    color: #ffffff;
-}
-
-/* ── Window title ───────────────────────────────── */
-#window {
-    background-color: transparent;
-    border: none;
-    border-radius: 20px;
-    margin: 3px 1px;
-    padding: 0 12px;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* ── Shared module pill defaults ────────────────── */
+/* ── Pill base ──────────────────────────────────── */
+/* Position, size, shape, and base color for every top-level module.
+   Per-module overrides below should only touch what's actually different. */
+#workspaces,
+#window,
 #clock,
 #battery,
 #cpu,
@@ -107,16 +62,20 @@ button:hover {
 #mpris,
 #custom-power,
 #custom-vpn,
-#custom-focus {
-    padding: 0 10px;
-    color: rgba(255, 255, 255, 0.9);
+#custom-focus,
+#privacy {
     background-color: transparent;
+    color: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 20px;
-    margin: 3px 1px;
+    margin: 4px 1px;
+    padding: 2px 10px;
     transition: all 0.2s ease;
 }
 
+/* ── Pill hover ─────────────────────────────────── */
+/* Shared hover for plain info pills. Modules with their own
+   hover treatment (custom-vpn, custom-focus, custom-power) override below. */
 #clock:hover,
 #battery:hover,
 #cpu:hover,
@@ -136,6 +95,44 @@ button:hover {
 #mpris:hover {
     background-color: #{{ .theme.surface_hover }};
     color: rgba(255, 255, 255, 0.95);
+}
+
+/* ── Workspaces ─────────────────────────────────── */
+#workspaces {
+    padding: 0 3px;
+}
+
+#workspaces button {
+    padding: 2px 6px;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 1px;
+    min-width: 20px;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    background-color: #{{ .theme.accent }};
+    color: #ffffff;
+}
+
+#workspaces button.urgent {
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
+    color: #ffffff;
+}
+
+/* ── Window title ───────────────────────────────── */
+#window {
+    padding: 2px 12px;
 }
 
 /* ── Clock ──────────────────────────────────────── */
@@ -188,10 +185,6 @@ button:hover {
 }
 
 /* ── Power profiles ─────────────────────────────── */
-#power-profiles-daemon {
-    padding: 0 10px;
-}
-
 #power-profiles-daemon.performance {
     background-color: rgba({{ .theme.error_rgb }}, 0.75);
     color: #ffffff;
@@ -209,7 +202,7 @@ button:hover {
 
 /* ── Tray ───────────────────────────────────────── */
 #tray {
-    padding: 0 6px;
+    padding: 2px 6px;
 }
 
 #tray > widget {
@@ -292,7 +285,6 @@ label:focus {
 /* ── Custom power button ────────────────────────── */
 #custom-power {
     color: rgba(255, 255, 255, 0.55);
-    padding: 0 10px;
 }
 
 #custom-power:hover {
@@ -355,14 +347,14 @@ label:focus {
 
 /* ── Power menu popup ───────────────────────────── */
 menu {
-    background-color: #{{ .theme.surface }};
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background-color: rgba(40, 40, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
     padding: 4px;
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
 }
 
 menuitem {

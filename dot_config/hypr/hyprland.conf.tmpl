@@ -113,10 +113,10 @@ general {
     gaps_in = 0
     gaps_out = 0
 
-    border_size = 3
+    border_size = 2
 
     # https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
-    col.active_border = rgba(00000011)
+    col.active_border = rgba(ffffff22)
     col.inactive_border = rgba(59595911)
 
     # Set to true enable resizing windows by clicking and dragging on borders and gaps
@@ -377,3 +377,7 @@ layerrule = ignorezero, wofi
 # Layer blur — subtle blurred backdrop behind the entire waybar
 layerrule = blur, waybar
 layerrule = ignorealpha 0.1, waybar
+
+# Window blur — ghostty uses background-opacity in its own config; global blur applies automatically.
+# Listed here so the set of blurred surfaces is visible in one place.
+# windowrule for ghostty: class = com.mitchellh.ghostty
