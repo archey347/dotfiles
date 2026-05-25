@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+hosts=$({
+  {
+    awk '
+      /^[[:space:]]*[Hh]ost[[:space:]]/ {
+        for (i = 2; i <= NF; i++) {
+          if ($i ~ /^#/) break
+          if ($i !~ /[*?!]/) print $i
+        }
+      }
+    ' ~/.ssh/config ~/.ssh/config.d/* 2>/dev/null || true
+    awk '
+      {
+        if ($1 ~ /^@/) sub(/^@[^[:space:]]+[[:space:]]+/, "")
+        if ($1 == "" || $1 ~ /^[#|]/) next
+        m = split($1, arr, ",")
+        for (i = 1; i <= m; i++) {
+          h = arr[i]
+          sub(/^\[/, "", h)
+          sub(/\]:.*$/, "", h)
+          if (h != "" && h !~ /[*?!]/) print h
+        }
+      }
+    ' ~/.ssh/known_hosts 2>/dev/null || true
+  } | grep -Ev '^([0-9]{1,3}\.){3}[0-9]{1,3}$|:' | sort -u
+} || true)
+
+input=$(printf '%s\n' "$hosts" | wofi --dmenu --prompt "ssh" --width 400) || exit 0
+[ -z "$input" ] && exit 0
+
+exec ghostty -e bash -lc "$(cat <<'INNER'
+ESC=$'\e'
+while :; do
+  ssh $1
+  rc=$?
+  printf '\nssh exited (%d). [r] retry, [Esc] close: ' "$rc"
+  while :; do
+    IFS= read -rsn1 key
+    case "$key" in
+      r|R) printf '\n'; break ;;
+      "$ESC") printf '\n'; exit 0 ;;
+    esac
+  done
+done
+INNER
+)" -- "$input"

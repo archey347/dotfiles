@@ -13,6 +13,7 @@ configure-chezmoi-git.sh
 .config/mako
 bin/replace-hypr-wallpapers
 bin/swaylock-random
+bin/hypr-ssh-prompt
 {{- end }}
 {{- if not (lookPath "cursor") }}
 .config/Cursor
