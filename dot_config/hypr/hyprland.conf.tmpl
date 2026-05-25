@@ -149,7 +149,7 @@ decoration {
     # https://wiki.hypr.land/Configuring/Variables/#blur
     blur {
         enabled = true
-        size = 3
+        size = 2
         passes = 1
 
         vibrancy = 0.1696
@@ -375,5 +375,5 @@ layerrule = blur, wofi
 layerrule = ignorezero, wofi
 
 # Layer blur — subtle blurred backdrop behind the entire waybar
-# layerrule = blur, waybar
-# layerrule = ignorealpha 0.1, waybar
+layerrule = blur, waybar
+layerrule = ignorealpha 0.1, waybar

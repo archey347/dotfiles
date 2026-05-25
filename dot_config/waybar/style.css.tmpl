@@ -2,10 +2,11 @@
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif, 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
     font-size: 12px;
     min-height: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 window#waybar {
-    background-color: rgba(220, 220, 225, 0.08);
+    background-color: rgba(40, 40, 50, 0.65);
     border: none;
     border-radius: 0;
     color: #e0e0e0;
@@ -41,8 +42,8 @@ button:hover {
 
 /* ── Workspaces ─────────────────────────────────── */
 #workspaces {
-    background-color: #{{ .theme.surface }};
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: transparent;
+    border: none;
     border-radius: 20px;
     margin: 3px 3px;
     padding: 0 3px;
@@ -51,7 +52,7 @@ button:hover {
 #workspaces button {
     padding: 0 6px;
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.55);
     margin: 3px 1px;
     min-width: 20px;
     border-radius: 14px;
@@ -76,12 +77,12 @@ button:hover {
 
 /* ── Window title ───────────────────────────────── */
 #window {
-    background-color: #{{ .theme.surface }};
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: transparent;
+    border: none;
     border-radius: 20px;
     margin: 3px 3px;
     padding: 0 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* ── Shared module pill defaults ────────────────── */
@@ -107,9 +108,9 @@ button:hover {
 #custom-vpn,
 #custom-focus {
     padding: 0 10px;
-    color: rgba(255, 255, 255, 0.75);
-    background-color: #{{ .theme.surface }};
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    background-color: transparent;
+    border: none;
     border-radius: 20px;
     margin: 3px 3px;
     transition: all 0.2s ease;
@@ -145,7 +146,7 @@ button:hover {
 
 /* ── Battery ────────────────────────────────────── */
 #battery {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #battery.charging,
@@ -168,7 +169,7 @@ button:hover {
 
 /* ── Network ────────────────────────────────────── */
 #network {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #network.disconnected {
@@ -177,7 +178,7 @@ button:hover {
 
 /* ── Pulseaudio ─────────────────────────────────── */
 #pulseaudio.muted {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.55);
 }
 
 /* ── Temperature ────────────────────────────────── */
@@ -196,8 +197,8 @@ button:hover {
 }
 
 #power-profiles-daemon.balanced {
-    background-color: #{{ .theme.surface }};
-    color: rgba(255, 255, 255, 0.75);
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #power-profiles-daemon.power-saver {
@@ -251,7 +252,7 @@ label:focus {
 
 /* ── Focus mode ─────────────────────────────────── */
 #custom-focus {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #custom-focus.on {
@@ -270,7 +271,7 @@ label:focus {
 
 /* ── VPN ────────────────────────────────────────── */
 #custom-vpn {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #custom-vpn.connected {
@@ -288,7 +289,7 @@ label:focus {
 
 /* ── Custom power button ────────────────────────── */
 #custom-power {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.55);
     padding: 0 10px;
 }
 
@@ -322,7 +323,7 @@ label:focus {
 
 /* ── Wireplumber ────────────────────────────────── */
 #wireplumber {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #wireplumber.muted {
@@ -331,17 +332,17 @@ label:focus {
 
 /* ── MPD ────────────────────────────────────────── */
 #mpd {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #mpd.disconnected,
 #mpd.stopped {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.55);
 }
 
 /* ── Custom media ───────────────────────────────── */
 #custom-media {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
     min-width: 100px;
 }
 
