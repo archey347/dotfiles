@@ -14,7 +14,7 @@ window {
   border-bottom: 1px solid #3a3a3a;
   border-radius: 0px;
   padding: 14px 18px;
-  color: #ffffff;
+  color: #{{ .theme.text }};
   background-color: transparent;
   outline: none;
   box-shadow: none;
@@ -50,7 +50,7 @@ window {
 }
 
 #text {
-  color: #ffffff;
+  color: #{{ .theme.text }};
   margin: 0px 0px 0px 10px;
 }
 
@@ -80,7 +80,7 @@ window {
 }
 
 #entry:selected #text {
-  color: #ffffff;
+  color: #{{ .theme.text }};
 }
 
 #entry image {

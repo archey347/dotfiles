@@ -6,7 +6,8 @@ font-size = 10
 window-padding-x = 6
 window-padding-y = 2
 
-background = #{{ .theme.background }}
+background = #{{ if hasKey . "theme" }}{{ .theme.background }}{{ else }}001a22{{ end }}
+foreground = #{{ if hasKey . "theme" }}{{ .theme.text }}{{ else }}ebdbb2{{ end }}
 background-opacity = 0.99
 
 cursor-style = block

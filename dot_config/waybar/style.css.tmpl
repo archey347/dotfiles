@@ -9,7 +9,7 @@ window#waybar {
     background-color: rgba({{ .theme.background_rgb }}, 0.72);
     border: none;
     border-radius: 0;
-    color: #e0e0e0;
+    color: rgba({{ .theme.text_rgb }}, 0.88);
     transition-property: background-color;
     transition-duration: .3s;
     padding: 0 4px;
@@ -33,7 +33,7 @@ button {
 }
 
 button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba({{ .theme.text_rgb }}, 0.1);
     box-shadow: none;
 }
 
@@ -65,7 +65,7 @@ button:hover {
 #custom-focus,
 #privacy {
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
     border: none;
     border-radius: 20px;
     margin: 4px 1px;
@@ -94,7 +94,7 @@ button:hover {
 #mpd:hover,
 #mpris:hover {
     background-color: #{{ .theme.surface_hover }};
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba({{ .theme.text_rgb }}, 0.95);
 }
 
 /* ── Workspaces ─────────────────────────────────── */
@@ -105,7 +105,7 @@ button:hover {
 #workspaces button {
     padding: 2px 6px;
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba({{ .theme.text_rgb }}, 0.55);
     margin: 0 1px;
     min-width: 20px;
     border-radius: 14px;
@@ -115,19 +115,19 @@ button:hover {
 }
 
 #workspaces button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba({{ .theme.text_rgb }}, 0.1);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #workspaces button.focused,
 #workspaces button.active {
     background-color: #{{ .theme.accent }};
-    color: #ffffff;
+    color: #{{ .theme.text }};
 }
 
 #workspaces button.urgent {
     background-color: rgba({{ .theme.error_rgb }}, 0.45);
-    color: #ffffff;
+    color: #{{ .theme.text }};
 }
 
 /* ── Window title ───────────────────────────────── */
@@ -138,13 +138,13 @@ button:hover {
 /* ── Clock ──────────────────────────────────────── */
 #clock {
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba({{ .theme.text_rgb }}, 0.95);
     letter-spacing: 0.03em;
 }
 
 /* ── Battery ────────────────────────────────────── */
 #battery {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #battery.charging,
@@ -167,7 +167,7 @@ button:hover {
 
 /* ── Network ────────────────────────────────────── */
 #network {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #network.disconnected {
@@ -176,7 +176,7 @@ button:hover {
 
 /* ── Pulseaudio ─────────────────────────────────── */
 #pulseaudio.muted {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba({{ .theme.text_rgb }}, 0.55);
 }
 
 /* ── Temperature ────────────────────────────────── */
@@ -187,17 +187,17 @@ button:hover {
 /* ── Power profiles ─────────────────────────────── */
 #power-profiles-daemon.performance {
     background-color: rgba({{ .theme.error_rgb }}, 0.75);
-    color: #ffffff;
+    color: #{{ .theme.text }};
 }
 
 #power-profiles-daemon.balanced {
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #power-profiles-daemon.power-saver {
     background-color: rgba({{ .theme.success_rgb }}, 0.65);
-    color: #ffffff;
+    color: #{{ .theme.text }};
 }
 
 /* ── Tray ───────────────────────────────────────── */
@@ -212,7 +212,7 @@ button:hover {
 }
 
 #tray > widget:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba({{ .theme.text_rgb }}, 0.08);
 }
 
 #tray > .passive {
@@ -226,8 +226,8 @@ button:hover {
 
 /* ── Idle inhibitor ─────────────────────────────── */
 #idle_inhibitor.activated {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+    background-color: rgba({{ .theme.text_rgb }}, 0.15);
+    color: #{{ .theme.text }};
 }
 
 /* ── Scratchpad ─────────────────────────────────── */
@@ -238,7 +238,7 @@ button:hover {
 
 /* ── Mode indicator ─────────────────────────────── */
 #mode {
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: rgba({{ .theme.text_rgb }}, 0.12);
 }
 
 label:focus {
@@ -247,17 +247,17 @@ label:focus {
 
 /* ── Focus mode ─────────────────────────────────── */
 #custom-focus {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #custom-focus.on {
     background-color: #{{ .theme.accent }};
-    color: #ffffff;
+    color: #{{ .theme.text }};
 }
 
 #custom-focus:hover {
     background-color: #{{ .theme.surface_hover }};
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba({{ .theme.text_rgb }}, 0.95);
 }
 
 #custom-focus.on:hover {
@@ -266,7 +266,7 @@ label:focus {
 
 /* ── VPN ────────────────────────────────────────── */
 #custom-vpn {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #custom-vpn.connected {
@@ -275,7 +275,7 @@ label:focus {
 
 #custom-vpn:hover {
     background-color: #{{ .theme.surface_hover }};
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba({{ .theme.text_rgb }}, 0.95);
 }
 
 #custom-vpn.connected:hover {
@@ -284,7 +284,7 @@ label:focus {
 
 /* ── Custom power button ────────────────────────── */
 #custom-power {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba({{ .theme.text_rgb }}, 0.55);
 }
 
 #custom-power:hover {
@@ -317,7 +317,7 @@ label:focus {
 
 /* ── Wireplumber ────────────────────────────────── */
 #wireplumber {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #wireplumber.muted {
@@ -326,36 +326,36 @@ label:focus {
 
 /* ── MPD ────────────────────────────────────────── */
 #mpd {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #mpd.disconnected,
 #mpd.stopped {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba({{ .theme.text_rgb }}, 0.55);
 }
 
 /* ── Custom media ───────────────────────────────── */
 #custom-media {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
     min-width: 100px;
 }
 
 /* ── Power menu popup ───────────────────────────── */
 menu {
     background-color: rgba({{ .theme.background_rgb }}, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba({{ .theme.text_rgb }}, 0.18);
     border-radius: 14px;
     padding: 4px;
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', sans-serif;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
 }
 
 menuitem {
     border-radius: 8px;
     padding: 6px 12px;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba({{ .theme.text_rgb }}, 0.85);
     transition: all 0.15s ease;
 }
 
@@ -366,6 +366,6 @@ menu menuitem radio {
 }
 
 menuitem:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    background-color: rgba({{ .theme.text_rgb }}, 0.1);
+    color: #{{ .theme.text }};
 }

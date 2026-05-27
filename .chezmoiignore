@@ -1,5 +1,6 @@
 README.md
 CLAUDE.md
+THEMES.md
 .cursor
 {{- if .is_work_machine }}
 .claude/settings.local.json
