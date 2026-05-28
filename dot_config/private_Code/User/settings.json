@@ -52,5 +52,6 @@
     "workbench.editor.enablePreview": false,
     "editor.stickyScroll.enabled": true,
     "telemetry.telemetryLevel": "off",
-    "editor.fontSize": 13
+    "editor.fontSize": 13,
+    "claudeCode.useTerminal": true
 }
