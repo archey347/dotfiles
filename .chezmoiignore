@@ -16,6 +16,7 @@ configure-chezmoi-git.sh
 bin/replace-hypr-wallpapers
 bin/swaylock-random
 bin/hypr-ssh-prompt
+enable-gnome-keyring.sh
 {{- end }}
 {{- if not (lookPath "cursor") }}
 .config/Cursor
