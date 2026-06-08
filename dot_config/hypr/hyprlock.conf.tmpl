@@ -2,19 +2,16 @@
 # Managed by chezmoi; only applied on Hyprland systems (see .chezmoiignore).
 #
 # Photos come from ~/Pictures/desktop-photos (same set as the wallpaper
-# slideshow). The `background` widget fills every monitor edge-to-edge (cover),
-# so it adapts to any monitor size with no manual sizing. reload_cmd fetches a
-# fresh random photo every reload_time seconds; crossfade_time fades between them.
+# slideshow). The background widget fills every monitor (cover); reload_cmd
+# swaps in a fresh random photo every reload_time seconds with a crossfade.
 
 general {
     hide_cursor = true
-    grace = 0
     ignore_empty_input = true
 }
 
-# Fullscreen cycling photo. `color` is the fallback shown until the first image
-# loads. `path` is a symlink that ~/bin/lock seeds before launch; subsequent
-# photos come straight from reload_cmd's stdout.
+# `path` is a symlink that ~/bin/lock seeds for the first frame; later photos
+# come straight from reload_cmd's stdout. `color` shows until the first loads.
 background {
     monitor =
     path = {{ .chezmoi.homeDir }}/.cache/lock-photo
@@ -24,26 +21,15 @@ background {
     crossfade_time = 1.0
 }
 
-# Password input ring — colours ported from ~/.config/swaylock/config.
+# Dark translucent field + white text reads better over photos than hyprlock's
+# stock light field; everything else here is left at its default.
 input-field {
     monitor =
     size = 280, 55
-    outline_thickness = 3
-    dots_size = 0.3
-    dots_spacing = 0.3
-    dots_center = true
     rounding = 12
-    outer_color = rgba(00000044)
     inner_color = rgba(00000088)
     font_color = rgba(ffffffff)
-    check_color = rgba(88888844)
-    fail_color = rgba(ff5555aa)
-    fade_on_empty = true
-    placeholder_text = <i>Password…</i>
-    fail_text = <i>$FAIL ($ATTEMPTS)</i>
     position = 0, -20
-    halign = center
-    valign = center
 }
 
 # Clock
@@ -54,8 +40,6 @@ label {
     font_size = 64
     font_family = Iosevka
     position = 0, 120
-    halign = center
-    valign = center
 }
 
 # Date
@@ -66,6 +50,4 @@ label {
     font_size = 20
     font_family = Iosevka
     position = 0, 55
-    halign = center
-    valign = center
 }
