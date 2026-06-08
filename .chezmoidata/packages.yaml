@@ -14,6 +14,7 @@ packages:
         - "dolphin"
         - "grim"
         - "hyprland"
+        - "hyprlock"
         - "hyprpaper"
         - "libdnf5-plugin-actions"
         - "lxpolkit"

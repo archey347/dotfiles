@@ -39,7 +39,7 @@ $menu = wofi --show drun
 
 # exec-once = $terminal
 exec = ~/.config/hypr/monitor-setup.sh
-exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} '{{ .chezmoi.homeDir }}/bin/swaylock-random' before-sleep '{{ .chezmoi.homeDir }}/bin/swaylock-random'
+exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} '{{ .chezmoi.homeDir }}/bin/lock' before-sleep '{{ .chezmoi.homeDir }}/bin/lock'
 exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
@@ -270,7 +270,7 @@ $mainMod = SUPER # Sets "Windows" key as main modifier
 
 # Example binds, see https://wiki.hypr.land/Configuring/Binds/ for more
 bind = $mainMod, Q, exec, $terminal
-bind = $mainMod, L, exec, {{ .chezmoi.homeDir }}/bin/swaylock-random
+bind = $mainMod, L, exec, {{ .chezmoi.homeDir }}/bin/lock
 bind = $mainMod, C, killactive,
 bind = $mainMod, M, exit,
 bind = $mainMod, E, exec, $fileManager
@@ -312,6 +312,19 @@ bind = $mainMod SHIFT, 7, movetoworkspace, 7
 bind = $mainMod SHIFT, 8, movetoworkspace, 8
 bind = $mainMod SHIFT, 9, movetoworkspace, 9
 bind = $mainMod SHIFT, 0, movetoworkspace, 10
+
+# Move current workspace to monitor N (numbered left-to-right, 1 = leftmost).
+# See ~/.config/hypr/move-ws-to-monitor.sh. Bound 1-9; numbers past the monitor
+# count just notify.
+bind = $mainMod ALT, 1, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 1
+bind = $mainMod ALT, 2, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 2
+bind = $mainMod ALT, 3, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 3
+bind = $mainMod ALT, 4, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 4
+bind = $mainMod ALT, 5, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 5
+bind = $mainMod ALT, 6, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 6
+bind = $mainMod ALT, 7, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 7
+bind = $mainMod ALT, 8, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 8
+bind = $mainMod ALT, 9, exec, $HOME/.config/hypr/move-ws-to-monitor.sh 9
 
 # Example special workspace (scratchpad)
 bind = $mainMod, S, togglespecialworkspace, magic

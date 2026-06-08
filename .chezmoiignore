@@ -15,6 +15,7 @@ configure-chezmoi-git.sh
 .config/mako
 bin/replace-hypr-wallpapers
 bin/swaylock-random
+bin/lock
 bin/hypr-ssh-prompt
 enable-gnome-keyring.sh
 {{- end }}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# lock: lock the screen with hyprlock, showing a cycling photo slideshow.
+#
+# hyprlock's `background` widget fills each monitor edge-to-edge on its own, so
+# all this needs to do is seed the first photo (the background's `path` points at
+# ~/.cache/lock-photo) before launching. Subsequent photos come from the
+# background's reload_cmd. Invoked by the Hyprland keybind and swayidle.
+set -euo pipefail
+
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
+mkdir -p "$CACHE"
+
+seed="$("$HOME/.config/hypr/random-lock-photo.sh" || true)"
+[ -n "$seed" ] && ln -sf "$seed" "$CACHE/lock-photo"
+
+exec hyprlock "$@"
