@@ -2,52 +2,71 @@
 # Managed by chezmoi; only applied on Hyprland systems (see .chezmoiignore).
 #
 # Photos come from ~/Pictures/desktop-photos (same set as the wallpaper
-# slideshow). The background widget fills every monitor (cover); reload_cmd
-# swaps in a fresh random photo every reload_time seconds with a crossfade.
+# slideshow). Only the *primary* monitor shows the photo + clock; the rest are
+# blacked out. "Primary" = whichever monitor was focused when the screen
+# locked — ~/bin/lock resolves it and writes $PRIMARY into the sourced file
+# below before launching. If the file is missing or $PRIMARY is empty, the
+# widgets fall back to every monitor (monitor = ). reload_cmd swaps in a fresh
+# random photo every reload_time seconds with a crossfade.
+source = {{ .chezmoi.homeDir }}/.cache/hyprlock-primary.conf
 
 general {
     hide_cursor = true
     ignore_empty_input = true
 }
 
-# `path` is a symlink that ~/bin/lock seeds for the first frame; later photos
-# come straight from reload_cmd's stdout. `color` shows until the first loads.
+# Black fill on every monitor, drawn first so it sits underneath. The photo
+# background below covers it on the primary monitor; non-primary monitors keep
+# this black.
 background {
     monitor =
+    color = rgba(000000ff)
+}
+
+# `path` is a symlink that ~/bin/lock seeds for the first frame; later photos
+# come straight from reload_cmd's stdout. `color` shows until the first loads.
+# Scoped to the primary monitor so only it shows the slideshow.
+background {
+    monitor = $PRIMARY
     path = {{ .chezmoi.homeDir }}/.cache/lock-photo
     color = rgba(000000ff)
-    reload_time = 60
+    reload_time = 300
     reload_cmd = {{ .chezmoi.homeDir }}/.config/hypr/random-lock-photo.sh
     crossfade_time = 1.0
 }
 
-# Dark translucent field + white text reads better over photos than hyprlock's
-# stock light field; everything else here is left at its default.
+# Understated field: a translucent light-grey fill lets the photo show through
+# (hyprlock can't blur behind a single widget, only the whole background), with
+# a thin, faint border so it sits back rather than grabbing attention. White
+# text keeps it legible over the photo.
 input-field {
-    monitor =
+    monitor = $PRIMARY
     size = 280, 55
     rounding = 12
-    inner_color = rgba(00000088)
+    outline_thickness = 1
+    outer_color = rgba(ffffff33)
+    inner_color = rgba(50505066)
     font_color = rgba(ffffffff)
     position = 0, -20
 }
 
-# Clock
+# Clock — sits roughly one third down from the top (offsets are from centre,
+# so this is tuned for the laptop's 1200px-tall panel).
 label {
-    monitor =
+    monitor = $PRIMARY
     text = cmd[update:1000] echo "$(date +'%H:%M')"
     color = rgba(ffffffff)
     font_size = 64
     font_family = Iosevka
-    position = 0, 120
+    position = 0, 200
 }
 
 # Date
 label {
-    monitor =
+    monitor = $PRIMARY
     text = cmd[update:60000] echo "$(date +'%A, %d %B')"
     color = rgba(ffffffcc)
     font_size = 20
     font_family = Iosevka
-    position = 0, 55
+    position = 0, 135
 }

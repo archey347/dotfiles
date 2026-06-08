@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-# lock: lock the screen with hyprlock, showing a cycling photo slideshow.
+# lock: lock the screen with hyprlock, showing a cycling photo slideshow on the
+# primary monitor and blacking out the rest.
 #
-# hyprlock's `background` widget fills each monitor edge-to-edge on its own, so
-# all this needs to do is seed the first photo (the background's `path` points at
-# ~/.cache/lock-photo) before launching. Subsequent photos come from the
-# background's reload_cmd. Invoked by the Hyprland keybind and swayidle.
+# Two things are seeded before launch:
+#   - ~/.cache/lock-photo: a symlink to the first photo (the background widget's
+#     `path`); subsequent photos come from the background's reload_cmd.
+#   - ~/.cache/hyprlock-primary.conf: defines $PRIMARY, which hyprlock.conf
+#     sources to scope the photo + clock to one monitor. "Primary" is whichever
+#     monitor is focused right now; an empty value makes the widgets fall back
+#     to every monitor.
+# Invoked by the Hyprland keybind and swayidle.
 set -euo pipefail
 
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
@@ -12,5 +17,8 @@ mkdir -p "$CACHE"
 
 seed="$("$HOME/.config/hypr/random-lock-photo.sh" || true)"
 [ -n "$seed" ] && ln -sf "$seed" "$CACHE/lock-photo"
+
+primary="$(hyprctl monitors -j 2>/dev/null | jq -r 'first(.[] | select(.focused) | .name) // empty')"
+printf '$PRIMARY = %s\n' "$primary" > "$CACHE/hyprlock-primary.conf"
 
 exec hyprlock "$@"
