@@ -81,6 +81,41 @@ apply_layout() {
                 fi
             fi
 
+            # Before disconnecting, move every non-focus monitor's workspaces onto
+            # the focus monitor. moveworkspacetomonitor is a graceful move between
+            # live outputs, so GPU apps (e.g. Ghostty) re-attach to the focus output
+            # cleanly instead of being yanked off a destroyed one. By the time the
+            # rule loop below disables them, the other monitors are empty, so nothing
+            # loses its rendering surface. Workspaces are not moved back on focus off.
+            if [[ "$focus_on" == true ]]; then
+                local focus_desc focus_name j src_desc src_name ws
+                focus_desc=""
+                for j in "${!clean_rules[@]}"; do
+                    if [[ "${is_focus[$j]}" -eq 1 && "${clean_rules[$j]}" == desc:* ]]; then
+                        focus_desc="${clean_rules[$j]#desc:}"
+                        focus_desc="${focus_desc%%,*}"
+                        break
+                    fi
+                done
+                focus_name=$(hyprctl monitors all -j 2>/dev/null \
+                    | jq -r --arg d "$focus_desc" '.[] | select(.description | contains($d)) | .name' 2>/dev/null | head -1)
+                if [[ -n "$focus_name" ]]; then
+                    for j in "${!clean_rules[@]}"; do
+                        if [[ "${is_focus[$j]}" -eq 0 && "${clean_rules[$j]}" == desc:* ]]; then
+                            src_desc="${clean_rules[$j]#desc:}"
+                            src_desc="${src_desc%%,*}"
+                            src_name=$(hyprctl monitors all -j 2>/dev/null \
+                                | jq -r --arg d "$src_desc" '.[] | select(.description | contains($d)) | .name' 2>/dev/null | head -1)
+                            [[ -z "$src_name" || "$src_name" == "$focus_name" ]] && continue
+                            for ws in $(hyprctl workspaces -j 2>/dev/null \
+                                | jq -r --arg m "$src_name" '.[] | select(.monitor == $m and .id > 0) | .id' 2>/dev/null); do
+                                hyprctl dispatch moveworkspacetomonitor "$ws" "$focus_name"
+                            done
+                        fi
+                    done
+                fi
+            fi
+
             local i
             for i in "${!clean_rules[@]}"; do
                 if [[ "$focus_on" == true && "${is_focus[$i]}" -eq 0 && "${clean_rules[$i]}" == desc:* ]]; then
