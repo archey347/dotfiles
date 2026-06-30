@@ -2,7 +2,7 @@
 {
   "layer": "top",
   // "position": "bottom", // Waybar position (top|bottom|left|right)
-  // "height": 30, // auto height
+  "height": 29, // fixed height so tall title glyphs (emoji) don't grow the bar (29 + 1px margin = 30)
   // "width": 1280, // Waybar width
   "margin-top": 0,
   "margin-bottom": 1,
