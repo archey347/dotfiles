@@ -140,7 +140,10 @@ fi
 apply_layout
 
 socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
-socat - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
+# -U is unidirectional socket->stdout, so socat never reads its own stdin.
+# Without it, Hyprland's `exec =` starts us with no stdin, socat hits EOF on `-`
+# immediately and exits 0, taking the read loop with it — no hotplug handling.
+socat -U - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
     if [[ "$line" == monitoradded* ]] || [[ "$line" == monitorremoved* ]]; then
         sleep 1
         apply_layout
