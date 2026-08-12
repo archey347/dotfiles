@@ -3,9 +3,11 @@
 # monitor rules. Baked in by chezmoi at apply time — actual monitor descriptors
 # live in ~/.config/chezmoi/chezmoi.toml, not in the dotfiles repo.
 #
-# A rule may be prefixed with `focus:` to mark it as the focus-mode monitor
-# for that profile. When ~/bin/focus turns focus mode on, every other
-# monitor in the matched profile is disabled.
+# A rule may be prefixed with `focus:` to mark it as the default focus-mode
+# monitor for that profile. When ~/bin/focus turns focus mode on, every other
+# monitor in the matched profile is disabled — keeping whichever monitor was
+# focused at the time, and falling back to the tagged one if that monitor isn't
+# part of this profile.
 PROFILES=(
 {{- range .monitor_profiles }}
     {{ . | quote }}
@@ -13,6 +15,13 @@ PROFILES=(
 )
 
 FOCUS_STATE="${XDG_RUNTIME_DIR}/hypr-focus"
+LOCKFILE="${XDG_RUNTIME_DIR}/hypr-monitor-setup.lock"
+APPLIED_MARKER="${XDG_RUNTIME_DIR}/hypr-monitor-applied"
+
+# How long after a layout change to treat monitoradded/monitorremoved as our own
+# doing rather than a real hotplug. Also coalesces the burst of events a dock
+# emits when it connects.
+GRACE=5
 
 # Selects a profile whose desc: entries exactly match the connected monitor set,
 # then applies each rule in that profile via hyprctl keyword. When the focus
@@ -66,6 +75,34 @@ apply_layout() {
         done
 
         if [[ "$matched" == true ]]; then
+            # ~/bin/focus writes the description of the monitor that was focused
+            # when focus mode went on, so the toggle keeps the screen you were
+            # working on rather than always collapsing onto the tagged one. The
+            # `focus:` tag is the fallback when that monitor isn't in this
+            # profile (or the state file predates this and is empty).
+            if [[ "$focus_on" == true ]]; then
+                local override k override_idx
+                override=$(< "$FOCUS_STATE") || override=""
+                if [[ -n "$override" ]]; then
+                    override_idx=-1
+                    for k in "${!clean_rules[@]}"; do
+                        [[ "${clean_rules[$k]}" == desc:* ]] || continue
+                        desc="${clean_rules[$k]#desc:}"
+                        desc="${desc%%,*}"
+                        if [[ "$override" == *"$desc"* ]]; then
+                            override_idx=$k
+                            break
+                        fi
+                    done
+                    if [[ "$override_idx" -ge 0 ]]; then
+                        for k in "${!is_focus[@]}"; do
+                            is_focus[$k]=0
+                        done
+                        is_focus[$override_idx]=1
+                    fi
+                fi
+            fi
+
             if [[ "$focus_on" == true ]]; then
                 local has_focus_rule=false
                 local f
@@ -131,13 +168,69 @@ apply_layout() {
     done
 }
 
+# Take the bar down before touching outputs: waybar 0.14 segfaults if an output
+# is destroyed underneath it (see waybar-ctl.sh), and nothing restarts it.
+pre_layout_change() {
+    "${HOME}/.config/waybar/waybar-ctl.sh" stop
+}
+
+# Put the bar back once the new layout has settled, and repaint any monitor that
+# lost its wallpaper along with its output. Neither runs on the initial call
+# below — waybar and hyprpaper are still starting up at that point.
+post_layout_change() {
+    sleep 1
+    # 9>&- so the new waybar does not inherit change_layout's lock fd. flock is
+    # only released once every fd on that open file description is closed, and
+    # waybar outlives this script — inheriting it pins the lock forever and every
+    # later toggle blocks on it.
+    "${HOME}/.config/waybar/waybar-ctl.sh" start 9>&-
+    "${HOME}/.config/hypr/wallpaper-refresh.sh"
+}
+
+# Enabling and disabling outputs makes Hyprland emit the very monitoradded /
+# monitorremoved events the watcher below listens for, so an apply that isn't
+# marked as ours comes straight back round as a "hotplug" and applies again —
+# which is how one focus toggle turned into five, with the bar flapping down and
+# up each time.
+recently_applied() {
+    local marked now
+    marked=$(stat -c %Y "$APPLIED_MARKER" 2>/dev/null) || return 1
+    now=$(date +%s)
+    (( now - marked < GRACE ))
+}
+
+# A full layout change: bar down, outputs re-arranged, bar back up. Serialised on
+# a lock so a focus toggle and the watcher can't interleave, and marked on
+# completion so the events it emits are recognised as self-inflicted.
+# --if-stale drops the change if another one just finished (watcher only; a focus
+# toggle must always apply).
+change_layout() {
+    exec 9>"$LOCKFILE"
+    # Bounded wait: if the lock is ever stuck, carry on regardless. Applying
+    # twice is recoverable; never applying strands you on one monitor.
+    flock -w 10 9 || true
+
+    if [[ "${1:-}" == "--if-stale" ]] && recently_applied; then
+        exec 9>&-
+        return
+    fi
+
+    pre_layout_change
+    apply_layout
+    post_layout_change
+
+    touch "$APPLIED_MARKER"
+    exec 9>&-
+}
+
 # One-shot mode for ~/bin/focus to re-apply after toggling state.
 if [[ "${1:-}" == "--apply" ]]; then
-    apply_layout
+    change_layout
     exit
 fi
 
 apply_layout
+touch "$APPLIED_MARKER"
 
 socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
 # -U is unidirectional socket->stdout, so socat never reads its own stdin.
@@ -145,7 +238,8 @@ socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
 # immediately and exits 0, taking the read loop with it — no hotplug handling.
 socat -U - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
     if [[ "$line" == monitoradded* ]] || [[ "$line" == monitorremoved* ]]; then
+        recently_applied && continue
         sleep 1
-        apply_layout
+        change_layout --if-stale
     fi
 done
