@@ -23,6 +23,7 @@ packages:
         - "network-manager-applet"
         - "pavucontrol"
         - "slurp"
+        - "socat"
         - "swayidle"
         - "swaylock"
         - "waybar"
