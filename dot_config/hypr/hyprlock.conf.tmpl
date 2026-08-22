@@ -14,6 +14,20 @@ general {
     hide_cursor = true
     ignore_empty_input = true
 }
+{{- if .has_fingerprint_reader }}
+
+# Fingerprint unlock. hyprlock talks to fprintd over D-Bus in a thread
+# separate from the password prompt, so an enrolled finger unlocks while the
+# password field stays usable. Only emitted on machines with a reader (see
+# has_fingerprint_reader in chezmoi data); the other laptop has none.
+# NB: /etc/pam.d/hyprlock must point at password-auth, NOT login — the login
+# stack pulls in pam_fprintd, which blocks the password path for ~a minute.
+auth {
+    fingerprint {
+        enabled = true
+    }
+}
+{{- end }}
 
 # Black fill on every monitor, drawn first so it sits underneath. The photo
 # background below covers it on the primary monitor; non-primary monitors keep
