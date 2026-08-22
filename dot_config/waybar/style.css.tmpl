@@ -69,7 +69,19 @@ button:hover {
     border: none;
     border-radius: 20px;
     margin: 4px 1px;
-    padding: 2px 10px;
+    /* Keeps the bar a constant 28px (20px pill + 4px margin top and bottom).
+       Without the floor, module height follows the tallest glyph in its text,
+       and characters resolve to whatever font fontconfig falls back to — e.g.
+       Claude Code's ◐◑◒◓ terminal-title spinner renders ◐ in Font Awesome
+       (16px line) but ◑◒◓ in Noto Sans Math (20px), which grew the bar, grew
+       its exclusive zone, and shoved every window down the screen as the
+       spinner ticked. Vertical padding is left off for the same reason: pills
+       stretch to the bar height anyway, so padding would only add to the
+       height the bar asks for and eat into the headroom this floor buys.
+       (waybar's "height" config key does not help here — it is only a size
+       request, and the bar still grows past it.) */
+    padding: 0 10px;
+    min-height: 20px;
     transition: all 0.2s ease;
 }
 
@@ -103,7 +115,7 @@ button:hover {
 }
 
 #workspaces button {
-    padding: 2px 6px;
+    padding: 0 6px;
     background-color: transparent;
     color: rgba({{ .theme.text_rgb }}, 0.55);
     margin: 0 1px;
@@ -132,7 +144,7 @@ button:hover {
 
 /* ── Window title ───────────────────────────────── */
 #window {
-    padding: 2px 12px;
+    padding: 0 12px;
 }
 
 /* ── Clock ──────────────────────────────────────── */
@@ -202,7 +214,7 @@ button:hover {
 
 /* ── Tray ───────────────────────────────────────── */
 #tray {
-    padding: 2px 6px;
+    padding: 0 6px;
 }
 
 #tray > widget {
