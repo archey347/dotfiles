@@ -139,6 +139,33 @@ Warm dark surfaces, bright-orange accent. This is the palette `chezmoi init` see
     info_rgb           = "131, 165, 152"
 ```
 
+## Blue (cool summer)
+
+Shaded-pool background, clear sky accent, pale-ice info, cool-mint success,
+warm-rose error pops against the cool palette.
+
+```toml
+[data.theme]
+    background         = "1a2838"
+    background_rgb     = "26, 40, 56"
+    surface            = "273a52"
+    surface_rgb        = "39, 58, 82"
+    surface_hover      = "34496a"
+    surface_hover_rgb  = "52, 73, 106"
+    accent             = "7fb4d9"
+    accent_rgb         = "127, 180, 217"
+    accent_strong      = "3a5273"
+    accent_strong_rgb  = "58, 82, 115"
+    text               = "dde5ed"
+    text_rgb           = "221, 229, 237"
+    error              = "d97878"
+    error_rgb          = "217, 120, 120"
+    success            = "7fc9a4"
+    success_rgb        = "127, 201, 164"
+    info               = "9fcfe8"
+    info_rgb           = "159, 207, 232"
+```
+
 ## Windows XP
 
 Luna blue — deep-blue taskbar surfaces, bright Luna-blue accent, start-button
