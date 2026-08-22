@@ -38,6 +38,12 @@ $menu = wofi --show drun
 # Or execute your favorite apps at launch like this:
 
 # exec-once = $terminal
+# GNOME/KDE session scripts import these into systemd --user automatically;
+# Hyprland doesn't. Without this, ConditionEnvironment=XDG_SESSION_CLASS=user
+# (used by localsearch-3.service, the Tracker file indexer) never matches, so
+# systemd skips the unit every time Nautilus tries to D-Bus-activate it —
+# Nautilus then blocks ~2s waiting on the failed activation before opening.
+exec-once = systemctl --user import-environment XDG_SESSION_CLASS XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CURRENT_DESKTOP DISPLAY WAYLAND_DISPLAY
 exec = ~/.config/hypr/monitor-setup.sh
 exec-once = swayidle -w timeout {{ index . "lock_timeout" | default 300 }} '{{ .chezmoi.homeDir }}/bin/lock' before-sleep '{{ .chezmoi.homeDir }}/bin/lock'
 exec-once = waybar
