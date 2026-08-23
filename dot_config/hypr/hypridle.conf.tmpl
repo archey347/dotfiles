@@ -1,0 +1,29 @@
+# hypridle — idle handling. Replaces swayidle, which only ever locked and left
+# every panel lit behind the lock screen (bad for the OLED external monitor and
+# for laptop battery).
+#
+# Managed by chezmoi; only applied on Hyprland systems (see .chezmoiignore).
+
+general {
+    # Fired by `loginctl lock-session` and by the systemd sleep target, so
+    # anything that asks the session to lock actually locks it.
+    lock_cmd = pidof hyprlock || {{ .chezmoi.homeDir }}/bin/lock
+    before_sleep_cmd = loginctl lock-session
+    # Wake the displays on resume — otherwise you get a black screen after lid
+    # open until you move the mouse.
+    after_sleep_cmd = hyprctl dispatch dpms on
+}
+
+# Lock the screen.
+listener {
+    timeout = {{ index . "lock_timeout" | default 300 }}
+    on-timeout = loginctl lock-session
+}
+
+# Then blank the displays a minute later. Kept separate from the lock so the
+# lock screen is briefly visible before the panels go dark.
+listener {
+    timeout = {{ add (index . "lock_timeout" | default 300) 60 }}
+    on-timeout = hyprctl dispatch dpms off
+    on-resume = hyprctl dispatch dpms on
+}
