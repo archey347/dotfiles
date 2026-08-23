@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # random-lock-photo.sh: print the path of a random photo from the desktop
-# slideshow set. Used as hyprlock's image `reload_cmd` — hyprlock takes the
-# stdout as the new image path, so each reload swaps to a fresh random photo.
-# Each monitor's image block calls this independently, so monitors cycle
-# independently.
+# slideshow set. Called once by ~/bin/lock at the start of each lock session
+# to pick that session's photo.
 set -euo pipefail
 
 DIR="$HOME/Pictures/desktop-photos"          # same set as the wallpaper slideshow

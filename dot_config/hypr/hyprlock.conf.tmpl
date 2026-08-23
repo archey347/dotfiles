@@ -1,4 +1,4 @@
-# hyprlock — lock screen with a cycling photo slideshow.
+# hyprlock — lock screen with a random photo, one per lock session.
 # Managed by chezmoi; only applied on Hyprland systems (see .chezmoiignore).
 #
 # Photos come from ~/Pictures/desktop-photos (same set as the wallpaper
@@ -6,9 +6,20 @@
 # blacked out. "Primary" = whichever monitor was focused when the screen
 # locked — ~/bin/lock resolves it and writes $PRIMARY into the sourced file
 # below before launching. If the file is missing or $PRIMARY is empty, the
-# widgets fall back to every monitor (monitor = ). reload_cmd swaps in a fresh
-# random photo every reload_time seconds with a crossfade.
+# widgets fall back to every monitor (monitor = ). The photo itself is picked
+# once by ~/bin/lock when the lock starts and stays fixed for the whole
+# session — there's no reload_cmd swapping it in mid-session (an earlier
+# version of this tried a periodic reload_cmd swap; hyprlock v0.9.2 fired it
+# almost immediately after locking rather than waiting reload_time, and the
+# reload itself — even returning the unchanged photo — caused a brief
+# vertical squash/recover glitch. Simplest fix: no reload, no glitch. The
+# next photo is picked on the next lock.)
+# $CLOCK_X/$CLOCK_Y and $DATE_X/$DATE_Y come from ~/bin/lock, which reads a
+# `__clockpos_X_Y` tag off the chosen photo's filename (n prefixes a negative
+# number) so a photo can move the clock off its subject; untagged photos fall
+# back to the original position. See ~/bin/lock for the tag format.
 source = {{ .chezmoi.homeDir }}/.cache/hyprlock-primary.conf
+source = {{ .chezmoi.homeDir }}/.cache/hyprlock-clock-position.conf
 
 general {
     hide_cursor = true
@@ -37,16 +48,13 @@ background {
     color = rgba(000000ff)
 }
 
-# `path` is a symlink that ~/bin/lock seeds for the first frame; later photos
-# come straight from reload_cmd's stdout. `color` shows until the first loads.
-# Scoped to the primary monitor so only it shows the slideshow.
+# `path` is a symlink that ~/bin/lock seeds before launch and never changes
+# for the rest of the session. `color` shows until it loads. Scoped to the
+# primary monitor so only it shows the photo.
 background {
     monitor = $PRIMARY
     path = {{ .chezmoi.homeDir }}/.cache/lock-photo
     color = rgba(000000ff)
-    reload_time = 300
-    reload_cmd = {{ .chezmoi.homeDir }}/.config/hypr/random-lock-photo.sh
-    crossfade_time = 1.0
 }
 
 # Understated field: a translucent light-grey fill lets the photo show through
@@ -64,23 +72,24 @@ input-field {
     position = 0, -20
 }
 
-# Clock — sits roughly one third down from the top (offsets are from centre,
-# so this is tuned for the laptop's 1200px-tall panel).
+# Clock — sits roughly one third down from the top by default (offsets are
+# from centre, tuned for the laptop's 1200px-tall panel); moves per-photo via
+# $CLOCK_X/$CLOCK_Y, see the source comment above.
 label {
     monitor = $PRIMARY
     text = cmd[update:1000] echo "$(date +'%H:%M')"
     color = rgba(ffffffff)
     font_size = 64
     font_family = Iosevka
-    position = 0, 200
+    position = $CLOCK_X, $CLOCK_Y
 }
 
-# Date
+# Date — rides 65px below the clock, wherever that lands.
 label {
     monitor = $PRIMARY
     text = cmd[update:60000] echo "$(date +'%A, %d %B')"
     color = rgba(ffffffcc)
     font_size = 20
     font_family = Iosevka
-    position = 0, 135
+    position = $DATE_X, $DATE_Y
 }

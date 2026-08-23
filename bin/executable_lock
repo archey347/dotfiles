@@ -1,24 +1,61 @@
 #!/usr/bin/env bash
-# lock: lock the screen with hyprlock, showing a cycling photo slideshow on the
-# primary monitor and blacking out the rest.
+# lock: lock the screen with hyprlock, showing a random photo on the primary
+# monitor and blacking out the rest. One photo per lock: it's picked here when
+# the lock starts and stays for the whole session; the next lock picks a new
+# one.
 #
-# Two things are seeded before launch:
-#   - ~/.cache/lock-photo: a symlink to the first photo (the background widget's
-#     `path`); subsequent photos come from the background's reload_cmd.
+# Three things are seeded before launch:
+#   - ~/.cache/lock-photo: a symlink to the photo, which the background
+#     widget's `path` points at for the whole session.
 #   - ~/.cache/hyprlock-primary.conf: defines $PRIMARY, which hyprlock.conf
 #     sources to scope the photo + clock to one monitor. "Primary" is whichever
 #     monitor is focused right now; an empty value makes the widgets fall back
 #     to every monitor.
-# Invoked by the Hyprland keybind and swayidle.
+#   - ~/.cache/hyprlock-clock-position.conf: defines $CLOCK_X/$CLOCK_Y and
+#     $DATE_X/$DATE_Y. A photo can encode where the clock should sit over it
+#     with a `__clockpos_X_Y` tag before the extension (n prefixes a negative
+#     number, e.g. sunset__clockpos_0_n300.jpg for Y=-300) — useful when a
+#     photo's subject would otherwise sit right under the default position.
+#     Untagged photos fall back to the original fixed position. The date
+#     label rides 65px below wherever the clock lands.
+# Invoked by the Hyprland keybind, and by hypridle's lock_cmd (which fires on
+# the idle timeout and before sleep, both routed via `loginctl lock-session`).
+#
+# Guarded against double-invocation with a flock: two near-simultaneous calls
+# (e.g. the keybind re-firing on key-repeat) would otherwise race to re-seed
+# the *same* ~/.cache/lock-photo symlink and hyprlock-primary.conf before
+# each execs hyprlock. The loser's `ln -sf` can repoint the symlink out from
+# under the still-loading winner — visible as the photo swapping mid-load
+# and the aspect ratio snapping once the second photo's real dimensions
+# land — and the loser's hyprlock then dies failing to grab the
+# already-held session lock. A plain `pidof hyprlock` check isn't enough:
+# seeding the photo (running `find` over the photo dir, calling hyprctl)
+# takes long enough that a second invocation can start before the first's
+# hyprlock is even in the process table. Holding the lock fd across `exec`
+# closes that window: it stays held for hyprlock's whole lifetime, so any
+# invocation that arrives while a lock screen is starting or showing just
+# backs off immediately instead of touching the cache files at all.
 set -euo pipefail
 
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
 mkdir -p "$CACHE"
+
+exec 9>"$CACHE/lock.lock"
+flock -n 9 || exit 0
 
 seed="$("$HOME/.config/hypr/random-lock-photo.sh" || true)"
 [ -n "$seed" ] && ln -sf "$seed" "$CACHE/lock-photo"
 
 primary="$(hyprctl monitors -j 2>/dev/null | jq -r 'first(.[] | select(.focused) | .name) // empty')"
 printf '$PRIMARY = %s\n' "$primary" > "$CACHE/hyprlock-primary.conf"
+
+clock_x=0
+clock_y=200
+if [[ "$(basename "$seed")" =~ __clockpos_(n?[0-9]+)_(n?[0-9]+)\.[^.]+$ ]]; then
+    clock_x=$(( ${BASH_REMATCH[1]/#n/-} ))
+    clock_y=$(( ${BASH_REMATCH[2]/#n/-} ))
+fi
+printf '$CLOCK_X = %s\n$CLOCK_Y = %s\n$DATE_X = %s\n$DATE_Y = %s\n' \
+    "$clock_x" "$clock_y" "$clock_x" "$(( clock_y - 65 ))" > "$CACHE/hyprlock-clock-position.conf"
 
 exec hyprlock "$@"
