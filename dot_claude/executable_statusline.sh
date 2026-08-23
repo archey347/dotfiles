@@ -14,6 +14,11 @@ short_dir="${dir/#$HOME/\~}"
 branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 ctx_pct=$(printf '%s' "$input" | jq -r '.context_window.used_percentage // empty')
+ctx_used=$(printf '%s' "$input" | jq -r '.context_window.total_input_tokens // empty')
+ctx_size=$(printf '%s' "$input" | jq -r '.context_window.context_window_size // empty')
+
+# Render a token count in k, e.g. 128000 -> 128k.
+fmt_tokens() { awk -v n="$1" 'BEGIN { printf "%dk", n / 1000 }'; }
 
 # ANSI: dim host, bold dir, green branch.
 out="\033[2m${host}\033[0m \033[1m${short_dir}\033[0m"
@@ -29,7 +34,11 @@ if [ -n "$ctx_pct" ]; then
     else
         ctx_color="\033[32m"
     fi
-    out="${out} ${ctx_color}${ctx_int}%\033[0m"
+    ctx_label="${ctx_int}%"
+    if [ -n "$ctx_used" ] && [ -n "$ctx_size" ]; then
+        ctx_label="${ctx_label} ($(fmt_tokens "$ctx_used")/$(fmt_tokens "$ctx_size"))"
+    fi
+    out="${out} ${ctx_color}${ctx_label}\033[0m"
 fi
 
 printf '%b' "$out"
