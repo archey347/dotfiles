@@ -44,10 +44,16 @@ $menu = wofi --show drun
 # systemd skips the unit every time Nautilus tries to D-Bus-activate it —
 # Nautilus then blocks ~2s waiting on the failed activation before opening.
 exec-once = systemctl --user import-environment XDG_SESSION_CLASS XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CURRENT_DESKTOP DISPLAY WAYLAND_DISPLAY
-exec = ~/.config/hypr/monitor-setup.sh
+# exec-once, not exec: `exec` re-runs on every config reload, which would leave
+# a second monitor-setup.sh (and its event-socket watcher) running per reload.
+exec-once = ~/.config/hypr/monitor-setup.sh
 # Idle handling lives in hypridle.conf (lock, then DPMS off). Replaces swayidle,
 # which had no DPMS timeout — panels stayed lit indefinitely behind the lock.
 exec-once = hypridle
+# Polkit authentication agent. Hyprland does not process XDG autostart entries,
+# and lxpolkit.desktop is OnlyShowIn=LXDE anyway, so it has to be started here —
+# without it, GUI privilege prompts (blueman, virt-manager) fail silently.
+exec-once = lxpolkit
 exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
@@ -224,6 +230,11 @@ master {
 misc {
     force_default_wallpaper = 0 # No mascot wallpaper asset — hyprpaper covers it anyway
     disable_hyprland_logo = true
+    # If hyprlock dies (crash, bad config, etc) without releasing the session
+    # lock, Hyprland otherwise refuses to let a fresh hyprlock take over —
+    # every relaunch gets rejected and you're stuck locked out with no way
+    # back in short of a VT switch. This lets a new instance reclaim the lock.
+    allow_session_lock_restore = true
 }
 
 debug {
