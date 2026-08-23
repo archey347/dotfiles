@@ -3,10 +3,6 @@
     "allow": [
       "Read(~/dev/**)",
       "Read(~/d/**)",
-      "Glob(~/dev/**)",
-      "Glob(~/d/**)",
-      "Grep(~/dev/**)",
-      "Grep(~/d/**)",
       "Bash(ls:*)",
       "Bash(find:~/dev/*)",
       "Bash(find:~/d/*)",
@@ -32,7 +28,7 @@
       "Bash(git branch)"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
