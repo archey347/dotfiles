@@ -17,6 +17,8 @@ bin/replace-hypr-wallpapers
 bin/swaylock-random
 bin/lock
 bin/hypr-ssh-prompt
+.local/share/applications/firefox-workspace.desktop
+set-default-browser.sh
 enable-gnome-keyring.sh
 {{- end }}
 {{- if not (lookPath "cursor") }}
