@@ -7,5 +7,14 @@ __git_branch() {
     fi
 }
 
+# Blank line before each prompt, except the shell's very first one
+__prompt_blank_line() {
+    if [[ -n "$__prompt_primed" ]]; then
+        printf '\n'
+    fi
+    __prompt_primed=1
+}
+PROMPT_COMMAND="__prompt_blank_line${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+
 # Set my preferred prompt string
-export PS1='\n\[$(tput setaf 39)\]\u\[$(tput setaf 81)\]@\[$(tput setaf 77)\]\h\[$(tput setaf 226)\]:\w\[$(tput setaf 245)\]$(__git_branch)\[$(tput sgr0)\]\n$ '
+export PS1='\[$(tput setaf 39)\]\u\[$(tput setaf 81)\]@\[$(tput setaf 77)\]\h\[$(tput setaf 226)\]:\w\[$(tput setaf 245)\]$(__git_branch)\[$(tput sgr0)\]\n$ '
