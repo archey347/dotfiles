@@ -406,6 +406,11 @@ windowrule = float, class:^(blueman-manager|.blueman-manager-wrapped)$
 windowrule = size 800 500, class:^(blueman-manager|.blueman-manager-wrapped)$
 windowrule = center, class:^(blueman-manager|.blueman-manager-wrapped)$
 
+# Monitor layout editor (the "Monitor layout" launcher entry). Sized by ghostty's
+# own --window-width/--window-height, so no size rule here.
+windowrule = float, class:^(dev.archey.monitor-profile)$
+windowrule = center, class:^(dev.archey.monitor-profile)$
+
 # Picture-in-picture: float and pin above everything, so it survives workspace
 # switches. Firefox titles the window "Picture-in-Picture"; Chromium-family
 # browsers use "Picture in picture" — hence both spellings.

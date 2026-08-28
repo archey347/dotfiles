@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Monitor layout
+Comment=Arrange the connected screens and save them as a Hyprland monitor profile
+# --gtk-single-instance=false so this gets its own process: a launcher-started
+# ghostty would otherwise hand the command to the running instance, which
+# ignores the class and size set here.
+Exec=ghostty --gtk-single-instance=false --class=dev.archey.monitor-profile --window-width=100 --window-height=38 -e {{ .chezmoi.homeDir }}/.config/hypr/monitor-profile.sh
+Icon=preferences-desktop-display
+Terminal=false
+Categories=Settings;HardwareSettings;
+Keywords=monitor;display;screen;layout;resolution;hyprland;
