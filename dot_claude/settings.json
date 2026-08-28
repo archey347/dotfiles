@@ -36,5 +36,19 @@
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true
+  },
+  "agentPushNotifEnabled": true,
+  "preferredNotifChannel": "terminal_bell",
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '[.title // \"Claude Code\", .cwd, .message] | @tsv' | { IFS=\"$(printf '\\t')\" read -r title cwd msg; notify-send -a \"Claude Code\" -u normal \"${title} · $(basename \"${cwd:-$PWD}\")\" \"$msg\"; }"
+          }
+        ]
+      }
+    ]
   }
 }
