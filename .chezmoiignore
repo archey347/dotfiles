@@ -3,6 +3,7 @@ CLAUDE.md
 THEMES.md
 HYPRLAND-QTUTILS-REBUILD.md
 .cursor
+tools
 {{- if .is_work_machine }}
 .claude/settings.local.json
 configure-chezmoi-git.sh

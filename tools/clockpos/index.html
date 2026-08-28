@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>clockpos</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    font-family: -apple-system, 'Inter', 'Cantarell', 'Noto Sans', sans-serif;
+    background: #14151a;
+    color: #e8e8ec;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    background: #1c1d24;
+    border-bottom: 1px solid #2a2b33;
+  }
+  header h1 { font-size: 14px; font-weight: 600; margin: 0; opacity: 0.7; }
+  header .spacer { flex: 1; }
+  select, button {
+    background: #262731;
+    color: #e8e8ec;
+    border: 1px solid #383a46;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button:hover, select:hover { background: #2f313d; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button.primary { background: #3b5bdb; border-color: #3b5bdb; }
+  button.danger { background: #4a2229; border-color: #6b2f3a; }
+  #status { font-size: 12px; opacity: 0.6; min-width: 90px; }
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 24px;
+  }
+  #stage {
+    position: relative;
+    background: #000;
+    box-shadow: 0 0 0 1px #2a2b33, 0 20px 60px rgba(0,0,0,0.5);
+    cursor: crosshair;
+    overflow: hidden;
+  }
+  #stage img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    -webkit-user-drag: none;
+  }
+  #crosshair {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ff5566;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.6);
+    display: none;
+  }
+  #clockLabel, #dateLabel {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+    font-family: 'Iosevka', monospace;
+    pointer-events: none;
+    white-space: nowrap;
+    display: none;
+  }
+  #dateLabel { color: rgba(255,255,255,0.8); }
+  footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #1c1d24;
+    border-top: 1px solid #2a2b33;
+  }
+  footer .spacer { flex: 1; }
+  #filename { font-size: 13px; font-family: monospace; opacity: 0.85; }
+  #coords { font-size: 12px; opacity: 0.6; font-family: monospace; }
+  #counter { font-size: 12px; opacity: 0.6; min-width: 60px; text-align: center; }
+  #hint { font-size: 12px; opacity: 0.5; padding: 4px 16px 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>clockpos</h1>
+  <select id="monitor">
+    <option value="1920x1200">eDP-1 laptop — 1920x1200</option>
+    <option value="2560x1440">external — 2560x1440</option>
+  </select>
+  <div class="spacer"></div>
+  <span id="status"></span>
+</header>
+
+<main>
+  <div id="stage">
+    <img id="photo" draggable="false">
+    <div id="crosshair"></div>
+    <div id="clockLabel">12:34</div>
+    <div id="dateLabel">Sunday, 23 August</div>
+  </div>
+</main>
+
+<div id="hint">Click the photo to place the clock. The date label rides 65px below it automatically, matching the lock screen.</div>
+
+<footer>
+  <button id="prev">&larr; Prev</button>
+  <span id="counter">–</span>
+  <button id="next">Next &rarr;</button>
+  <span id="filename"></span>
+  <span id="coords"></span>
+  <div class="spacer"></div>
+  <button id="clear" class="danger">Clear (use default)</button>
+</footer>
+
+<script>
+const stage = document.getElementById('stage');
+const img = document.getElementById('photo');
+const crosshair = document.getElementById('crosshair');
+const clockLabel = document.getElementById('clockLabel');
+const dateLabel = document.getElementById('dateLabel');
+const monitorSel = document.getElementById('monitor');
+const statusEl = document.getElementById('status');
+const filenameEl = document.getElementById('filename');
+const coordsEl = document.getElementById('coords');
+const counterEl = document.getElementById('counter');
+
+let photos = [];
+let idx = 0;
+
+function monitorSize() {
+  const [w, h] = monitorSel.value.split('x').map(Number);
+  return { w, h };
+}
+
+function layoutStage() {
+  const { w, h } = monitorSize();
+  const maxW = window.innerWidth - 48;
+  const maxH = window.innerHeight - 140;
+  let stageW = maxW, stageH = maxW * h / w;
+  if (stageH > maxH) { stageH = maxH; stageW = maxH * w / h; }
+  stage.style.width = stageW + 'px';
+  stage.style.height = stageH + 'px';
+  render();
+}
+
+function current() {
+  return photos[idx];
+}
+
+function render() {
+  const p = current();
+  if (!p) return;
+  img.src = '/photos/' + encodeURIComponent(p.filename);
+  filenameEl.textContent = p.filename;
+  counterEl.textContent = (idx + 1) + ' / ' + photos.length;
+  updateMarkers();
+}
+
+function updateMarkers() {
+  const p = current();
+  const { w, h } = monitorSize();
+  const rect = stage.getBoundingClientRect();
+  const scale = rect.width / w;
+  if (p.x === null || p.y === null) {
+    crosshair.style.display = 'none';
+    clockLabel.style.display = 'none';
+    dateLabel.style.display = 'none';
+    coordsEl.textContent = '(default position)';
+    return;
+  }
+  const px = rect.width / 2 + p.x * scale;
+  const py = rect.height / 2 - p.y * scale;
+  crosshair.style.left = px + 'px';
+  crosshair.style.top = py + 'px';
+  crosshair.style.display = 'block';
+  clockLabel.style.left = px + 'px';
+  clockLabel.style.top = py + 'px';
+  clockLabel.style.fontSize = (48 * scale) + 'px';
+  clockLabel.style.display = 'block';
+  const dateY = py + 65 * scale;
+  dateLabel.style.left = px + 'px';
+  dateLabel.style.top = dateY + 'px';
+  dateLabel.style.fontSize = (15 * scale) + 'px';
+  dateLabel.style.display = 'block';
+  coordsEl.textContent = `x=${p.x} y=${p.y}`;
+}
+
+function setStatus(text) {
+  statusEl.textContent = text;
+  if (text === 'saved') setTimeout(() => { if (statusEl.textContent === 'saved') statusEl.textContent = ''; }, 1200);
+}
+
+async function save(p) {
+  setStatus('saving…');
+  try {
+    await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base: p.base, x: p.x, y: p.y }),
+    });
+    setStatus('saved');
+  } catch (e) {
+    setStatus('save failed');
+  }
+}
+
+stage.addEventListener('click', (e) => {
+  const p = current();
+  if (!p) return;
+  const { w, h } = monitorSize();
+  const rect = stage.getBoundingClientRect();
+  const fx = (e.clientX - rect.left) / rect.width;
+  const fy = (e.clientY - rect.top) / rect.height;
+  p.x = Math.round(fx * w - w / 2);
+  p.y = Math.round(h / 2 - fy * h); // hyprlock's Y increases upward, opposite of screen space
+  updateMarkers();
+  save(p);
+});
+
+document.getElementById('clear').addEventListener('click', () => {
+  const p = current();
+  if (!p) return;
+  p.x = null; p.y = null;
+  updateMarkers();
+  save(p);
+});
+
+document.getElementById('prev').addEventListener('click', () => {
+  idx = (idx - 1 + photos.length) % photos.length;
+  render();
+});
+document.getElementById('next').addEventListener('click', () => {
+  idx = (idx + 1) % photos.length;
+  render();
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') document.getElementById('prev').click();
+  if (e.key === 'ArrowRight') document.getElementById('next').click();
+  if (e.key === 'Backspace' || e.key === 'Delete') document.getElementById('clear').click();
+});
+window.addEventListener('resize', layoutStage);
+monitorSel.addEventListener('change', layoutStage);
+
+fetch('/api/photos').then(r => r.json()).then(data => {
+  photos = data;
+  layoutStage();
+});
+</script>
+
+</body>
+</html>
