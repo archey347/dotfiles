@@ -167,6 +167,13 @@ function current() {
   return photos[idx];
 }
 
+function syncMonitorSelect() {
+  const p = current();
+  if (!p || !p.w || !p.h) return;
+  const val = `${p.w}x${p.h}`;
+  if ([...monitorSel.options].some(o => o.value === val)) monitorSel.value = val;
+}
+
 function render() {
   const p = current();
   if (!p) return;
@@ -216,7 +223,7 @@ async function save(p) {
     await fetch('/api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base: p.base, x: p.x, y: p.y }),
+      body: JSON.stringify({ base: p.base, x: p.x, y: p.y, w: p.w, h: p.h }),
     });
     setStatus('saved');
   } catch (e) {
@@ -233,6 +240,7 @@ stage.addEventListener('click', (e) => {
   const fy = (e.clientY - rect.top) / rect.height;
   p.x = Math.round(fx * w - w / 2);
   p.y = Math.round(h / 2 - fy * h); // hyprlock's Y increases upward, opposite of screen space
+  p.w = w; p.h = h;
   updateMarkers();
   save(p);
 });
@@ -240,18 +248,20 @@ stage.addEventListener('click', (e) => {
 document.getElementById('clear').addEventListener('click', () => {
   const p = current();
   if (!p) return;
-  p.x = null; p.y = null;
+  p.x = null; p.y = null; p.w = null; p.h = null;
   updateMarkers();
   save(p);
 });
 
 document.getElementById('prev').addEventListener('click', () => {
   idx = (idx - 1 + photos.length) % photos.length;
-  render();
+  syncMonitorSelect();
+  layoutStage();
 });
 document.getElementById('next').addEventListener('click', () => {
   idx = (idx + 1) % photos.length;
-  render();
+  syncMonitorSelect();
+  layoutStage();
 });
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') document.getElementById('prev').click();
@@ -263,6 +273,7 @@ monitorSel.addEventListener('change', layoutStage);
 
 fetch('/api/photos').then(r => r.json()).then(data => {
   photos = data;
+  syncMonitorSelect();
   layoutStage();
 });
 </script>

@@ -3,10 +3,13 @@
 
 Serves dot_config/hypr/hyprlock.conf.tmpl's photo set from
 ~/Pictures/desktop-photos and lets you click each photo to place where the
-clock should sit. Every change is saved immediately to export.json next to
-this script (keyed by the untagged base filename), so nothing is lost if the
-browser tab closes. Applying export.json to the actual filenames is a
-separate, explicit step (see apply.py) — this tool never renames files.
+clock should sit, against a chosen preview monitor size. Every change is
+saved immediately to export.json next to this script (keyed by the untagged
+base filename, with the monitor size it was placed against), so nothing is
+lost if the browser tab closes. ~/bin/lock rescales the saved x/y for
+whichever monitor actually locks. Applying export.json to the actual
+filenames is a separate, explicit step (see apply.py) — this tool never
+renames files.
 """
 import json
 import re
@@ -20,7 +23,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 EXPORT_PATH = SCRIPT_DIR / "export.json"
 INDEX_PATH = SCRIPT_DIR / "index.html"
 
-TAG_RE = re.compile(r"^(?P<base>.+?)(?:__clockpos_(?P<xs>n?\d+)_(?P<ys>n?\d+))?(?P<ext>\.[A-Za-z0-9]+)$")
+TAG_RE = re.compile(
+    r"^(?P<base>.+?)"
+    r"(?:__clockpos_(?P<xs>n?\d+)_(?P<ys>n?\d+)(?:_(?P<w>\d+)x(?P<h>\d+))?)?"
+    r"(?P<ext>\.[A-Za-z0-9]+)$"
+)
 
 
 def signed(s):
@@ -34,7 +41,9 @@ def parse_photo(name):
     base = m.group("base") + m.group("ext")
     x = signed(m.group("xs")) if m.group("xs") else None
     y = signed(m.group("ys")) if m.group("ys") else None
-    return {"base": base, "filename": name, "x": x, "y": y}
+    w = int(m.group("w")) if m.group("w") else None
+    h = int(m.group("h")) if m.group("h") else None
+    return {"base": base, "filename": name, "x": x, "y": y, "w": w, "h": h}
 
 
 def load_state():
@@ -57,7 +66,11 @@ def list_photos():
             continue
         if info["base"] in state:
             pos = state[info["base"]]
-            info["x"], info["y"] = (pos["x"], pos["y"]) if pos else (None, None)
+            if pos:
+                info["x"], info["y"] = pos["x"], pos["y"]
+                info["w"], info["h"] = pos.get("w"), pos.get("h")
+            else:
+                info["x"] = info["y"] = info["w"] = info["h"] = None
         photos.append(info)
     return photos
 
@@ -116,7 +129,12 @@ class Handler(BaseHTTPRequestHandler):
         if payload.get("x") is None or payload.get("y") is None:
             state[base] = None
         else:
-            state[base] = {"x": payload["x"], "y": payload["y"]}
+            state[base] = {
+                "x": payload["x"],
+                "y": payload["y"],
+                "w": payload.get("w"),
+                "h": payload.get("h"),
+            }
         EXPORT_PATH.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n")
         self._json({"ok": True, "count": len(state)})
 

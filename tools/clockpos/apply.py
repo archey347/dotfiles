@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Rename photos in ~/Pictures/desktop-photos to match export.json.
 
-export.json maps a base (untagged) filename to either {"x", "y"} (tag it,
-replacing any existing tag) or null (strip an existing tag). Bases absent
-from the file are left untouched. Run with --dry-run to preview.
+export.json maps a base (untagged) filename to either {"x", "y", "w", "h"}
+(tag it, replacing any existing tag) or null (strip an existing tag). Bases
+absent from the file are left untouched. Run with --dry-run to preview.
 """
 import json
 import sys
@@ -17,11 +17,14 @@ def tag_component(n):
     return f"n{-n}" if n < 0 else str(n)
 
 
-def target_name(base, x, y):
+def target_name(base, x, y, w, h):
     stem, ext = base.rsplit(".", 1)
     if x is None or y is None:
         return f"{stem}.{ext}"
-    return f"{stem}__clockpos_{tag_component(x)}_{tag_component(y)}.{ext}"
+    tag = f"{stem}__clockpos_{tag_component(x)}_{tag_component(y)}"
+    if w and h:
+        tag += f"_{w}x{h}"
+    return f"{tag}.{ext}"
 
 
 def main():
@@ -42,8 +45,11 @@ def main():
         if current is None:
             print(f"skip (not found): {base}", file=sys.stderr)
             continue
-        x, y = (pos["x"], pos["y"]) if pos else (None, None)
-        new_name = target_name(base, x, y)
+        if pos:
+            x, y, w, h = pos["x"], pos["y"], pos.get("w"), pos.get("h")
+        else:
+            x = y = w = h = None
+        new_name = target_name(base, x, y, w, h)
         if new_name != current:
             changes.append((current, new_name))
 

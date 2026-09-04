@@ -18,6 +18,14 @@
 #     photo's subject would otherwise sit right under the default position.
 #     Untagged photos fall back to the original fixed position. The date
 #     label rides 65px below wherever the clock lands.
+#     X/Y were placed by eye against one specific monitor (see
+#     tools/clockpos), so they only land correctly if the lock screen's
+#     monitor has the same resolution. An optional `_WxH` suffix on the tag
+#     (e.g. `__clockpos_0_n300_1920x1200`) records which one; missing it
+#     (including every photo tagged before this suffix existed) falls back to
+#     the laptop panel below. Either way the offsets get rescaled by
+#     current-monitor-size / reference-size before use, so a photo tagged (or
+#     defaulted) for the laptop still lands sensibly on the external monitor.
 # Invoked by the Hyprland keybind, and by hypridle's lock_cmd (which fires on
 # the idle timeout and before sleep, both routed via `loginctl lock-session`).
 #
@@ -46,15 +54,39 @@ flock -n 9 || exit 0
 seed="$("$HOME/.config/hypr/random-lock-photo.sh" || true)"
 [ -n "$seed" ] && ln -sf "$seed" "$CACHE/lock-photo"
 
-primary="$(hyprctl monitors -j 2>/dev/null | jq -r 'first(.[] | select(.focused) | .name) // empty')"
+IFS=$'\t' read -r primary mon_w mon_h < <(
+    hyprctl monitors -j 2>/dev/null \
+        | jq -r 'first(.[] | select(.focused)) | [.name, .width, .height] | @tsv'
+) || true
 printf '$PRIMARY = %s\n' "$primary" > "$CACHE/hyprlock-primary.conf"
 
 clock_x=0
 clock_y=200
-if [[ "$(basename "$seed")" =~ __clockpos_(n?[0-9]+)_(n?[0-9]+)\.[^.]+$ ]]; then
+# Reference monitor the fixed default position (and every pre-_WxH tag) was
+# tuned against — the laptop panel, per tools/clockpos's own default.
+ref_w=1920
+ref_h=1200
+if [[ "$(basename "$seed")" =~ __clockpos_(n?[0-9]+)_(n?[0-9]+)(_([0-9]+)x([0-9]+))?\.[^.]+$ ]]; then
     clock_x=$(( ${BASH_REMATCH[1]/#n/-} ))
     clock_y=$(( ${BASH_REMATCH[2]/#n/-} ))
+    if [[ -n "${BASH_REMATCH[4]}" ]]; then
+        ref_w=${BASH_REMATCH[4]}
+        ref_h=${BASH_REMATCH[5]}
+    fi
 fi
+
+# Rescale by the cover-fit factor between the reference monitor and the one
+# actually locking, so the clock stays over the same point of the photo
+# instead of drifting when the aspect ratio differs.
+if [[ -n "$mon_w" && -n "$mon_h" && "$mon_w" -gt 0 && "$mon_h" -gt 0 ]]; then
+    read -r clock_x clock_y < <(awk -v x="$clock_x" -v y="$clock_y" \
+        -v mw="$mon_w" -v mh="$mon_h" -v rw="$ref_w" -v rh="$ref_h" \
+        'BEGIN {
+            s = mw/rw; t = mh/rh; if (t > s) s = t
+            printf "%d %d", (x*s >= 0 ? x*s+0.5 : x*s-0.5), (y*s >= 0 ? y*s+0.5 : y*s-0.5)
+        }')
+fi
+
 printf '$CLOCK_X = %s\n$CLOCK_Y = %s\n$DATE_X = %s\n$DATE_Y = %s\n' \
     "$clock_x" "$clock_y" "$clock_x" "$(( clock_y - 65 ))" > "$CACHE/hyprlock-clock-position.conf"
 

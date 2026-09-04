@@ -17,7 +17,8 @@
 # $CLOCK_X/$CLOCK_Y and $DATE_X/$DATE_Y come from ~/bin/lock, which reads a
 # `__clockpos_X_Y` tag off the chosen photo's filename (n prefixes a negative
 # number) so a photo can move the clock off its subject; untagged photos fall
-# back to the original position. See ~/bin/lock for the tag format.
+# back to the original position. ~/bin/lock also rescales for the current
+# monitor's aspect ratio. See ~/bin/lock for the tag format.
 source = {{ .chezmoi.homeDir }}/.cache/hyprlock-primary.conf
 source = {{ .chezmoi.homeDir }}/.cache/hyprlock-clock-position.conf
 
