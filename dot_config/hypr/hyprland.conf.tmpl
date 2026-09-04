@@ -210,14 +210,17 @@ animations {
 # uncomment all if you wish to use that.
 # workspace = w[tv1], gapsout:0, gapsin:0
 # workspace = f[1], gapsout:0, gapsin:0
-# windowrule = bordersize 0, floating:0, onworkspace:w[tv1]
-# windowrule = rounding 0, floating:0, onworkspace:w[tv1]
-# windowrule = bordersize 0, floating:0, onworkspace:f[1]
-# windowrule = rounding 0, floating:0, onworkspace:f[1]
+# windowrule[floating:0, onworkspace:w[tv1]] {
+#     border_size = 0
+#     rounding = 0
+# }
+# windowrule[floating:0, onworkspace:f[1]] {
+#     border_size = 0
+#     rounding = 0
+# }
 
 # See https://wiki.hypr.land/Configuring/Dwindle-Layout/ for more
 dwindle {
-    pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
     preserve_split = true # You probably want this
 }
 
@@ -297,7 +300,7 @@ bind = $mainMod, V, togglefloating,
 bind = $mainMod, R, exec, $menu
 bind = $mainMod, T, exec, {{ .chezmoi.homeDir }}/bin/hypr-ssh-prompt
 bind = $mainMod, P, pseudo, # dwindle
-bind = $mainMod, J, togglesplit, # dwindle
+bind = $mainMod, J, layoutmsg, togglesplit # dwindle
 bind = $mainMod, F, fullscreen, 0
 
 # Move focus with mainMod + arrow keys
@@ -392,54 +395,78 @@ bind = $mainMod, Sys_Req, exec, hyprshot -m window                 # pick a wind
 # See https://wiki.hypr.land/Configuring/Workspace-Rules/ for workspace rules
 
 # Example windowrule
-# windowrule = float,class:^(kitty)$,title:^(kitty)$
+# windowrule[class:^(kitty)$, title:^(kitty)$] { float = true }
 
-# Ignore maximize requests from apps. You'll probably like this.
-windowrule = suppressevent maximize, class:.*
+# Ignore maximize requests from apps, and hold off the idle lock during
+# fullscreen video. Both apply to every window, so they share one block —
+# 0.56 keys rules by selector, and a repeated selector would collide.
+windowrule[class:.*] {
+    suppress_event = maximize
+    idle_inhibit = fullscreen
+}
 
 # Float audio/bluetooth control windows
-windowrule = float, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
-windowrule = size 800 500, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
-windowrule = center, class:^(pavucontrol|org.pulseaudio.pavucontrol)$
+windowrule[class:^(pavucontrol|org.pulseaudio.pavucontrol)$] {
+    float = true
+    size = 800 500
+    center = true
+}
 
-windowrule = float, class:^(blueman-manager|.blueman-manager-wrapped)$
-windowrule = size 800 500, class:^(blueman-manager|.blueman-manager-wrapped)$
-windowrule = center, class:^(blueman-manager|.blueman-manager-wrapped)$
+windowrule[class:^(blueman-manager|.blueman-manager-wrapped)$] {
+    float = true
+    size = 800 500
+    center = true
+}
 
 # Monitor layout editor (the "Monitor layout" launcher entry). Sized by ghostty's
 # own --window-width/--window-height, so no size rule here.
-windowrule = float, class:^(dev.archey.monitor-profile)$
-windowrule = center, class:^(dev.archey.monitor-profile)$
+windowrule[class:^(dev.archey.monitor-profile)$] {
+    float = true
+    center = true
+}
 
 # Picture-in-picture: float and pin above everything, so it survives workspace
 # switches. Firefox titles the window "Picture-in-Picture"; Chromium-family
 # browsers use "Picture in picture" — hence both spellings.
-windowrule = float, title:^(Picture-in-Picture)$
-windowrule = pin, title:^(Picture-in-Picture)$
-windowrule = size 640 360, title:^(Picture-in-Picture)$
-windowrule = float, title:^(Picture in picture)$
-windowrule = pin, title:^(Picture in picture)$
+windowrule[title:^(Picture-in-Picture)$] {
+    float = true
+    pin = true
+    size = 640 360
+}
+
+windowrule[title:^(Picture in picture)$] {
+    float = true
+    pin = true
+}
 
 # Transient file/print dialogs float instead of tiling into the layout.
-windowrule = float, title:^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$
-windowrule = center, title:^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$
-# GTK portal + Qt native dialogs announce themselves by class.
-windowrule = float, class:^(xdg-desktop-portal-gtk)$
-windowrule = center, class:^(xdg-desktop-portal-gtk)$
+windowrule[title:^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$] {
+    float = true
+    center = true
+}
 
-# Don't let the idle timer lock the screen during fullscreen video.
-windowrule = idleinhibit fullscreen, class:.*
+# GTK portal + Qt native dialogs announce themselves by class.
+windowrule[class:^(xdg-desktop-portal-gtk)$] {
+    float = true
+    center = true
+}
 
 # Fix some dragging issues with XWayland
-windowrule = nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0
+windowrule[class:^$, title:^$, xwayland:1, floating:1, fullscreen:0, pinned:0] {
+    no_focus = true
+}
 
 # Layer blur — apply backdrop blur to wofi launcher
-layerrule = blur, wofi
-layerrule = ignorezero, wofi
+layerrule[wofi] {
+    blur = true
+    ignore_alpha = 0
+}
 
 # Layer blur — subtle blurred backdrop behind the entire waybar
-layerrule = blur, waybar
-layerrule = ignorealpha 0.1, waybar
+layerrule[waybar] {
+    blur = true
+    ignore_alpha = 0.1
+}
 
 # Window blur — ghostty uses background-opacity in its own config; global blur applies automatically.
 # Listed here so the set of blurred surfaces is visible in one place.
