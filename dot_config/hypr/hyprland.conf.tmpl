@@ -210,11 +210,17 @@ animations {
 # uncomment all if you wish to use that.
 # workspace = w[tv1], gapsout:0, gapsin:0
 # workspace = f[1], gapsout:0, gapsin:0
-# windowrule[floating:0, onworkspace:w[tv1]] {
+# windowrule[smart-gaps-tv1] {
+#     match {
+#         workspace = w[tv1]
+#     }
 #     border_size = 0
 #     rounding = 0
 # }
-# windowrule[floating:0, onworkspace:f[1]] {
+# windowrule[smart-gaps-f1] {
+#     match {
+#         workspace = f[1]
+#     }
 #     border_size = 0
 #     rounding = 0
 # }
@@ -395,24 +401,38 @@ bind = $mainMod, Sys_Req, exec, hyprshot -m window                 # pick a wind
 # See https://wiki.hypr.land/Configuring/Workspace-Rules/ for workspace rules
 
 # Example windowrule
-# windowrule[class:^(kitty)$, title:^(kitty)$] { float = true }
+# windowrule[kitty] {
+#     match {
+#         class = ^(kitty)$
+#         title = ^(kitty)$
+#     }
+#     float = true
+# }
 
 # Ignore maximize requests from apps, and hold off the idle lock during
-# fullscreen video. Both apply to every window, so they share one block —
-# 0.56 keys rules by selector, and a repeated selector would collide.
-windowrule[class:.*] {
+# fullscreen video. Both apply to every window.
+windowrule[all-windows] {
+    match {
+        class = .*
+    }
     suppress_event = maximize
     idle_inhibit = fullscreen
 }
 
 # Float audio/bluetooth control windows
-windowrule[class:^(pavucontrol|org.pulseaudio.pavucontrol)$] {
+windowrule[pavucontrol] {
+    match {
+        class = ^(pavucontrol|org.pulseaudio.pavucontrol)$
+    }
     float = true
     size = 800 500
     center = true
 }
 
-windowrule[class:^(blueman-manager|.blueman-manager-wrapped)$] {
+windowrule[blueman] {
+    match {
+        class = ^(blueman-manager|.blueman-manager-wrapped)$
+    }
     float = true
     size = 800 500
     center = true
@@ -420,7 +440,10 @@ windowrule[class:^(blueman-manager|.blueman-manager-wrapped)$] {
 
 # Monitor layout editor (the "Monitor layout" launcher entry). Sized by ghostty's
 # own --window-width/--window-height, so no size rule here.
-windowrule[class:^(dev.archey.monitor-profile)$] {
+windowrule[monitor-profile] {
+    match {
+        class = ^(dev.archey.monitor-profile)$
+    }
     float = true
     center = true
 }
@@ -428,42 +451,68 @@ windowrule[class:^(dev.archey.monitor-profile)$] {
 # Picture-in-picture: float and pin above everything, so it survives workspace
 # switches. Firefox titles the window "Picture-in-Picture"; Chromium-family
 # browsers use "Picture in picture" — hence both spellings.
-windowrule[title:^(Picture-in-Picture)$] {
+windowrule[pip-firefox] {
+    match {
+        title = ^(Picture-in-Picture)$
+    }
     float = true
     pin = true
     size = 640 360
 }
 
-windowrule[title:^(Picture in picture)$] {
+windowrule[pip-chromium] {
+    match {
+        title = ^(Picture in picture)$
+    }
     float = true
     pin = true
 }
 
 # Transient file/print dialogs float instead of tiling into the layout.
-windowrule[title:^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$] {
+windowrule[file-dialogs] {
+    match {
+        title = ^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$
+    }
     float = true
     center = true
 }
 
 # GTK portal + Qt native dialogs announce themselves by class.
-windowrule[class:^(xdg-desktop-portal-gtk)$] {
+windowrule[portal-gtk] {
+    match {
+        class = ^(xdg-desktop-portal-gtk)$
+    }
     float = true
     center = true
 }
 
-# Fix some dragging issues with XWayland
-windowrule[class:^$, title:^$, xwayland:1, floating:1, fullscreen:0, pinned:0] {
+# Fix some dragging issues with XWayland. 0.56 has no `floating` or `pinned`
+# match key, so this is broader than before — the empty class and title are
+# what actually single out the drag surfaces.
+windowrule[xwayland-drag] {
+    match {
+        class = ^$
+        title = ^$
+        xwayland = true
+        fullscreen = false
+    }
     no_focus = true
 }
 
 # Layer blur — apply backdrop blur to wofi launcher
 layerrule[wofi] {
+    match {
+        namespace = wofi
+    }
     blur = true
     ignore_alpha = 0
 }
 
 # Layer blur — subtle blurred backdrop behind the entire waybar
 layerrule[waybar] {
+    match {
+        namespace = waybar
+    }
     blur = true
     ignore_alpha = 0.1
 }
