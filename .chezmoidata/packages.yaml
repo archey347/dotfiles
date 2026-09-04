@@ -8,7 +8,7 @@ packages:
         - "iosevka-term-fonts"
     hyprland:
       coprs:
-        - "solopasha/hyprland"
+        - "nett00n/hyprland"
       dnf:
         - "blueman"
         - "dolphin"
