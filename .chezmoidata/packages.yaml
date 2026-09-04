@@ -28,3 +28,4 @@ packages:
         - "swaylock"
         - "waybar"
         - "wl-clipboard"
+        - "wofi"
