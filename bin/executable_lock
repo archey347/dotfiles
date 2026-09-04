@@ -83,7 +83,7 @@ if [[ -n "$mon_w" && -n "$mon_h" && "$mon_w" -gt 0 && "$mon_h" -gt 0 ]]; then
         -v mw="$mon_w" -v mh="$mon_h" -v rw="$ref_w" -v rh="$ref_h" \
         'BEGIN {
             s = mw/rw; t = mh/rh; if (t > s) s = t
-            printf "%d %d", (x*s >= 0 ? x*s+0.5 : x*s-0.5), (y*s >= 0 ? y*s+0.5 : y*s-0.5)
+            printf "%d %d\n", (x*s >= 0 ? x*s+0.5 : x*s-0.5), (y*s >= 0 ? y*s+0.5 : y*s-0.5)
         }')
 fi
 
