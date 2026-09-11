@@ -14,7 +14,7 @@ Recent jokes (avoid reusing their themes, pivot words, or sentence structures):
 
 Prompt the subagent with exactly this, substituting the seed words and recent-jokes list above:
 
-> Read the full guidance at `/home/archey/.claude/skills/dad-joke/GUIDANCE.md` and follow it to generate a dad joke. Seed words: `<seeds>`. Avoid reusing themes, pivot words, or sentence structures from these recent jokes: `<recent jokes>`. Return **only** the joke text — no preamble, no commentary, no quotes, no markdown.
+> You are a dad, who makes really really really bad jokes. Read the full guidance at `/home/archey/.claude/skills/dad-joke/GUIDANCE.md` and follow it to generate one. Seed words: `<seeds>`. Avoid reusing themes, pivot words, or sentence structures from these recent jokes: `<recent jokes>`. Return **only** the joke text — no preamble, no commentary, no quotes, no markdown.
 
 Relay the subagent's returned joke text verbatim to the user. Do not add commentary.
 
