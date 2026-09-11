@@ -1,0 +1,234 @@
+#!/usr/bin/env python3
+"""Record which Hyprland desktop has focus, and what is running on each one.
+
+Appends closed focus intervals to ~/.local/state/hyprfocus/<date>.jsonl, so the
+round-robin day analysis can decompose the "no prompts anywhere" bucket into real
+activity instead of guessing at it.
+
+Claude Code sets the terminal title to its session title, so a ghostty window's
+normalised title joins straight onto the `ai-title` in a session transcript.
+"""
+import argparse, json, os, re, signal, socket, subprocess, sys, time
+from datetime import datetime, timedelta
+from pathlib import Path
+
+STATE = Path(os.environ.get('XDG_STATE_HOME', Path.home() / '.local/state')) / 'hyprfocus'
+SNAPSHOT_EVERY = 300          # seconds between unprompted desktop snapshots
+LAYOUT_EVENTS = {'openwindow', 'closewindow', 'movewindow', 'movewindowv2',
+                 'openlayer', 'closelayer', 'monitoradded', 'monitorremoved'}
+# A screen locker owns a layer surface, which is the only lock signal socket2 offers.
+LOCK_LAYERS = {'hyprlock', 'swaylock', 'gtklock'}
+
+# Claude Code prefixes the title with a spinner (◐◓◑◒) or an attention glyph (✳),
+# repainted several times a second — dedup on the stripped title or the log explodes.
+GLYPH = re.compile(r'^[^\w~/(\[]+\s*')
+
+
+def now():
+    return datetime.now().astimezone()
+
+
+def strip_glyph(title):
+    return GLYPH.sub('', title).strip()
+
+
+def instance_dir():
+    """The live Hyprland instance, whether or not we inherited its env."""
+    root = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}')) / 'hypr'
+    sig = os.environ.get('HYPRLAND_INSTANCE_SIGNATURE')
+    if sig and (root / sig / '.socket2.sock').is_socket():
+        return root / sig
+    live = [d for d in root.glob('*') if (d / '.socket2.sock').is_socket()]
+    if not live:
+        return None
+    return max(live, key=lambda d: (d / '.socket2.sock').stat().st_mtime)
+
+
+def hypridle_running():
+    return subprocess.run(['pgrep', '-x', 'hypridle'], stdout=subprocess.DEVNULL).returncode == 0
+
+
+def hyprctl(inst, *args):
+    """Query over .socket.sock rather than forking hyprctl for every snapshot."""
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+            s.connect(str(inst / '.socket.sock'))
+            s.sendall(('j/' + '/'.join(args)).encode())
+            buf = b''
+            while chunk := s.recv(65536):
+                buf += chunk
+        return json.loads(buf)
+    except (OSError, ValueError):
+        return None
+
+
+class Log:
+    """One JSONL file per local day, named by the day a record starts in."""
+
+    def __init__(self, keep_titles=True):
+        self.keep_titles = keep_titles
+        STATE.mkdir(parents=True, exist_ok=True)
+
+    def write(self, rec):
+        day = rec.get('start', rec.get('at'))[:10]
+        with open(STATE / f'{day}.jsonl', 'a') as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + '\n')
+
+    def clean(self, title):
+        return title if self.keep_titles else ''
+
+
+class Recorder:
+    def __init__(self, log):
+        self.log = log
+        self.cur = None          # (ws, monitor, cls, title) currently focused
+        self.since = None
+        self.raw = ''
+        self.watching = False
+
+    def focus(self, ws, mon, cls, title, raw):
+        key = (ws, mon, cls, title)
+        if key == self.cur:
+            self.raw = raw       # spinner repaint: same state, keep latest raw title
+            return
+        self.close()
+        self.cur, self.since, self.raw = key, now(), raw
+        self.mark_current()
+
+    def close(self):
+        if not self.cur or not self.since:
+            return
+        end = now()
+        secs = (end - self.since).total_seconds()
+        ws, mon, cls, title = self.cur
+        self.log.write({'t': 'focus', 'start': self.since.isoformat(),
+                        'end': end.isoformat(), 'secs': round(secs, 2),
+                        'ws': ws, 'mon': mon, 'class': cls,
+                        'title': self.log.clean(title),
+                        'raw_title': self.log.clean(self.raw)})
+        self.cur = self.since = None
+        self.mark_current()
+
+    def mark_current(self):
+        """Leave the open interval on disk so a hard kill loses at most one record."""
+        p = STATE / 'current.json'
+        if not self.cur:
+            p.unlink(missing_ok=True)
+            return
+        ws, mon, cls, title = self.cur
+        p.write_text(json.dumps({'since': self.since.isoformat(), 'ws': ws, 'mon': mon,
+                                 'class': cls, 'title': self.log.clean(title)}))
+
+    def state(self, what):
+        """Session state changed. Close the open interval on the way out so a locked screen or an
+        empty desk is never billed to whichever window happened to be focused."""
+        if what in ('locked', 'idle', 'sleep'):
+            self.close()
+        self.log.write({'t': 'state', 'state': what, 'at': now().isoformat(), 'src': 'daemon'})
+
+    def watch_check(self):
+        """Log once that idle markers can be trusted from here on. hypridle starts alongside
+        us, so the first check can miss it; the periodic snapshot retries."""
+        if self.watching or not hypridle_running():
+            return
+        self.watching = True
+        self.log.write({'t': 'state', 'state': 'watching', 'at': now().isoformat(), 'src': 'daemon'})
+
+    def snapshot(self, inst, why):
+        """What is sitting on every desktop, focused or not."""
+        clients = hyprctl(inst, 'clients')
+        spaces = hyprctl(inst, 'workspaces')
+        if clients is None or spaces is None:
+            return
+        by_ws = {}
+        for c in clients:
+            if not c.get('mapped', True):
+                continue
+            by_ws.setdefault(c['workspace']['id'], []).append(
+                {'class': c.get('class', ''), 'title': self.log.clean(c.get('title', '')),
+                 'pid': c.get('pid'), 'floating': c.get('floating', False)})
+        self.log.write({'t': 'desktops', 'at': now().isoformat(), 'why': why,
+                        'monitors': {str(w['id']): w.get('monitor') for w in spaces},
+                        'windows': {str(k): v for k, v in sorted(by_ws.items())}})
+
+
+def run(rec, inst):
+    """Follow socket2 until the compositor goes away."""
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(str(inst / '.socket2.sock'))
+    s.settimeout(30)
+    ws = hyprctl(inst, 'activeworkspace') or {}
+    win = hyprctl(inst, 'activewindow') or {}
+    rec.focus(ws.get('id'), ws.get('monitor'), win.get('class', ''),
+              strip_glyph(win.get('title', '')), win.get('title', ''))
+    rec.snapshot(inst, 'start')
+    rec.watch_check()
+    last_snap = time.monotonic()
+    cur_ws, cur_mon = ws.get('id'), ws.get('monitor')
+    buf = b''
+    while True:
+        try:
+            chunk = s.recv(8192)
+            if not chunk:
+                return
+            buf += chunk
+        except socket.timeout:
+            chunk = b''
+        while b'\n' in buf:
+            line, buf = buf.split(b'\n', 1)
+            ev, _, data = line.decode('utf-8', 'replace').partition('>>')
+            if ev in ('workspacev2', 'focusedmonv2', 'workspace', 'focusedmon'):
+                # id arrives here before the window event that follows it
+                fresh = hyprctl(inst, 'activeworkspace') or {}
+                cur_ws, cur_mon = fresh.get('id', cur_ws), fresh.get('monitor', cur_mon)
+                w = hyprctl(inst, 'activewindow') or {}
+                rec.focus(cur_ws, cur_mon, w.get('class', ''),
+                          strip_glyph(w.get('title', '')), w.get('title', ''))
+            elif ev == 'activewindow':
+                cls, _, title = data.partition(',')
+                rec.focus(cur_ws, cur_mon, cls, strip_glyph(title), title)
+            elif ev == 'windowtitlev2':
+                _, _, title = data.partition(',')
+                if rec.cur:
+                    rec.focus(rec.cur[0], rec.cur[1], rec.cur[2], strip_glyph(title), title)
+            elif ev in LAYOUT_EVENTS:
+                if ev in ('openlayer', 'closelayer') and data.strip() in LOCK_LAYERS:
+                    rec.state('locked' if ev == 'openlayer' else 'unlocked')
+                    if ev == 'closelayer':
+                        w = hyprctl(inst, 'activewindow') or {}
+                        rec.focus(cur_ws, cur_mon, w.get('class', ''),
+                                  strip_glyph(w.get('title', '')), w.get('title', ''))
+                rec.snapshot(inst, ev)
+                last_snap = time.monotonic()
+        if time.monotonic() - last_snap > SNAPSHOT_EVERY:
+            rec.snapshot(inst, 'periodic')
+            rec.watch_check()
+            last_snap = time.monotonic()
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--no-titles', action='store_true',
+                    help='log desktop and app only — drops the Claude session join')
+    a = ap.parse_args()
+    rec = Recorder(Log(keep_titles=not a.no_titles))
+
+    def bye(*_):
+        rec.close()
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, bye)
+    signal.signal(signal.SIGINT, bye)
+
+    while True:
+        inst = instance_dir()
+        if inst:
+            try:
+                run(rec, inst)
+            except OSError:
+                pass
+        rec.close()                       # compositor gone: don't strand the interval
+        time.sleep(3)
+
+
+if __name__ == '__main__':
+    main()

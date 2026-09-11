@@ -17,6 +17,9 @@ bin/replace-hypr-wallpapers
 bin/swaylock-random
 bin/lock
 bin/hypr-ssh-prompt
+bin/hyprfocusd
+bin/hyprfocus-mark
+.config/systemd/user/hyprfocusd.service
 .local/share/applications/firefox-workspace.desktop
 set-default-browser.sh
 enable-gnome-keyring.sh

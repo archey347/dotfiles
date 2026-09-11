@@ -16,6 +16,7 @@
     kb_layout         = {{ promptStringOnce . "kb_layout" "Keyboard layout (e.g. us, gb, de)" | quote }}
     has_fingerprint_reader = {{ promptBoolOnce . "has_fingerprint_reader" "Does this machine have a fingerprint reader (enables hyprlock fingerprint unlock)" }}
     monitor_profiles  = {{ if hasKey . "monitor_profiles" }}{{ .monitor_profiles | toJson }}{{ else }}[]{{ end }}
+    1984              = {{ promptBoolOnce . "1984" "Record which desktop has focus, for workday metrics (hyprfocusd; window titles are logged locally)" false }}
 
 # Desktop theme — palette consumed by waybar, mako, wofi and ghostty.
 # Edit the values below to reskin this machine; copy a ready-made block from

@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Append a session-state marker to today's hyprfocus log.
+
+    hyprfocus-mark idle | resume | locked | unlocked | sleep | wake
+
+Hyprland's event socket carries no idle signal, so a hypridle listener calls this instead
+(see hypridle.conf). Records are single short lines opened O_APPEND, which the kernel writes
+atomically, so this is safe to run alongside the daemon writing the same file.
+"""
+import json, os, sys, datetime as dt
+from pathlib import Path
+
+# 'watching' records that an idle daemon was seen running: before it, absence is
+# unobservable, so a reader knows which part of a day its markers can actually speak for.
+KINDS = ('idle', 'resume', 'locked', 'unlocked', 'sleep', 'wake', 'watching')
+STATE = Path(os.environ.get('XDG_STATE_HOME', Path.home() / '.local/state')) / 'hyprfocus'
+
+def main():
+    if len(sys.argv) != 2 or sys.argv[1] not in KINDS:
+        sys.exit(f'usage: {Path(sys.argv[0]).name} {{{"|".join(KINDS)}}}')
+    at = dt.datetime.now().astimezone()
+    STATE.mkdir(parents=True, exist_ok=True)
+    line = json.dumps({'t': 'state', 'state': sys.argv[1], 'at': at.isoformat(),
+                       'src': 'mark'}, ensure_ascii=False) + '\n'
+    with open(STATE / f'{at.date().isoformat()}.jsonl', 'a') as f:
+        f.write(line)
+
+if __name__ == '__main__':
+    main()

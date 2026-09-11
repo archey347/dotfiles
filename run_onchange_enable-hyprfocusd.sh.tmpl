@@ -1,0 +1,30 @@
+{{ if .is_hyprland -}}
+#!/usr/bin/env bash
+# Re-runs when the flag, the unit, the daemon or the idle config changes.
+# 1984:     {{ index . "1984" | default false }}
+# unit:     {{ include "dot_config/systemd/user/hyprfocusd.service" | sha256sum }}
+# daemon:   {{ include "bin/executable_hyprfocusd" | sha256sum }}
+# hypridle: {{ include "dot_config/hypr/hypridle.conf.tmpl" | sha256sum }}
+set -euo pipefail
+
+systemctl --user daemon-reload
+{{ if index . "1984" | default false -}}
+systemctl --user enable hyprfocusd.service
+# Only start inside a live graphical session; on a TTY the unit would flap.
+if systemctl --user is-active --quiet graphical-session.target; then
+    systemctl --user restart hyprfocusd.service
+    echo "hyprfocusd: running — see ~/.local/state/hyprfocus/"
+else
+    echo "hyprfocusd: enabled, starts with the next graphical session"
+fi
+{{ else -}}
+systemctl --user disable --now hyprfocusd.service 2>/dev/null || true
+echo "hyprfocusd: 1984 is off, not recording"
+{{ end -}}
+
+# hypridle only reads its config at startup.
+if pgrep -x hypridle >/dev/null; then
+    pkill -x hypridle
+    hyprctl dispatch exec hypridle >/dev/null
+fi
+{{ end -}}

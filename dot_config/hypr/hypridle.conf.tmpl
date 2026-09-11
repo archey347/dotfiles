@@ -27,3 +27,13 @@ listener {
     on-timeout = hyprctl dispatch dpms off
     on-resume = hyprctl dispatch dpms on
 }
+{{- if index . "1984" | default false }}
+
+# Feed idle and resume into the hyprfocus log (bin/hyprfocusd). Same timeout as the lock so
+# "idle" and "locked" land together rather than a minute apart.
+listener {
+    timeout = {{ index . "lock_timeout" | default 300 }}
+    on-timeout = {{ .chezmoi.homeDir }}/bin/hyprfocus-mark idle
+    on-resume = {{ .chezmoi.homeDir }}/bin/hyprfocus-mark resume
+}
+{{- end }}

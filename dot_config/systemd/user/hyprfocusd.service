@@ -1,0 +1,14 @@
+[Unit]
+Description=Record Hyprland desktop focus and layout for workday metrics
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/bin/hyprfocusd
+Restart=always
+RestartSec=2
+Nice=10
+
+[Install]
+WantedBy=graphical-session.target
