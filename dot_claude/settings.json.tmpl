@@ -1,5 +1,10 @@
 {
   "model": {{ .claude_default_model | quote }},
+{{- if ne .claude_subagent_model "inherit" }}
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": {{ .claude_subagent_model | quote }}
+  },
+{{- end }}
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
