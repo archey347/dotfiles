@@ -19,7 +19,10 @@ mapfile -d '' images < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \
     -print0)
 [[ ${#images[@]} -eq 0 ]] && exit 0
 
-# hyprpaper may still be coming up (hyprland.conf delays it 2s at login).
+# Only wait on the IPC socket while hyprpaper is actually starting up (it is
+# delayed 2s at login). If it is dead there is nothing to paint with, and 20s of
+# polling here holds monitor-setup.sh's layout lock past its bounded wait.
+pgrep -x hyprpaper >/dev/null || exit 0
 for _ in $(seq 1 20); do
     hyprctl hyprpaper listactive &>/dev/null && break
     sleep 1
@@ -31,7 +34,7 @@ while IFS= read -r line; do
     current["${line%% = *}"]="${line#* = }"
 done < <(hyprctl hyprpaper listactive 2>/dev/null)
 
-for monitor in $(hyprctl monitors -j 2>/dev/null | jq -r '.[].name'); do
+for monitor in $(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.width > 0) | .name'); do
     img="${current[$monitor]:-}"
     if [[ -z "$img" || ! -f "$img" ]]; then
         img="${images[$((RANDOM % ${#images[@]}))]}"

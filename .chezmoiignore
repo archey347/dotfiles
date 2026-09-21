@@ -20,6 +20,7 @@ bin/hypr-ssh-prompt
 bin/hyprfocusd
 bin/hyprfocus-mark
 .config/systemd/user/hyprfocusd.service
+.config/systemd/user/hyprpaper.service
 .local/share/applications/firefox-workspace.desktop
 set-default-browser.sh
 enable-gnome-keyring.sh

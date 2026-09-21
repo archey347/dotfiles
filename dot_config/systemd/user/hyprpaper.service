@@ -1,0 +1,16 @@
+[Unit]
+Description=hyprpaper wallpaper daemon
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/hyprpaper
+# hyprpaper's output bindings die with it, so repaint every monitor on each
+# (re)start rather than waiting for the slideshow's next rotation.
+ExecStartPost=%h/.config/hypr/wallpaper-refresh.sh
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

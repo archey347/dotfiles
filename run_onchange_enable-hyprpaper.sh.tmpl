@@ -1,0 +1,12 @@
+{{ if .is_hyprland -}}
+#!/usr/bin/env bash
+# unit: {{ include "dot_config/systemd/user/hyprpaper.service" | sha256sum }}
+set -euo pipefail
+
+systemctl --user daemon-reload
+systemctl --user enable hyprpaper.service
+if systemctl --user is-active --quiet graphical-session.target; then
+    pkill -x hyprpaper 2>/dev/null || true
+    systemctl --user restart hyprpaper.service
+fi
+{{ end -}}

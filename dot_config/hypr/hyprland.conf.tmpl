@@ -58,7 +58,10 @@ exec-once = waybar
 exec-once = mako
 exec-once = nm-applet --indicator
 exec-once = blueman-applet
-exec-once = bash -c 'sleep 2 && hyprpaper'
+# Supervised by systemd (Restart=on-failure): hyprpaper has aborted at login on
+# some days, and nothing else would bring it back. UWSM starts it with
+# graphical-session.target; this only covers a session started another way.
+exec-once = systemctl --user start hyprpaper.service
 exec-once = ~/.config/hypr/wallpaper-slideshow.sh
 
 

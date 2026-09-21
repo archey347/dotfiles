@@ -168,6 +168,20 @@ apply_layout() {
     done
 }
 
+# A modeset the kernel rejects (seen on a dock's DP-MST link after a replug: every
+# mode fails with EINVAL) leaves Hyprland holding an enabled 0x0 output. waybar
+# 0.15 maps a zero-sized bar on it and spins forever in a configure/ack loop with
+# the compositor, and workspaces sent there are invisible. Disabling the output
+# makes Hyprland drop it and rehome its workspaces; a physical replug brings it
+# back through the normal hotplug path.
+disable_dead_outputs() {
+    local name
+    for name in $(hyprctl monitors all -j 2>/dev/null \
+            | jq -r '.[] | select(.disabled == false and .width == 0) | .name' 2>/dev/null); do
+        hyprctl keyword monitor "${name},disable"
+    done
+}
+
 # Take the bar down before touching outputs: waybar 0.14 segfaults if an output
 # is destroyed underneath it (see waybar-ctl.sh), and nothing restarts it.
 pre_layout_change() {
@@ -178,7 +192,6 @@ pre_layout_change() {
 # lost its wallpaper along with its output. Neither runs on the initial call
 # below — waybar and hyprpaper are still starting up at that point.
 post_layout_change() {
-    sleep 1
     # 9>&- so the new waybar does not inherit change_layout's lock fd. flock is
     # only released once every fd on that open file description is closed, and
     # waybar outlives this script — inheriting it pins the lock forever and every
@@ -217,6 +230,12 @@ change_layout() {
 
     pre_layout_change
     apply_layout
+    sleep 1
+    disable_dead_outputs
+    # Mark before the bar and wallpaper come back, not after: the watcher checks
+    # the marker the moment an event lands, and the events from apply_layout are
+    # already in flight by now.
+    touch "$APPLIED_MARKER"
     post_layout_change
 
     touch "$APPLIED_MARKER"
@@ -230,6 +249,8 @@ if [[ "${1:-}" == "--apply" ]]; then
 fi
 
 apply_layout
+sleep 1
+disable_dead_outputs
 touch "$APPLIED_MARKER"
 
 socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"

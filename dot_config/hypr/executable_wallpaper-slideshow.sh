@@ -28,7 +28,7 @@ declare -A prev_img
 monitor_idx=0
 
 # Set a random wallpaper on each monitor at startup
-mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[].name')
+mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[] | select(.width > 0) | .name')
 for monitor in "${monitors[@]}"; do
     img="${images[$((RANDOM % ${#images[@]}))]}"
     hyprctl hyprpaper preload "$img"
@@ -37,8 +37,12 @@ for monitor in "${monitors[@]}"; do
 done
 
 while true; do
-    mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[].name')
+    mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[] | select(.width > 0) | .name')
     n=${#monitors[@]}
+    if (( n == 0 )); then
+        sleep "$INTERVAL"
+        continue
+    fi
 
     sleep $(( INTERVAL / n ))
 
