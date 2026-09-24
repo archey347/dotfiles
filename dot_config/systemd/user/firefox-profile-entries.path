@@ -1,0 +1,17 @@
+[Unit]
+Description=Refresh Firefox profile launcher entries when profiles change
+
+# The profile store only closes (and so only fires) when Firefox exits, which
+# is when a rename made in the profile manager becomes visible here.
+[Path]
+PathChanged=%h/.mozilla/firefox/profiles.ini
+PathChanged=%h/.mozilla/firefox/Profile Groups
+PathChanged=%h/.config/mozilla/firefox/profiles.ini
+PathChanged=%h/.config/mozilla/firefox/Profile Groups
+# wofi rewrites its cache after each launch, which can knock the primary
+# profile off the top of the Firefox matches.
+PathChanged=%h/.cache/wofi-drun
+Unit=firefox-profile-entries.service
+
+[Install]
+WantedBy=default.target

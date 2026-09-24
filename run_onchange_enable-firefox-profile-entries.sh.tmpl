@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Re-runs when the units or the generator change.
+# path:      {{ include "dot_config/systemd/user/firefox-profile-entries.path" | sha256sum }}
+# service:   {{ include "dot_config/systemd/user/firefox-profile-entries.service" | sha256sum }}
+# generator: {{ include "bin/executable_firefox-profile-entries" | sha256sum }}
+set -euo pipefail
+
+systemctl --user daemon-reload
+systemctl --user enable --now firefox-profile-entries.path
+systemctl --user start firefox-profile-entries.service

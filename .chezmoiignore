@@ -31,6 +31,12 @@ enable-gnome-keyring.sh
 {{- if not (lookPath "code") }}
 vscode.settings.json
 {{- end }}
+{{- if not (lookPath "firefox") }}
+bin/firefox-profile-entries
+.config/systemd/user/firefox-profile-entries.path
+.config/systemd/user/firefox-profile-entries.service
+enable-firefox-profile-entries.sh
+{{- end }}
 {{- if not (lookPath "zed") }}
 .config/zed
 {{- end }}

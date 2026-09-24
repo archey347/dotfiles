@@ -1,0 +1,6 @@
+[Unit]
+Description=Write launcher entries for Firefox profiles
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/firefox-profile-entries

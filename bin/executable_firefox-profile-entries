@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""Write a launcher entry for every Firefox profile, and remove entries for
+profiles that no longer exist. The primary (original) profile takes over the
+stock "Firefox" entry, so it opens regardless of which profile Firefox's own
+profile manager has made the default.
+
+Profiles made with Firefox's profile manager live in a per-group SQLite store,
+not in profiles.ini, which only names the group's default profile — so the store
+is the source of truth whenever there is one.
+"""
+import configparser, os, re, sqlite3, sys
+from pathlib import Path
+
+APPS = Path(os.environ.get('XDG_DATA_HOME', Path.home() / '.local/share')) / 'applications'
+PREFIX = 'firefox-profile-'
+PRIMARY = 'org.mozilla.firefox.desktop'
+WOFI_CACHE = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache')) / 'wofi-drun'
+ROOTS = [Path.home() / '.mozilla/firefox',
+         Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'mozilla/firefox']
+
+
+def profiles(root):
+    ini = configparser.ConfigParser(interpolation=None)
+    ini.optionxform = str
+    ini.read(root / 'profiles.ini')
+    sections = [s for s in ini.values() if s.name.startswith('Profile') and 'Path' in s]
+
+    def resolve(path):
+        return root / path if not Path(path).is_absolute() else Path(path)
+
+    stores = {s['StoreID'] for s in sections if 'StoreID' in s}
+    found = []
+    for store in sorted(stores):
+        db = root / 'Profile Groups' / f'{store}.sqlite'
+        # mode=ro so a running Firefox never sees us as a writer on its store.
+        with sqlite3.connect(f'file:{db}?mode=ro', uri=True) as conn:
+            found += [(name, resolve(path)) for name, path in
+                      conn.execute('SELECT name, path FROM Profiles ORDER BY id')]
+    if stores:
+        # The store's first row is the profile that predates the profile manager.
+        return found
+
+    install = next((s['Default'] for s in ini.values()
+                    if s.name.startswith('Install') and 'Default' in s), None)
+    found = [(s['Name'], resolve(s['Path'])) for s in sections]
+    found.sort(key=lambda p: install is None or p[1] != resolve(install))
+    return found
+
+
+def exec_arg(s):
+    return '"' + re.sub(r'(["`$\\])', r'\\\1', s) + '"'
+
+
+def entry(name, path, primary=False):
+    return f"""[Desktop Entry]
+Type=Application
+Name={'Firefox' if primary else f'Firefox ({name})'}
+Comment=Firefox profile: {name}
+Exec=firefox --profile {exec_arg(str(path))} %u
+Icon=firefox
+Terminal=false
+Categories=Network;WebBrowser;
+Keywords=firefox;browser;profile;{name};
+StartupWMClass=org.mozilla.firefox
+"""
+
+
+def rank_primary_first():
+    """wofi scores every match equally and lists cached entries first by launch
+    count, so the primary only stays on top of "firefox" by out-counting the rest."""
+    try:
+        lines = WOFI_CACHE.read_text().splitlines()
+    except FileNotFoundError:
+        lines = []
+    counts = {}
+    for line in lines:
+        count, _, path = line.partition(' ')
+        if count.isdigit():
+            counts[path] = int(count)
+
+    primary = str(APPS / PRIMARY)
+    need = 1 + max((c for p, c in counts.items()
+                    if p.startswith(str(APPS / PREFIX))), default=0)
+    if counts.get(primary, 0) >= need:
+        return
+    counts[primary] = need
+    WOFI_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    WOFI_CACHE.write_text(''.join(f'{c} {p}\n' for p, c in counts.items()))
+
+
+def main():
+    root = next((r for r in ROOTS if (r / 'profiles.ini').exists()), None)
+    found = profiles(root) if root else []
+    if sys.argv[1:] == ['--primary']:
+        if not found:
+            sys.exit(1)
+        print(found[0][1])
+        return
+
+    wanted = {}
+    if found:
+        wanted[APPS / PRIMARY] = entry(*found[0], primary=True)
+    for name, path in found[1:]:
+        slug = re.sub(r'[^A-Za-z0-9]+', '-', path.name).strip('-').lower()
+        wanted[APPS / f'{PREFIX}{slug}.desktop'] = entry(name, path)
+
+    APPS.mkdir(parents=True, exist_ok=True)
+    for stale in set(APPS.glob(f'{PREFIX}*.desktop')) - wanted.keys():
+        stale.unlink()
+    for file, text in wanted.items():
+        if not file.exists() or file.read_text() != text:
+            file.write_text(text)
+    if found:
+        rank_primary_first()
+
+
+if __name__ == '__main__':
+    main()
