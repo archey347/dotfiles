@@ -2,7 +2,7 @@
 {
   "layer": "top",
   // "position": "bottom", // Waybar position (top|bottom|left|right)
-  "height": 29, // fixed height so tall title glyphs (emoji) don't grow the bar (29 + 1px margin = 30)
+  "height": 34, // fixed height so tall title glyphs (emoji) don't grow the bar
   // "width": 1280, // Waybar width
   "margin-top": 0,
   "margin-bottom": 1,
@@ -28,7 +28,7 @@
   // Groups only exist to put breathing room between clusters (see style.css).
   "group/io": {
     "orientation": "horizontal",
-    "modules": ["pulseaudio", "custom/network", "custom/vpn"],
+    "modules": ["pulseaudio", "custom/network", "custom/vpn", "custom/bluetooth"],
   },
   "group/system": {
     "orientation": "horizontal",
@@ -112,8 +112,13 @@
     },
   },
   "tray": {
-    // "icon-size": 21,
+    "icon-size": 14,
     "spacing": 14,
+    // Font Awesome renders so tray icons match the rest of the bar
+    "icons": {
+      "1Password_status_icon_1": "{{ .chezmoi.homeDir }}/.config/waybar/icons/1password.png",
+      "spotify-client": "{{ .chezmoi.homeDir }}/.config/waybar/icons/spotify.png",
+    },
     // "icons": {
     //   "blueman": "bluetooth",
     //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
@@ -128,27 +133,27 @@
   "cpu": {
     "states": { "busy": 60 },
     "format": "",
-    "format-busy": "<span fgalpha='55%'></span> {usage}%",
+    "format-busy": "<span fgalpha='55%' rise='-1024'></span> {usage}%",
     "tooltip": false,
   },
   "memory": {
     "states": { "high": 80 },
     "format": "",
-    "format-high": "<span fgalpha='55%'></span> {}%",
+    "format-high": "<span fgalpha='55%' rise='-1024'></span> {}%",
   },
   "temperature": {
     // "thermal-zone": 2,
     // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
-    // "format-critical": "{icon} {temperatureC}°",
+    // "format-critical": "<span fgalpha='55%' rise='-1024'>{icon}</span> {temperatureC}°",
     "format": "",
-    "format-critical": "{icon} {temperatureC}°",
+    "format-critical": "<span fgalpha='55%' rise='-1024'>{icon}</span> {temperatureC}°",
     "format-icons": ["", "", ""],
   },
   "backlight": {
     // "device": "acpi_video1",
-    "format": "<span fgalpha='55%'>{icon}</span> {percent}%",
-    "format-icons": ["", "", "", "", ""],
+    "format": "<span fgalpha='55%' rise='-1024'></span> {percent}%",
+    "tooltip": false,
   },
   "battery": {
     "states": {
@@ -156,10 +161,10 @@
       "warning": 30,
       "critical": 15,
     },
-    "format": "<span fgalpha='55%'>{icon}</span> {capacity}%",
-    "format-full": "<span fgalpha='55%'>{icon}</span> {capacity}%",
-    "format-charging": "<span fgalpha='55%'></span> {capacity}%",
-    "format-plugged": "<span fgalpha='55%'></span> {capacity}%",
+    "format": "<span fgalpha='55%' rise='-1024'>{icon}</span> {capacity}%",
+    "format-full": "<span fgalpha='55%' rise='-1024'>{icon}</span> {capacity}%",
+    "format-charging": "<span fgalpha='55%' rise='-1024'></span> {capacity}%",
+    "format-plugged": "<span fgalpha='55%' rise='-1024'></span> {capacity}%",
     "format-alt": "{icon} {time}",
     // "format-good": "", // An empty format will hide the module
     // "format-full": "",
@@ -188,11 +193,11 @@
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
-    "format": "<span fgalpha='55%'>{icon}</span> {volume}% {format_source}",
+    "format": "<span fgalpha='55%' rise='-1024'>{icon}</span> {volume}% {format_source}",
     "format-bluetooth": "{volume}% {icon} {format_source}",
     "format-bluetooth-muted": " {icon} {format_source}",
     "format-muted": " {format_source}",
-    "format-source": "<span color='#e5534b'></span>",
+    "format-source": "<span color='#{{ .theme.error }}'></span>",
     "format-source-muted": "",
     "format-icons": {
       "headphone": "",
@@ -211,11 +216,18 @@
     "max-length": 40,
     "format-icons": {
       "spotify": "",
-      "default": "🎜",
+      "default": "",
     },
     "escape": true,
     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null", // Script in resources folder
     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+  },
+  "custom/bluetooth": {
+    "exec": "$HOME/.config/waybar/bluetooth.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "blueman-manager",
+    "tooltip": true,
   },
   "custom/vpn": {
     "exec": "$HOME/.config/waybar/vpn.sh",
@@ -235,7 +247,7 @@
   },
 
   "custom/power": {
-    "format": "⏻",
+    "format": "",
     "tooltip": false,
     "menu": "on-click",
     "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
@@ -249,15 +261,18 @@
   },
 
   "mpris": {
-    "format": "{status_icon} {title:.28}",
-    "format-paused": "{status_icon} <i>{title:.28}</i>",
+    "title-len": 28,
+    "artist-len": 20,
+    "ellipsis": "…",
+    "format": "<span fgalpha='55%'>{status_icon}</span>  {title}  <span fgalpha='55%'>{artist}</span>",
+    "format-paused": "<span fgalpha='55%'>{status_icon}</span>  <span fgalpha='65%'>{title}</span>  <span fgalpha='40%'>{artist}</span>",
     "status-icons": {
-      "playing": "⏸",
-      "paused": "▶",
+      "playing": "\uf04c",
+      "paused": "\uf04b",
     },
+    "tooltip-format": "{title}\n{artist}\nPlaying in {player}",
     "on-click": "playerctl play-pause",
     "on-click-right": "playerctl next",
     "on-scroll-down": "playerctl previous",
-    "tooltip-format": "{player}: {artist} — {title}",
   },
 }

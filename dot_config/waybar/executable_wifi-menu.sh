@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 # WiFi menu using wofi + nmcli
 
-# Signal strength to icon
-signal_icon() {
-    local sig=$1
-    if   [ "$sig" -ge 80 ]; then echo "▂▄▆█"
-    elif [ "$sig" -ge 60 ]; then echo "▂▄▆░"
-    elif [ "$sig" -ge 40 ]; then echo "▂▄░░"
-    elif [ "$sig" -ge 20 ]; then echo "▂░░░"
-    else                         echo "░░░░"
-    fi
-}
+# Font Awesome has a single wifi glyph, so strength is shown as a percentage
+LOCK=$'\uf023'
+CHECK=$'\uf00c'
+DISCONNECT=$'\uf00d'
 
 # Get current connection
 current=$(nmcli -t -f active,ssid dev wifi | awk -F: '/^yes/{print $2}')
@@ -22,15 +16,15 @@ nmcli dev wifi rescan 2>/dev/null
 entries=$(nmcli -t -f SSID,SIGNAL,SECURITY,IN-USE dev wifi list \
     | awk -F: '!seen[$1]++ && $1!=""' \
     | while IFS=: read -r ssid signal security inuse; do
-        icon=$(signal_icon "$signal")
-        lock=$([[ "$security" != "--" ]] && echo " [P]" || echo "")
-        active=$([[ "$inuse" == "*" ]] && echo " ✓" || echo "")
+        icon="${signal}%"
+        lock=$([[ "$security" != "--" ]] && echo " $LOCK" || echo "")
+        active=$([[ "$inuse" == "*" ]] && echo " $CHECK" || echo "")
         printf "%s %s%s%s\n" "$icon" "$ssid" "$lock" "$active"
     done)
 
 # Add disconnect option if connected
 if [ -n "$current" ]; then
-    entries="[X] Disconnect from $current\n$entries"
+    entries="$DISCONNECT Disconnect from $current\n$entries"
 fi
 
 # Show wofi menu
@@ -45,7 +39,7 @@ if [[ "$chosen" == *"Disconnect from"* ]]; then
 fi
 
 # Extract SSID (strip icon prefix and trailing markers)
-ssid=$(echo "$chosen" | sed 's/^[^ ]* //' | sed 's/ \[P\]//' | sed 's/ ✓//')
+ssid=$(echo "$chosen" | sed 's/^[^ ]* //' | sed "s/ $LOCK//" | sed "s/ $CHECK//")
 
 # If already connected to this, do nothing
 if [ "$ssid" = "$current" ]; then

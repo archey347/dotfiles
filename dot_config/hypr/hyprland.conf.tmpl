@@ -56,8 +56,10 @@ exec-once = hypridle
 exec-once = lxpolkit
 exec-once = waybar
 exec-once = mako
-exec-once = nm-applet --indicator
 exec-once = blueman-applet
+# blueman-applet (kept for its pairing agent) always spawns a full-colour tray icon,
+# duplicating waybar's own Bluetooth key; its plugin-list setting doesn't stop it.
+exec-once = sh -c 'sleep 8; pkill -f /usr/bin/blueman-tray'
 # Supervised by systemd (Restart=on-failure): hyprpaper has aborted at login on
 # some days, and nothing else would bring it back. UWSM starts it with
 # graphical-session.target; this only covers a session started another way.
@@ -127,14 +129,14 @@ env = HYPRCURSOR_SIZE,24
 
 # https://wiki.hypr.land/Configuring/Variables/#general
 general {
-    gaps_in = 0
-    gaps_out = 0
+    gaps_in = 4
+    gaps_out = 8
 
-    border_size = 2
+    border_size = 1
 
     # https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
-    col.active_border = rgba({{ .theme.accent }}bb)
-    col.inactive_border = rgba(59595911)
+    col.active_border = rgba({{ .theme.accent }}ff)
+    col.inactive_border = rgba({{ .theme.text }}40)
 
     # Set to true enable resizing windows by clicking and dragging on borders and gaps
     resize_on_border = true
@@ -147,7 +149,7 @@ general {
 
 # https://wiki.hypr.land/Configuring/Variables/#decoration
 decoration {
-    rounding = 5
+    rounding = 8
 {{- if ge (atoi .chezmoi.osRelease.versionID) 43 }}
     rounding_power = 3
 {{- end }}
@@ -156,11 +158,14 @@ decoration {
     active_opacity = 1.0
     inactive_opacity = 1.0
 
+    # Soft on purpose: hard ledges are reserved for things you can press
     shadow {
-        enabled = false
-        range = 4
+        enabled = true
+        range = 18
         render_power = 3
-        color = rgba(1a1a1a11)
+        offset = 0 6
+        color = rgba(00000077)
+        color_inactive = rgba(00000033)
     }
 
     # https://wiki.hypr.land/Configuring/Variables/#blur
@@ -420,6 +425,14 @@ windowrule[all-windows] {
     }
     suppress_event = maximize
     idle_inhibit = fullscreen
+}
+
+# Floating windows sit flat, without the drop shadow tiled windows get
+windowrule[floating-no-shadow] {
+    match {
+        float = true
+    }
+    no_shadow = true
 }
 
 # Float audio/bluetooth control windows

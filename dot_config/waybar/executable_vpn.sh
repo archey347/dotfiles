@@ -20,7 +20,7 @@ if command -v nmcli >/dev/null 2>&1; then
                 rx=$(ip -s link show "$iface" 2>/dev/null | awk '/RX:/{getline; print $2}')
                 tx=$(ip -s link show "$iface" 2>/dev/null | awk '/TX:/{getline; print $2}')
                 active_names+=("$conn")
-                tooltip_lines+=("$ICON_ON $conn  ↓ ${rx:-0} pkts  ↑ ${tx:-0} pkts")
+                tooltip_lines+=("$ICON_ON $conn   ${rx:-0} pkts   ${tx:-0} pkts")
             else
                 tooltip_lines+=("$ICON_OFF $conn")
             fi

@@ -18,17 +18,22 @@ Alpha is applied per-surface at the call site in the templates.
 
 ### Token reference
 
-| Token             | Used for                                                        |
-| ----------------- | --------------------------------------------------------------- |
-| `background`      | Window/bar background (ghostty, waybar bar + dropdowns, wofi)    |
-| `surface`         | Brand surfaces / waybar pills (full opacity)                    |
-| `surface_hover`   | Hovered/active pill surfaces                                    |
-| `accent`          | Active workspace, notification border                           |
-| `accent_strong`   | Notification background, low-urgency border                     |
-| `text`            | Foreground text + subtle hover/border overlays                  |
-| `error`           | Errors, urgent/critical status                                  |
-| `success`         | OK status, progress fills                                       |
-| `info`            | Informational status                                            |
+| Token             | Used for                                                                   |
+| ----------------- | -------------------------------------------------------------------------- |
+| `background`      | Bar, launcher card, ghostty background                                     |
+| `surface`         | Bar keycaps, notifications, tooltips, launcher search field                |
+| `surface_hover`   | Hovered keycaps and launcher rows                                          |
+| `accent`          | "Where you are": active workspace, focused window border, launcher selection — one per surface |
+| `accent_strong`   | Resting keycap ledge (the solid right/bottom shadow)                       |
+| `text`            | Text, plus hairline borders and hover ledges at reduced alpha              |
+| `error`           | Power key hover, performance power mode, critical notifications, live mic  |
+| `success`         | Power-saver power mode                                                     |
+| `info`            | Switched-on toggles (idle inhibitor, focus mode)                           |
+
+The styling is neo-brutalist in the PostHog vein: rounded corners, 1px borders, and a
+solid 3px ledge on the right and bottom of anything you can press. Containers, windows
+and notifications stay flat. Pick an `accent_strong` that contrasts with `surface`
+so resting keys read as raised.
 
 Each token has a matching `*_rgb` triple for the same colour.
 
@@ -191,4 +196,31 @@ green for "ok"/charging, and white text.
     success_rgb        = "92, 184, 92"
     info               = "4f86c6"
     info_rgb           = "79, 134, 198"
+```
+
+## Autumn
+
+Late-September woodland: wet-bark background, field-maple gold accent, leaf-litter
+notifications, parchment text, hawthorn-berry error, moss success, overcast-sky info.
+
+```toml
+[data.theme]
+    background         = "1f1a16"
+    background_rgb     = "31, 26, 22"
+    surface            = "2d2520"
+    surface_rgb        = "45, 37, 32"
+    surface_hover      = "3b302a"
+    surface_hover_rgb  = "59, 48, 42"
+    accent             = "d9a14a"
+    accent_rgb         = "217, 161, 74"
+    accent_strong      = "4a3b30"
+    accent_strong_rgb  = "74, 59, 48"
+    text               = "eadfcb"
+    text_rgb           = "234, 223, 203"
+    error              = "c8553d"
+    error_rgb          = "200, 85, 61"
+    success            = "97a05c"
+    success_rgb        = "151, 160, 92"
+    info               = "8fa3b3"
+    info_rgb           = "143, 163, 179"
 ```

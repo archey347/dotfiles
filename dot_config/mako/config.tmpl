@@ -1,19 +1,20 @@
-# Appearance — matches Waybar pill aesthetic
-font=Noto Serif, Liberation Serif 11
-background-color=#{{ .theme.accent_strong }}
-text-color=#{{ .theme.text }}D9
-border-color=#{{ .theme.error }}
+# Appearance — flat card; hangs from the bar, right edge flush with the power key
+font=Montserrat SemiBold 11
+background-color=#{{ .theme.surface }}
+text-color=#{{ .theme.text }}
+border-color=#{{ .theme.text }}55
 border-size=1
-border-radius=14
+border-radius=8
 padding=14
-margin=8
+margin=4,8,6,8
+outer-margin=0,3,0,0
 width=360
 max-icon-size=48
 icons=1
 markup=1
 actions=1
-format=<b>%s</b>\n%b
-progress-color=over #{{ .theme.success }}66
+format=<b>%s</b>\n<span fgalpha='70%%'>%b</span>
+progress-color=over #{{ .theme.accent }}5c
 
 # Layout
 max-visible=4
@@ -27,8 +28,8 @@ on-button-right=dismiss-all
 group-by=app-name
 
 [urgency=low]
-border-color=#{{ .theme.accent_strong }}
+border-color=#{{ .theme.text }}30
 
 [urgency=critical]
-border-color=#{{ .theme.error }}CC
+border-color=#{{ .theme.error }}
 default-timeout=0

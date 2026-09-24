@@ -1,35 +1,42 @@
+* {
+  font-family: 'Montserrat', 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
+}
+
 window {
   margin: 0px;
-  border: 1px solid rgba({{ .theme.text_rgb }}, 0.16);
-  border-radius: 14px;
-  /* Low enough that the layerrule blur in hyprland.conf actually shows through */
-  background-color: rgba({{ .theme.background_rgb }}, 0.86);
-  font-family: 'Noto Serif', 'Liberation Serif', serif;
-  font-size: 15px;
-  font-weight: 400;
+  border: 1px solid rgba({{ .theme.text_rgb }}, 0.35);
+  border-radius: 12px;
+  background-color: rgba({{ .theme.background_rgb }}, 0.96);
+}
+
+#outer-box {
+  margin: 0px;
+  border: none;
+  background-color: transparent;
 }
 
 #input {
-  margin: 0px;
-  border: none;
-  border-bottom: 1px solid rgba({{ .theme.text_rgb }}, 0.1);
-  border-radius: 0px;
-  padding: 14px 18px;
+  margin: 12px 12px 10px 12px;
+  border: 1px solid rgba({{ .theme.text_rgb }}, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
   color: #{{ .theme.text }};
-  background-color: transparent;
+  background-color: #{{ .theme.surface }};
+  font-size: 15px;
+  font-weight: 600;
   outline: none;
   box-shadow: none;
 }
 
+/* A field, not a button: flat and neutral, so gold stays reserved for the selection */
+#input,
 #input:focus {
-  border: none;
-  border-bottom: 1px solid rgba({{ .theme.text_rgb }}, 0.1);
+  border: 1px solid rgba({{ .theme.text_rgb }}, 0.3);
   outline: none;
-  box-shadow: none;
 }
 
 #input image {
-  color: rgba({{ .theme.text_rgb }}, 0.45);
+  color: rgba({{ .theme.text_rgb }}, 0.6);
   margin-right: 8px;
 }
 
@@ -39,57 +46,52 @@ window {
   background-color: transparent;
 }
 
-#outer-box {
-  margin: 0px;
-  border: none;
-  background-color: transparent;
-}
-
-/* Margin lives here, not on #inner-box, or the selected row overruns the right edge */
 #scroll {
-  margin: 4px 8px 8px 8px;
+  margin: 0px 12px 12px 12px;
   border: none;
 }
 
-/* hide_scroll=true would do this, but it also lets rows overflow sideways */
 scrollbar {
   opacity: 0;
 }
 
 #text {
   color: #{{ .theme.text }};
-  margin: 0px 0px 0px 10px;
+  margin: 0px 0px 0px 12px;
+  font-size: 15px;
+  font-weight: 600;
 }
 
+/* Rows are flat until selected, then stand up as a keycap */
 #entry {
   padding: 6px 12px;
-  margin: 1px 4px;
-  border: none;
+  margin: 1px 7px 4px 0px;
+  border: 1px solid transparent;
   border-radius: 8px;
   background-color: transparent;
   outline: none;
-  transition: background-color 120ms ease;
 }
 
 #entry:focus,
-#entry:hover,
 #entry:selected:focus {
   outline: none;
-  border: none;
-  box-shadow: none;
+}
+
+#entry:hover {
+  background-color: #{{ .theme.surface_hover }};
+  border: 1px solid rgba({{ .theme.text_rgb }}, 0.5);
+  box-shadow: 3px 3px 0px 0px rgba({{ .theme.text_rgb }}, 0.5);
+  outline: none;
 }
 
 #entry:selected {
-  background-color: rgba({{ .theme.accent_rgb }}, 0.35);
+  background-color: rgba({{ .theme.accent_rgb }}, 0.24);
+  border: 1px solid #{{ .theme.accent }};
+  box-shadow: 3px 3px 0px 0px #{{ .theme.accent }};
   outline: none;
-  border: none;
-  box-shadow: none;
 }
 
 #entry:selected #text {
   color: #{{ .theme.text }};
-}
-
-#entry image {
-  -gtk-icon-transform: scale(0.9);
+  font-weight: 700;
 }

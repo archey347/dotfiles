@@ -4,8 +4,11 @@ packages:
       coprs:
         - "peterwu/iosevka"
       dnf:
+        - "fontawesome-6-brands-fonts"
+        - "fontawesome-6-free-fonts"
         - "iosevka-fonts"
         - "iosevka-term-fonts"
+        - "julietaula-montserrat-fonts"
     hyprland:
       coprs:
         - "nett00n/hyprland"
@@ -17,12 +20,14 @@ packages:
         - "hyprland"
         - "hyprlock"
         - "hyprpaper"
+        - "ImageMagick"
         - "libdnf5-plugin-actions"
         - "lxpolkit"
         - "jq"
         - "mako"
         - "network-manager-applet"
         - "pavucontrol"
+        - "playerctl"
         - "slurp"
         - "socat"
         - "swaylock"

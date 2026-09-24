@@ -1,0 +1,20 @@
+{{ if .is_hyprland -}}
+#!/bin/bash
+# Waybar's tray maps these apps to image files, so their Font Awesome stand-ins are
+# rendered here; the theme colour below makes this re-run whenever it changes.
+# text colour: {{ .theme.text }}
+set -euo pipefail
+
+dir="$HOME/.config/waybar/icons"
+solid="/usr/share/fonts/fontawesome-6-free-fonts/Font Awesome 6 Free-Solid-900.otf"
+brands="/usr/share/fonts/fontawesome-6-brands-fonts/Font Awesome 6 Brands-Regular-400.otf"
+
+render() {
+    magick -background none -fill '#{{ .theme.text }}' -font "$1" -size 64x64 \
+        -gravity center "label:$2" "$dir/$3"
+}
+
+mkdir -p "$dir"
+render "$solid" $'' 1password.png
+render "$brands" $'' spotify.png
+{{ end -}}

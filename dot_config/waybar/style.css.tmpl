@@ -1,390 +1,223 @@
+/* Every module is its own keycap: a solid right/bottom ledge marks what can be pressed.
+   Groups are separated by spacing only. */
 * {
-    font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif, 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
-    font-size: 13px;
+    font-family: 'Montserrat', 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
     min-height: 0;
-    /* Tabular figures stop pills shifting width as numbers tick over */
     font-feature-settings: "tnum";
 }
 
 window#waybar {
-    /* Near-opaque so legibility doesn't depend on which wallpaper is behind it */
     background-color: rgba({{ .theme.background_rgb }}, 0.94);
     border: none;
-    border-radius: 0;
-    color: rgba({{ .theme.text_rgb }}, 0.88);
-    transition-property: background-color;
-    transition-duration: .3s;
-    padding: 0 4px;
-}
-
-window#waybar.hidden {
-    opacity: 0.2;
-}
-
-.modules-left,
-.modules-center,
-.modules-right {
-    background-color: transparent;
-}
-
-button {
-    box-shadow: none;
-    border: none;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-button:hover {
-    background: rgba({{ .theme.text_rgb }}, 0.1);
-    box-shadow: none;
-}
-
-/* ── Pill base ──────────────────────────────────── */
-/* Position, size, shape, and base color for every top-level module.
-   Per-module overrides below should only touch what's actually different. */
-#workspaces,
-#window,
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#wireplumber,
-#custom-media,
-#tray,
-#mode,
-#idle_inhibitor,
-#scratchpad,
-#power-profiles-daemon,
-#mpd,
-#mpris,
-#custom-power,
-#custom-vpn,
-#custom-focus,
-#custom-network,
-#privacy {
-    background-color: transparent;
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-    border: none;
-    border-radius: 20px;
-    margin: 4px 1px;
-    /* Keeps the bar a constant 28px (20px pill + 4px margin top and bottom).
-       Without the floor, module height follows the tallest glyph in its text,
-       and characters resolve to whatever font fontconfig falls back to — e.g.
-       Claude Code's ◐◑◒◓ terminal-title spinner renders ◐ in Font Awesome
-       (16px line) but ◑◒◓ in Noto Sans Math (20px), which grew the bar, grew
-       its exclusive zone, and shoved every window down the screen as the
-       spinner ticked. Vertical padding is left off for the same reason: pills
-       stretch to the bar height anyway, so padding would only add to the
-       height the bar asks for and eat into the headroom this floor buys.
-       (waybar's "height" config key does not help here — it is only a size
-       request, and the bar still grows past it.) */
-    padding: 0 10px;
-    min-height: 20px;
-    transition: all 0.2s ease;
-}
-
-/* ── Pill hover ─────────────────────────────────── */
-/* Shared hover for plain info pills. Modules with their own
-   hover treatment (custom-vpn, custom-focus, custom-power) override below. */
-#clock:hover,
-#battery:hover,
-#cpu:hover,
-#memory:hover,
-#disk:hover,
-#temperature:hover,
-#backlight:hover,
-#custom-network:hover,
-#pulseaudio:hover,
-#wireplumber:hover,
-#custom-media:hover,
-#mode:hover,
-#idle_inhibitor:hover,
-#scratchpad:hover,
-#power-profiles-daemon:hover,
-#mpd:hover,
-#mpris:hover {
-    background-color: #{{ .theme.surface_hover }};
-    color: rgba({{ .theme.text_rgb }}, 0.95);
-}
-
-/* ── Workspaces ─────────────────────────────────── */
-#workspaces {
-    padding: 0 3px;
-}
-
-#workspaces button {
-    padding: 0 6px;
-    background-color: transparent;
-    color: rgba({{ .theme.text_rgb }}, 0.55);
-    margin: 0 1px;
-    min-width: 20px;
-    border-radius: 14px;
-    transition: all 0.2s ease;
-    font-weight: 600;
-}
-
-#workspaces button:hover {
-    background: rgba({{ .theme.text_rgb }}, 0.1);
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#workspaces button.focused,
-#workspaces button.active {
-    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
     color: #{{ .theme.text }};
 }
 
-/* Shown on an unfocused monitor, so every bar still says which workspace it holds */
+tooltip {
+    background-color: #{{ .theme.surface }};
+    border: 1px solid rgba({{ .theme.text_rgb }}, 0.35);
+    border-radius: 6px;
+}
+
+tooltip label {
+    color: #{{ .theme.text }};
+}
+
+button {
+    border: none;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+#workspaces,
+#io,
+#system,
+#toggles {
+    background-color: transparent;
+    border: none;
+    margin: 0 8px;
+    padding: 0;
+}
+
+#workspaces {
+    margin-left: 6px;
+}
+
+/* Keycaps */
+#workspaces button,
+#pulseaudio,
+#custom-network,
+#custom-bluetooth,
+#custom-vpn,
+#cpu,
+#memory,
+#temperature,
+#backlight,
+#power-profiles-daemon,
+#battery,
+#clock,
+#idle_inhibitor,
+#custom-focus,
+#tray,
+#mpris,
+#custom-power {
+    background-color: #{{ .theme.surface }};
+    color: #{{ .theme.text }};
+    border: 1px solid rgba({{ .theme.text_rgb }}, 0.3);
+    border-radius: 6px;
+    box-shadow: 3px 3px 0 0 #{{ .theme.accent_strong }};
+    margin: 5px 4px 8px 1px;
+    padding: 0 8px;
+}
+
+#workspaces button:hover,
+#pulseaudio:hover,
+#custom-network:hover,
+#custom-bluetooth:hover,
+#custom-vpn:hover,
+#backlight:hover,
+#battery:hover,
+#clock:hover,
+#idle_inhibitor:hover,
+#custom-focus:hover,
+#power-profiles-daemon:hover,
+#mpris:hover {
+    background-color: #{{ .theme.surface_hover }};
+    border-color: rgba({{ .theme.text_rgb }}, 0.65);
+    box-shadow: 3px 3px 0 0 rgba({{ .theme.text_rgb }}, 0.65);
+}
+
+#clock {
+    font-weight: 700;
+    padding: 0 12px;
+    margin-left: 9px;
+    margin-right: 12px;
+}
+
+#tray {
+    padding: 0 6px;
+    margin-left: 9px;
+}
+
+#custom-power {
+    margin-right: 8px;
+}
+
+/* Workspaces */
+#workspaces button {
+    color: rgba({{ .theme.text_rgb }}, 0.6);
+    min-width: 14px;
+    padding: 0 8px;
+    font-weight: 700;
+}
+
+#workspaces button.active {
+    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
+    border-color: #{{ .theme.accent }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.accent }};
+    color: #{{ .theme.text }};
+}
+
 #workspaces button.visible:not(.active) {
     background-color: rgba({{ .theme.accent_rgb }}, 0.14);
-    color: rgba({{ .theme.text_rgb }}, 0.9);
+    color: #{{ .theme.text }};
 }
 
 #workspaces button.urgent {
     background-color: rgba({{ .theme.error_rgb }}, 0.45);
+    border-color: #{{ .theme.error }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.error }};
     color: #{{ .theme.text }};
 }
 
-/* ── Clusters ───────────────────────────────────── */
-#io,
-#system,
-#toggles,
-#clock {
-    margin-left: 8px;
-    margin-right: 8px;
-}
-
-/* ── Window title ───────────────────────────────── */
 #window {
-    padding: 0 12px;
+    color: #{{ .theme.text }};
+    margin: 5px 0 8px 0;
+    padding: 0 8px;
 }
 
-/* ── Clock ──────────────────────────────────────── */
-#clock {
-    font-weight: 600;
-    color: rgba({{ .theme.text_rgb }}, 0.95);
-    letter-spacing: 0.03em;
+/* States */
+/* Switched-on toggles light up in slate so they don't compete with the gold workspace */
+#custom-focus.on,
+#idle_inhibitor.activated {
+    background-color: rgba({{ .theme.info_rgb }}, 0.35);
+    border-color: #{{ .theme.info }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.info }};
 }
 
-/* ── Battery ────────────────────────────────────── */
-#battery {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
+#custom-bluetooth.off,
+#custom-bluetooth.on,
+#custom-vpn.disconnected {
+    color: rgba({{ .theme.text_rgb }}, 0.5);
 }
 
-#battery.warning:not(.charging) {
-    color: #{{ .theme.error }};
-}
-
-@keyframes blink {
-    to { color: #{{ .theme.error }}; }
-}
-
-#battery.critical:not(.charging) {
-    color: #{{ .theme.error }};
-    animation-name: blink;
-    animation-duration: 1s;
-    animation-timing-function: steps(12);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-
-/* ── Network ────────────────────────────────────── */
-#custom-network.disconnected {
-    color: #{{ .theme.error }};
-}
-
-/* ── Pulseaudio ─────────────────────────────────── */
-#pulseaudio.muted {
-    color: rgba({{ .theme.text_rgb }}, 0.55);
-}
-
-/* ── Temperature ────────────────────────────────── */
+#custom-network.disconnected,
+#battery.warning:not(.charging),
+#battery.critical:not(.charging),
 #temperature.critical {
     color: #{{ .theme.error }};
 }
 
-/* ── Power profiles ─────────────────────────────── */
-#power-profiles-daemon.balanced {
-    color: rgba({{ .theme.text_rgb }}, 0.55);
+#custom-power:hover {
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
+    border-color: #{{ .theme.error }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.error }};
 }
 
-#power-profiles-daemon.performance:hover {
-    background-color: rgba({{ .theme.error_rgb }}, 0.75);
-    color: #{{ .theme.text }};
-}
-
-#power-profiles-daemon.power-saver:hover {
-    background-color: rgba({{ .theme.success_rgb }}, 0.65);
-    color: #{{ .theme.text }};
-}
-
-/* ── Tray ───────────────────────────────────────── */
+/* Third-party tray icons can't be Font Awesome; ask GTK for their monochrome variants */
 #tray {
-    padding: 0 6px;
+    -gtk-icon-style: symbolic;
 }
 
 #tray > widget {
-    border-radius: 6px;
-    margin: 0 3px;
-    padding: 0 5px;
-}
-
-#tray > widget:hover {
-    background-color: rgba({{ .theme.text_rgb }}, 0.08);
-}
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
+    padding: 0 4px;
 }
 
 #tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-    background-color: rgba({{ .theme.error_rgb }}, 0.3);
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
 }
 
-/* ── Idle inhibitor ─────────────────────────────── */
-#idle_inhibitor.activated {
-    background-color: rgba({{ .theme.text_rgb }}, 0.15);
-    color: #{{ .theme.text }};
-}
-
-/* ── Scratchpad ─────────────────────────────────── */
-#scratchpad.empty {
-    background-color: transparent;
-    box-shadow: none;
-}
-
-/* ── Mode indicator ─────────────────────────────── */
-#mode {
-    background-color: rgba({{ .theme.text_rgb }}, 0.12);
-}
-
-label:focus {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-/* ── Focus mode ─────────────────────────────────── */
-#custom-focus {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#custom-focus.on {
-    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
-    color: #{{ .theme.text }};
-}
-
-#custom-focus:hover {
-    background-color: #{{ .theme.surface_hover }};
-    color: rgba({{ .theme.text_rgb }}, 0.95);
-}
-
-#custom-focus.on:hover {
-    background-color: rgba({{ .theme.accent_rgb }}, 0.5);
-}
-
-/* ── VPN ────────────────────────────────────────── */
-#custom-vpn {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#custom-vpn.disconnected {
-    color: rgba({{ .theme.text_rgb }}, 0.55);
-}
-
-#custom-vpn:hover {
-    background-color: #{{ .theme.surface_hover }};
-    color: rgba({{ .theme.text_rgb }}, 0.95);
-}
-
-/* ── Custom power button ────────────────────────── */
-#custom-power {
-    color: rgba({{ .theme.text_rgb }}, 0.55);
-}
-
-#custom-power:hover {
-    color: #{{ .theme.error }};
-    background-color: rgba({{ .theme.error_rgb }}, 0.70);
-    border-color: rgba({{ .theme.error_rgb }}, 0.75);
-}
-
-/* ── Privacy indicators ─────────────────────────── */
-#privacy {
-    padding: 0;
-}
-
-#privacy-item {
-    padding: 0 5px;
-    color: white;
-}
-
-#privacy-item.screenshare {
-    background-color: rgba({{ .theme.accent_rgb }}, 0.6);
-}
-
-#privacy-item.audio-in {
-    background-color: rgba({{ .theme.success_rgb }}, 0.6);
-}
-
-#privacy-item.audio-out {
-    background-color: rgba({{ .theme.info_rgb }}, 0.6);
-}
-
-/* ── Wireplumber ────────────────────────────────── */
-#wireplumber {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#wireplumber.muted {
-    color: #{{ .theme.error }};
-}
-
-/* ── MPD ────────────────────────────────────────── */
-#mpd {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#mpd.disconnected,
-#mpd.stopped {
-    color: rgba({{ .theme.text_rgb }}, 0.55);
-}
-
-/* ── Custom media ───────────────────────────────── */
-#custom-media {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-    min-width: 100px;
-}
-
-/* ── Power menu popup ───────────────────────────── */
+/* Power menu popup */
 menu {
-    background-color: rgba({{ .theme.background_rgb }}, 0.95);
-    border: 1px solid rgba({{ .theme.text_rgb }}, 0.18);
-    border-radius: 14px;
+    background-color: #{{ .theme.surface }};
+    border: 1px solid rgba({{ .theme.text_rgb }}, 0.35);
+    border-radius: 8px;
     padding: 4px;
-    font-family: 'SF Pro Display', 'Inter', 'Cantarell', sans-serif;
-    font-size: 13px;
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+    color: #{{ .theme.text }};
 }
 
 menuitem {
-    border-radius: 8px;
-    padding: 6px 12px;
-    color: rgba({{ .theme.text_rgb }}, 0.85);
-    transition: all 0.15s ease;
-}
-
-menu menuitem check,
-menu menuitem radio {
-    min-width: 0;
-    min-height: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    margin: 1px 3px 4px 0;
+    padding: 6px 14px;
+    color: #{{ .theme.text }};
 }
 
 menuitem:hover {
-    background-color: rgba({{ .theme.text_rgb }}, 0.1);
-    color: #{{ .theme.text }};
+    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
+    border-color: #{{ .theme.accent }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.accent }};
+}
+
+/* Power mode is a state, so its colour stays on */
+#power-profiles-daemon.performance {
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
+    border-color: #{{ .theme.error }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.error }};
+}
+
+#power-profiles-daemon.power-saver {
+    background-color: rgba({{ .theme.success_rgb }}, 0.4);
+    border-color: #{{ .theme.success }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.success }};
+}
+
+#power-profiles-daemon.performance:hover {
+    background-color: rgba({{ .theme.error_rgb }}, 0.65);
+}
+
+#power-profiles-daemon.power-saver:hover {
+    background-color: rgba({{ .theme.success_rgb }}, 0.6);
 }
