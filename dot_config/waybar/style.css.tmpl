@@ -2,11 +2,13 @@
     font-family: 'SF Pro Display', 'Inter', 'Cantarell', 'Noto Sans', sans-serif, 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
     font-size: 13px;
     min-height: 0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    /* Tabular figures stop pills shifting width as numbers tick over */
+    font-feature-settings: "tnum";
 }
 
 window#waybar {
-    background-color: rgba({{ .theme.background_rgb }}, 0.72);
+    /* Near-opaque so legibility doesn't depend on which wallpaper is behind it */
+    background-color: rgba({{ .theme.background_rgb }}, 0.94);
     border: none;
     border-radius: 0;
     color: rgba({{ .theme.text_rgb }}, 0.88);
@@ -63,6 +65,7 @@ button:hover {
 #custom-power,
 #custom-vpn,
 #custom-focus,
+#custom-network,
 #privacy {
     background-color: transparent;
     color: rgba({{ .theme.text_rgb }}, 0.9);
@@ -95,7 +98,7 @@ button:hover {
 #disk:hover,
 #temperature:hover,
 #backlight:hover,
-#network:hover,
+#custom-network:hover,
 #pulseaudio:hover,
 #wireplumber:hover,
 #custom-media:hover,
@@ -122,7 +125,6 @@ button:hover {
     min-width: 20px;
     border-radius: 14px;
     transition: all 0.2s ease;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 600;
 }
 
@@ -133,13 +135,28 @@ button:hover {
 
 #workspaces button.focused,
 #workspaces button.active {
-    background-color: #{{ .theme.accent }};
+    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
     color: #{{ .theme.text }};
+}
+
+/* Shown on an unfocused monitor, so every bar still says which workspace it holds */
+#workspaces button.visible:not(.active) {
+    background-color: rgba({{ .theme.accent_rgb }}, 0.14);
+    color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
 #workspaces button.urgent {
     background-color: rgba({{ .theme.error_rgb }}, 0.45);
     color: #{{ .theme.text }};
+}
+
+/* ── Clusters ───────────────────────────────────── */
+#io,
+#system,
+#toggles,
+#clock {
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 /* ── Window title ───────────────────────────────── */
@@ -159,9 +176,8 @@ button:hover {
     color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
-#battery.charging,
-#battery.plugged {
-    color: #{{ .theme.success }};
+#battery.warning:not(.charging) {
+    color: #{{ .theme.error }};
 }
 
 @keyframes blink {
@@ -178,11 +194,7 @@ button:hover {
 }
 
 /* ── Network ────────────────────────────────────── */
-#network {
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#network.disconnected {
+#custom-network.disconnected {
     color: #{{ .theme.error }};
 }
 
@@ -197,17 +209,16 @@ button:hover {
 }
 
 /* ── Power profiles ─────────────────────────────── */
-#power-profiles-daemon.performance {
+#power-profiles-daemon.balanced {
+    color: rgba({{ .theme.text_rgb }}, 0.55);
+}
+
+#power-profiles-daemon.performance:hover {
     background-color: rgba({{ .theme.error_rgb }}, 0.75);
     color: #{{ .theme.text }};
 }
 
-#power-profiles-daemon.balanced {
-    background-color: transparent;
-    color: rgba({{ .theme.text_rgb }}, 0.9);
-}
-
-#power-profiles-daemon.power-saver {
+#power-profiles-daemon.power-saver:hover {
     background-color: rgba({{ .theme.success_rgb }}, 0.65);
     color: #{{ .theme.text }};
 }
@@ -263,7 +274,7 @@ label:focus {
 }
 
 #custom-focus.on {
-    background-color: #{{ .theme.accent }};
+    background-color: rgba({{ .theme.accent_rgb }}, 0.35);
     color: #{{ .theme.text }};
 }
 
@@ -273,7 +284,7 @@ label:focus {
 }
 
 #custom-focus.on:hover {
-    background-color: rgba({{ .theme.accent_rgb }}, 0.75);
+    background-color: rgba({{ .theme.accent_rgb }}, 0.5);
 }
 
 /* ── VPN ────────────────────────────────────────── */
@@ -281,17 +292,13 @@ label:focus {
     color: rgba({{ .theme.text_rgb }}, 0.9);
 }
 
-#custom-vpn.connected {
-    color: #{{ .theme.success }};
+#custom-vpn.disconnected {
+    color: rgba({{ .theme.text_rgb }}, 0.55);
 }
 
 #custom-vpn:hover {
     background-color: #{{ .theme.surface_hover }};
     color: rgba({{ .theme.text_rgb }}, 0.95);
-}
-
-#custom-vpn.connected:hover {
-    background-color: rgba({{ .theme.success_rgb }}, 0.45);
 }
 
 /* ── Custom power button ────────────────────────── */

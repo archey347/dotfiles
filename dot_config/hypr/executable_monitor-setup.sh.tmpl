@@ -262,5 +262,9 @@ socat -U - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
         recently_applied && continue
         sleep 1
         change_layout --if-stale
+    # A reload re-applies hyprland.conf's fallback monitor rule, dropping the
+    # profile's scaling — and chezmoi apply triggers one whenever it rewrites it.
+    elif [[ "$line" == configreloaded* ]]; then
+        change_layout
     fi
 done

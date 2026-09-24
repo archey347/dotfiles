@@ -1,0 +1,11 @@
+[Desktop Entry]
+# Shadows the packaged entry, whose 88-character name is wider than wofi and
+# stretches every row past the window's right edge.
+Name=JConsole
+Comment=Monitor and manage OpenJDK applications
+Exec=/usr/lib/jvm/java-21-openjdk/bin/jconsole
+Icon=java-21-openjdk
+Terminal=false
+Type=Application
+StartupWMClass=sun-tools-jconsole-JConsole
+Categories=Development;Profiling;Java;

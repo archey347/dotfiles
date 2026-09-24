@@ -18,21 +18,30 @@
   "modules-center": [],
   "modules-right": [
     "mpris",
-    "pulseaudio",
-    "network",
-    "custom/vpn",
-    "cpu",
-    "memory",
-    "temperature",
-    "backlight",
-    "power-profiles-daemon",
-    "battery",
+    "group/io",
+    "group/system",
     "clock",
-    "idle_inhibitor",
-    "custom/focus",
+    "group/toggles",
     "tray",
     "custom/power",
   ],
+  // Groups only exist to put breathing room between clusters (see style.css).
+  "group/io": {
+    "orientation": "horizontal",
+    "modules": ["pulseaudio", "custom/network", "custom/vpn"],
+  },
+  "group/system": {
+    "orientation": "horizontal",
+    "modules": ["cpu", "memory", "temperature", "backlight", "power-profiles-daemon", "battery"],
+  },
+  "group/toggles": {
+    "orientation": "horizontal",
+    "modules": ["idle_inhibitor", "custom/focus"],
+  },
+  "hyprland/window": {
+    "max-length": 90,
+    "separate-outputs": true,
+  },
   // Modules configuration
   // "sway/workspaces": {
   //     "disable-scroll": true,
@@ -112,28 +121,33 @@
   },
   "clock": {
     // "timezone": "America/New_York",
-    "format": "{:%a %d %b %H:%M}",
+    "format": "<span fgalpha='60%'>{0:%a %d %b}</span>  {0:%H:%M}",
     "format-alt": "{:%Y-%m-%d}",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
   },
   "cpu": {
-    "format": " {usage}%",
+    "states": { "busy": 60 },
+    "format": "",
+    "format-busy": "<span fgalpha='55%'></span> {usage}%",
     "tooltip": false,
   },
   "memory": {
-    "format": " {}%",
+    "states": { "high": 80 },
+    "format": "",
+    "format-high": "<span fgalpha='55%'></span> {}%",
   },
   "temperature": {
     // "thermal-zone": 2,
     // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
     // "format-critical": "{icon} {temperatureC}°",
-    "format": "{icon} {temperatureC}°",
+    "format": "",
+    "format-critical": "{icon} {temperatureC}°",
     "format-icons": ["", "", ""],
   },
   "backlight": {
     // "device": "acpi_video1",
-    "format": "{icon} {percent}%",
+    "format": "<span fgalpha='55%'>{icon}</span> {percent}%",
     "format-icons": ["", "", "", "", ""],
   },
   "battery": {
@@ -142,10 +156,10 @@
       "warning": 30,
       "critical": 15,
     },
-    "format": "{icon} {capacity}%",
-    "format-full": "{icon} {capacity}%",
-    "format-charging": " {capacity}%",
-    "format-plugged": " {capacity}%",
+    "format": "<span fgalpha='55%'>{icon}</span> {capacity}%",
+    "format-full": "<span fgalpha='55%'>{icon}</span> {capacity}%",
+    "format-charging": "<span fgalpha='55%'></span> {capacity}%",
+    "format-plugged": "<span fgalpha='55%'></span> {capacity}%",
     "format-alt": "{icon} {time}",
     // "format-good": "", // An empty format will hide the module
     // "format-full": "",
@@ -165,24 +179,21 @@
       "power-saver": "",
     },
   },
-  "network": {
-    // "interface": "wlp2*", // (Optional) To force the use of this interface
-    "format-wifi": " {essid} {signalStrength}%",
-    "format-ethernet": "",
-    "tooltip-format": "{ifname} via {gwaddr} ",
-    "format-linked": " No IP",
-    "format-disconnected": "⚠ Disconnected",
-    "format-alt": "{ifname}: {ipaddr}/{cidr}",
+  "custom/network": {
+    "exec": "$HOME/.config/waybar/network.sh",
+    "return-type": "json",
+    "interval": 5,
     "on-click": "$HOME/.config/waybar/wifi-menu.sh",
+    "tooltip": true,
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
-    "format": "{icon} {volume}% {format_source}",
+    "format": "<span fgalpha='55%'>{icon}</span> {volume}% {format_source}",
     "format-bluetooth": "{volume}% {icon} {format_source}",
     "format-bluetooth-muted": " {icon} {format_source}",
     "format-muted": " {format_source}",
-    "format-source": " {volume}%",
-    "format-source-muted": "",
+    "format-source": "<span color='#e5534b'></span>",
+    "format-source-muted": "",
     "format-icons": {
       "headphone": "",
       "hands-free": "",
