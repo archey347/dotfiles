@@ -1,10 +1,4 @@
-{
-  "model": {{ .claude_default_model | quote }},
-{{- if ne .claude_subagent_model "inherit" }}
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": {{ .claude_subagent_model | quote }}
-  },
-{{- end }}
+{{- $settings := `{
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -27,4 +21,14 @@
       }
     ]
   }
-}
+}` | fromJson -}}
+{{- $_ := set $settings "model" .claude_default_model -}}
+{{- if ne .claude_subagent_model "inherit" -}}
+{{-   $_ := set $settings "env" (dict "CLAUDE_CODE_SUBAGENT_MODEL" .claude_subagent_model) -}}
+{{- end -}}
+{{- /* Claude Code has no user-level local settings file, so per-machine extras live in an untracked one merged here */ -}}
+{{- $machine := joinPath .chezmoi.homeDir ".claude/settings.machine.json" -}}
+{{- if stat $machine -}}
+{{-   $settings = mergeOverwrite $settings (include $machine | fromJson) -}}
+{{- end -}}
+{{ toPrettyJson "  " $settings -}}
