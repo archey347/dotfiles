@@ -32,10 +32,9 @@ Alpha is applied per-surface at the call site in the templates.
 
 The styling is neo-brutalist in the PostHog vein: rounded corners, 1px borders, and a
 solid 3px ledge on the right and bottom of anything you can press. Containers, windows
-and notifications stay flat. Every window gets a grey outline that lightens slightly
-on focus, unfocused ones are dimmed, and the floating bar is rounded like the
-windows. Pick an `accent_strong` that contrasts with `surface` so resting keys read
-as raised.
+and notifications stay flat. Windows get a faint 1px outline, unfocused ones are
+dimmed, and the floating bar is rounded like the windows. Pick an `accent_strong` that
+contrasts with `surface` so resting keys read as raised.
 
 Each token has a matching `*_rgb` triple for the same colour.
 
