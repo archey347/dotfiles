@@ -129,14 +129,15 @@ env = HYPRCURSOR_SIZE,24
 
 # https://wiki.hypr.land/Configuring/Variables/#general
 general {
-    gaps_in = 4
-    gaps_out = 8
+    # Applied per window side, so half the outer gap keeps every gap on screen equal
+    gaps_in = 2
+    gaps_out = 4
 
-    border_size = 1
+    border_size = 2
 
-    # https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
-    col.active_border = rgba({{ .theme.accent }}ff)
-    col.inactive_border = rgba({{ .theme.text }}40)
+    # Close greys: a big contrast gap makes the border look like it changes width on focus
+    col.active_border = rgb(7c7c80)
+    col.inactive_border = rgb(545456)
 
     # Set to true enable resizing windows by clicking and dragging on borders and gaps
     resize_on_border = true
@@ -158,14 +159,12 @@ decoration {
     active_opacity = 1.0
     inactive_opacity = 1.0
 
-    # Soft on purpose: hard ledges are reserved for things you can press
+    dim_inactive = true
+    dim_strength = 0.1
+
+    # Windows sit flat: soft shadows fight the hard edges everywhere else
     shadow {
-        enabled = true
-        range = 18
-        render_power = 3
-        offset = 0 6
-        color = rgba(00000077)
-        color_inactive = rgba(00000033)
+        enabled = false
     }
 
     # https://wiki.hypr.land/Configuring/Variables/#blur
@@ -425,14 +424,6 @@ windowrule[all-windows] {
     }
     suppress_event = maximize
     idle_inhibit = fullscreen
-}
-
-# Floating windows sit flat, without the drop shadow tiled windows get
-windowrule[floating-no-shadow] {
-    match {
-        float = true
-    }
-    no_shadow = true
 }
 
 # Float audio/bluetooth control windows

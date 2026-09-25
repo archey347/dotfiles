@@ -2,15 +2,17 @@
    Groups are separated by spacing only. */
 * {
     font-family: 'Montserrat', 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     min-height: 0;
     font-feature-settings: "tnum";
 }
 
+/* Floats, rounded like the windows */
 window#waybar {
-    background-color: rgba({{ .theme.background_rgb }}, 0.94);
+    background-color: rgba({{ .theme.background_rgb }}, 0.7);
     border: none;
+    border-radius: 8px;
     color: #{{ .theme.text }};
 }
 
@@ -68,7 +70,7 @@ button {
     border-radius: 6px;
     box-shadow: 3px 3px 0 0 #{{ .theme.accent_strong }};
     margin: 5px 4px 8px 1px;
-    padding: 0 8px;
+    padding: 2px 8px;
 }
 
 #workspaces button:hover,
@@ -90,13 +92,13 @@ button {
 
 #clock {
     font-weight: 700;
-    padding: 0 12px;
+    padding: 2px 12px;
     margin-left: 9px;
     margin-right: 12px;
 }
 
 #tray {
-    padding: 0 6px;
+    padding: 2px 6px;
     margin-left: 9px;
 }
 
@@ -108,7 +110,7 @@ button {
 #workspaces button {
     color: rgba({{ .theme.text_rgb }}, 0.6);
     min-width: 14px;
-    padding: 0 8px;
+    padding: 2px 8px;
     font-weight: 700;
 }
 

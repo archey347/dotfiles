@@ -23,7 +23,7 @@ Alpha is applied per-surface at the call site in the templates.
 | `background`      | Bar, launcher card, ghostty background                                     |
 | `surface`         | Bar keycaps, notifications, tooltips, launcher search field                |
 | `surface_hover`   | Hovered keycaps and launcher rows                                          |
-| `accent`          | "Where you are": active workspace, focused window border, launcher selection — one per surface |
+| `accent`          | "Where you are": active workspace, launcher selection — one per surface |
 | `accent_strong`   | Resting keycap ledge (the solid right/bottom shadow)                       |
 | `text`            | Text, plus hairline borders and hover ledges at reduced alpha              |
 | `error`           | Power key hover, performance power mode, critical notifications, live mic  |
@@ -32,8 +32,10 @@ Alpha is applied per-surface at the call site in the templates.
 
 The styling is neo-brutalist in the PostHog vein: rounded corners, 1px borders, and a
 solid 3px ledge on the right and bottom of anything you can press. Containers, windows
-and notifications stay flat. Pick an `accent_strong` that contrasts with `surface`
-so resting keys read as raised.
+and notifications stay flat. Every window gets a grey outline that lightens slightly
+on focus, unfocused ones are dimmed, and the floating bar is rounded like the
+windows. Pick an `accent_strong` that contrasts with `surface` so resting keys read
+as raised.
 
 Each token has a matching `*_rgb` triple for the same colour.
 
@@ -54,8 +56,8 @@ system status colours.
     surface_hover_rgb  = "58, 58, 60"
     accent             = "007681"
     accent_rgb         = "0, 118, 129"
-    accent_strong      = "48484a"
-    accent_strong_rgb  = "72, 72, 74"
+    accent_strong      = "8e8e93"
+    accent_strong_rgb  = "142, 142, 147"
     text               = "ffffff"
     text_rgb           = "255, 255, 255"
     error              = "ff453a"
