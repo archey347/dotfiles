@@ -253,6 +253,13 @@ misc {
     allow_session_lock_restore = true
 }
 
+# https://wiki.hypr.land/Configuring/Variables/#render
+render {
+    # 4K frames finish late in the refresh on the iGPU; without this a
+    # kernel flip trace showed ~24% of vblanks missed instead of ~10%
+    new_render_scheduling = true
+}
+
 debug {
     disable_logs = true # Default. Flip to false only when chasing a bug.
 }
@@ -417,13 +424,16 @@ bind = $mainMod, Sys_Req, exec, hyprshot -m window                 # pick a wind
 # }
 
 # Ignore maximize requests from apps, and hold off the idle lock during
-# fullscreen video. Both apply to every window.
+# fullscreen video, for every window.
 windowrule[all-windows] {
     match {
         class = .*
     }
     suppress_event = maximize
     idle_inhibit = fullscreen
+    # Firefox's surface counts as translucent, so it was blurred at 4K on
+    # every animated frame and missed vblanks; blur is kept for bar/launcher
+    no_blur = true
 }
 
 # Float audio/bluetooth control windows
@@ -523,7 +533,3 @@ layerrule[waybar] {
     blur = true
     ignore_alpha = 0.1
 }
-
-# Window blur — ghostty uses background-opacity in its own config; global blur applies automatically.
-# Listed here so the set of blurred surfaces is visible in one place.
-# windowrule for ghostty: class = com.mitchellh.ghostty
