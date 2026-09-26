@@ -1,0 +1,27 @@
+{{ if and .is_hyprland (lookPath "dnf") -}}
+#!/usr/bin/env bash
+# Waybar 0.15.0 sends legacy dispatches that a Lua Hyprland config rejects, so workspace
+# clicks do nothing; drop this and packages/waybar once a release includes upstream #5013.
+# spec: {{ include "packages/waybar/waybar.spec" | sha256sum }}
+# patch: {{ include "packages/waybar/waybar-hyprland-lua-dispatch.patch" | sha256sum }}
+set -euo pipefail
+
+src={{ joinPath .chezmoi.sourceDir "packages/waybar" | quote }}
+want=$(rpmspec -q --srpm --qf '%{name}-%{version}-%{release}' "$src/waybar.spec")
+if rpm -q --qf '%{name}-%{version}-%{release}\n' waybar 2>/dev/null | grep -qx "$want"; then
+    exit 0
+fi
+
+top=$(mktemp -d)
+trap 'rm -rf "$top"' EXIT
+mkdir -p "$top/SOURCES"
+cp "$src"/*.patch "$top/SOURCES/"
+
+sudo dnf builddep -y "$src/waybar.spec"
+rpmbuild -bb --define "_topdir $top" --define "_disable_source_fetch 0" "$src/waybar.spec"
+
+sudo dnf versionlock delete waybar >/dev/null 2>&1 || true
+sudo dnf install -y "$top"/RPMS/*/waybar-[0-9]*.rpm
+# Otherwise the COPR's next waybar build replaces this one and clicks break again
+sudo dnf versionlock add waybar
+{{ end -}}
