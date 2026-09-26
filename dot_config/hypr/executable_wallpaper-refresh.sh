@@ -37,7 +37,7 @@ done < <(hyprctl hyprpaper listactive 2>/dev/null)
 for monitor in $(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.width > 0) | .name'); do
     img="${current[$monitor]:-}"
     if [[ -z "$img" || ! -f "$img" ]]; then
-        img="${images[$((RANDOM % ${#images[@]}))]}"
+        img=$(~/.config/hypr/wallpaper-cached.sh "${images[$((RANDOM % ${#images[@]}))]}")
     fi
     # Re-issue both: the image may have been unloaded with the output, and
     # re-setting a wallpaper the monitor already has costs nothing.

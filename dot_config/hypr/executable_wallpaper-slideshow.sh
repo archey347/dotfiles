@@ -8,7 +8,7 @@ STAGGER=5          # seconds between each monitor update
 
 # Wait for hyprpaper IPC socket to be available
 for i in $(seq 1 20); do
-    if hyprctl hyprpaper listloaded &>/dev/null; then
+    if hyprctl hyprpaper listactive &>/dev/null; then
         break
     fi
     sleep 1
@@ -30,11 +30,16 @@ monitor_idx=0
 # Set a random wallpaper on each monitor at startup
 mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[] | select(.width > 0) | .name')
 for monitor in "${monitors[@]}"; do
-    img="${images[$((RANDOM % ${#images[@]}))]}"
+    img=$(~/.config/hypr/wallpaper-cached.sh "${images[$((RANDOM % ${#images[@]}))]}")
     hyprctl hyprpaper preload "$img"
     hyprctl hyprpaper wallpaper "$monitor,$img"
     prev_img[$monitor]="$img"
 done
+
+# Shrink the rest now, so no rotation waits on a resize
+for img in "${images[@]}"; do
+    ~/.config/hypr/wallpaper-cached.sh "$img" >/dev/null
+done &
 
 while true; do
     mapfile -t monitors < <(hyprctl monitors -j | jq -r '.[] | select(.width > 0) | .name')
@@ -47,7 +52,7 @@ while true; do
     sleep $(( INTERVAL / n ))
 
     monitor="${monitors[$((monitor_idx % n))]}"
-    img="${images[$((RANDOM % ${#images[@]}))]}"
+    img=$(~/.config/hypr/wallpaper-cached.sh "${images[$((RANDOM % ${#images[@]}))]}")
     monitor_idx=$(( monitor_idx + 1 ))
 
     if [ "${prev_img[$monitor]:-}" = "$img" ]; then
