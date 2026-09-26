@@ -22,7 +22,9 @@
     ]
   }
 }` | fromJson -}}
-{{- $_ := set $settings "model" .claude_default_model -}}
+{{- if ne .claude_default_model "default" -}}
+{{-   $_ := set $settings "model" .claude_default_model -}}
+{{- end -}}
 {{- if ne .claude_subagent_model "inherit" -}}
 {{-   $_ := set $settings "env" (dict "CLAUDE_CODE_SUBAGENT_MODEL" .claude_subagent_model) -}}
 {{- end -}}
