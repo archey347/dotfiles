@@ -10,4 +10,4 @@ To iterate on the Waybar design, follow the workflow documented in
 [.cursor/skills/iterate-waybar-design/SKILL.md](.cursor/skills/iterate-waybar-design/SKILL.md).
 
 Summary: edit files in `dot_config/waybar/`, run `chezmoi apply`, restart
-with `pkill waybar && waybar &`, then screenshot with `grim` to review.
+with `pkill -x waybar; hyprctl dispatch 'hl.dsp.exec_cmd("waybar")'`, then screenshot with `grim` to review.

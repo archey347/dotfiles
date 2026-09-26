@@ -47,11 +47,11 @@ chezmoi apply
 ### 4. Restart Waybar
 
 ```bash
-pkill waybar && waybar &
+pkill -x waybar; hyprctl dispatch 'hl.dsp.exec_cmd("waybar")'
 ```
 
-Run this in a backgrounded shell. Give it ~1 second to start before
-taking a screenshot.
+Hyprland launches it, so it outlives the shell. Give it ~1 second to start
+before taking a screenshot.
 
 ### 5. Screenshot and review
 

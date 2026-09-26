@@ -24,4 +24,9 @@ sudo dnf versionlock delete waybar >/dev/null 2>&1 || true
 sudo dnf install -y "$top"/RPMS/*/waybar-[0-9]*.rpm
 # Otherwise the COPR's next waybar build replaces this one and clicks break again
 sudo dnf versionlock add waybar
+
+if pgrep -x waybar >/dev/null; then
+    pkill -x waybar
+    hyprctl dispatch 'hl.dsp.exec_cmd("waybar")' >/dev/null
+fi
 {{ end -}}
