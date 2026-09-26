@@ -477,7 +477,7 @@ edit_transform() {
 
 # --- save --------------------------------------------------------------------
 
-# The watcher started by hyprland.conf's exec-once has the old profile list baked
+# The watcher started at login by hyprland.lua has the old profile list baked
 # into its PROFILES array, so it has to be replaced or the next hotplug re-applies
 # the layout this just edited away.
 restart_watcher() {
@@ -491,7 +491,7 @@ restart_watcher() {
     done
     # Spawned via Hyprland so it outlives this script (and this terminal), the
     # same as the exec-once that normally starts it.
-    hyprctl dispatch exec "$MONITOR_SETUP" >/dev/null 2>&1
+    hyprctl dispatch "hl.dsp.exec_cmd(\"$MONITOR_SETUP\")" >/dev/null 2>&1
 }
 
 save_and_apply() {

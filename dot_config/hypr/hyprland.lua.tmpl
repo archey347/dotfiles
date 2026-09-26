@@ -1,0 +1,393 @@
+-- See https://wiki.hypr.land/Configuring/Start/
+
+
+------------------
+---- MONITORS ----
+------------------
+
+-- Layout is applied dynamically by monitor-setup.sh (work vs. home auto-detection).
+-- This fallback catches any monitor not explicitly handled by that script.
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+
+
+---------------------
+---- MY PROGRAMS ----
+---------------------
+
+local terminal    = "ghostty"
+local fileManager = "dolphin"
+local menu        = "wofi --show drun"
+
+
+-------------------
+---- AUTOSTART ----
+-------------------
+
+hl.on("hyprland.start", function()
+    -- GNOME/KDE session scripts import these into systemd --user automatically;
+    -- Hyprland doesn't. Without this, ConditionEnvironment=XDG_SESSION_CLASS=user
+    -- (used by localsearch-3.service, the Tracker file indexer) never matches, so
+    -- systemd skips the unit every time Nautilus tries to D-Bus-activate it —
+    -- Nautilus then blocks ~2s waiting on the failed activation before opening.
+    hl.exec_cmd("systemctl --user import-environment XDG_SESSION_CLASS XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CURRENT_DESKTOP DISPLAY WAYLAND_DISPLAY")
+    -- Only at start: running it per reload would leave a second monitor-setup.sh
+    -- (and its event-socket watcher) running per reload.
+    hl.exec_cmd("~/.config/hypr/monitor-setup.sh")
+    -- Idle handling lives in hypridle.conf (lock, then DPMS off). Replaces swayidle,
+    -- which had no DPMS timeout — panels stayed lit indefinitely behind the lock.
+    hl.exec_cmd("hypridle")
+    -- Polkit authentication agent. Hyprland does not process XDG autostart entries,
+    -- and lxpolkit.desktop is OnlyShowIn=LXDE anyway, so it has to be started here —
+    -- without it, GUI privilege prompts (blueman, virt-manager) fail silently.
+    hl.exec_cmd("lxpolkit")
+    hl.exec_cmd("waybar")
+    hl.exec_cmd("mako")
+    hl.exec_cmd("blueman-applet")
+    -- blueman-applet (kept for its pairing agent) always spawns a full-colour tray icon,
+    -- duplicating waybar's own Bluetooth key; its plugin-list setting doesn't stop it.
+    hl.exec_cmd("sleep 8; pkill -f /usr/bin/blueman-tray")
+    -- Supervised by systemd (Restart=on-failure): hyprpaper has aborted at login on
+    -- some days, and nothing else would bring it back. UWSM starts it with
+    -- graphical-session.target; this only covers a session started another way.
+    hl.exec_cmd("systemctl --user start hyprpaper.service")
+    hl.exec_cmd("~/.config/hypr/wallpaper-slideshow.sh")
+end)
+
+
+-------------------------------
+---- ENVIRONMENT VARIABLES ----
+-------------------------------
+
+-- NOTE: Do NOT set GBM_BACKEND=nvidia-drm or __GLX_VENDOR_LIBRARY_NAME=nvidia
+-- globally — those force dGPU rendering and will break this iGPU-primary setup.
+-- Per-app NVIDIA offload: prime-run <app>
+-- In Steam launch options: prime-run %command%
+-- mpv: prime-run mpv <file>  (hwdec=nvdec, vo=gpu-next, gpu-api=vulkan set in ~/.config/mpv/mpv.conf)
+
+{{- if and (hasKey . "aq_drm_devices") .aq_drm_devices }}
+hl.env("AQ_DRM_DEVICES", {{ .aq_drm_devices | quote }})
+{{- end }}
+{{- if and (hasKey . "libva_driver_name") .libva_driver_name }}
+hl.env("LIBVA_DRIVER_NAME", {{ .libva_driver_name | quote }})
+{{- end }}
+
+-- Wayland hint for apps that still check this
+hl.env("MOZ_ENABLE_WAYLAND", "1")
+
+-- Toolkits: prefer Wayland, fall back to X11 where needed
+hl.env("QT_QPA_PLATFORM", "wayland;xcb")
+hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
+hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+hl.env("GDK_BACKEND", "wayland,x11")
+hl.env("SDL_VIDEODRIVER", "wayland")
+hl.env("CLUTTER_BACKEND", "wayland")
+hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+
+hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_SIZE", "24")
+
+
+-----------------------
+---- LOOK AND FEEL ----
+-----------------------
+
+-- See https://wiki.hypr.land/Configuring/Basics/Variables/
+hl.config({
+    general = {
+        -- Applied per window side, so half the outer gap keeps every gap on screen equal
+        gaps_in  = 2,
+        gaps_out = 4,
+
+        border_size = 1,
+
+        -- Translucent white reads as a faint edge over any window background
+        col = {
+            active_border   = "rgba(ffffff29)",
+            inactive_border = "rgba(ffffff17)",
+        },
+
+        resize_on_border = true,
+        allow_tearing    = false,
+
+        layout = "dwindle",
+    },
+
+    decoration = {
+        rounding       = 8,
+        rounding_power = 3,
+
+        active_opacity   = 1.0,
+        inactive_opacity = 1.0,
+
+        -- Windows sit flat: soft shadows fight the hard edges everywhere else
+        shadow = {
+            enabled = false,
+        },
+
+        blur = {
+            enabled  = true,
+            size     = 2,
+            passes   = 1,
+            vibrancy = 0.1696,
+        },
+    },
+
+    animations = {
+        enabled = true,
+    },
+
+    dwindle = {
+        preserve_split = true,
+    },
+
+    master = {
+        new_status = "master",
+    },
+
+    misc = {
+        force_default_wallpaper = 0, -- No mascot wallpaper asset — hyprpaper covers it anyway
+        disable_hyprland_logo   = true,
+        -- If hyprlock dies (crash, bad config, etc) without releasing the session
+        -- lock, Hyprland otherwise refuses to let a fresh hyprlock take over —
+        -- every relaunch gets rejected and you're stuck locked out with no way
+        -- back in short of a VT switch. This lets a new instance reclaim the lock.
+        allow_session_lock_restore = true,
+    },
+
+    render = {
+        -- 4K frames finish late in the refresh on the iGPU; without this a
+        -- kernel flip trace showed ~24% of vblanks missed instead of ~10%
+        new_render_scheduling = true,
+    },
+
+    debug = {
+        disable_logs = true, -- Default. Flip to false only when chasing a bug.
+    },
+})
+
+-- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
+hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
+hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
+hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
+hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1}    } })
+hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
+
+hl.animation({ leaf = "global",        enabled = true, speed = 10,   bezier = "default" })
+hl.animation({ leaf = "border",        enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windows",       enabled = true, speed = 4.79, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windowsIn",     enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
+hl.animation({ leaf = "windowsOut",    enabled = true, speed = 1.49, bezier = "linear",       style = "popin 87%" })
+hl.animation({ leaf = "fadeIn",        enabled = true, speed = 1.73, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut",       enabled = true, speed = 1.46, bezier = "almostLinear" })
+hl.animation({ leaf = "fade",          enabled = true, speed = 3.03, bezier = "quick" })
+hl.animation({ leaf = "layers",        enabled = true, speed = 3.81, bezier = "easeOutQuint" })
+hl.animation({ leaf = "layersIn",      enabled = true, speed = 4,    bezier = "easeOutQuint", style = "fade" })
+hl.animation({ leaf = "layersOut",     enabled = true, speed = 1.5,  bezier = "linear",       style = "fade" })
+hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces",    enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "zoomFactor",    enabled = true, speed = 7,    bezier = "quick" })
+
+
+---------------
+---- INPUT ----
+---------------
+
+hl.config({
+    input = {
+        kb_layout  = {{ .kb_layout | default "us" | quote }},
+        kb_variant = "",
+        kb_model   = "",
+        kb_options = "",
+        kb_rules   = "",
+
+        follow_mouse = 1,
+
+        sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
+
+        touchpad = {
+            natural_scroll = false,
+        },
+    },
+})
+
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+
+{{- if hasKey . "kb_devices" }}
+{{ range $name, $layout := .kb_devices }}
+hl.device({ name = {{ $name | quote }}, kb_layout = {{ $layout | quote }} })
+{{- end }}
+{{- end }}
+
+
+---------------------
+---- KEYBINDINGS ----
+---------------------
+
+local mainMod = "SUPER"
+
+hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd({{ printf "%s/bin/lock" .chezmoi.homeDir | quote }}))
+hl.bind(mainMod .. " + C", hl.dsp.window.close())
+hl.bind(mainMod .. " + M", hl.dsp.exit())
+hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + T", hl.dsp.exec_cmd({{ printf "%s/bin/hypr-ssh-prompt" .chezmoi.homeDir | quote }}))
+hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
+hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+
+for _, dir in ipairs({ "left", "right", "up", "down" }) do
+    hl.bind(mainMod .. " + " .. dir,           hl.dsp.focus({ direction = dir }))
+    hl.bind(mainMod .. " + SHIFT + " .. dir,   hl.dsp.window.move({ direction = dir }))
+end
+
+-- Toggles between current and last-used workspace
+hl.bind("ALT + Tab", hl.dsp.focus({ workspace = "previous" }))
+
+for i = 1, 10 do
+    local key = i % 10 -- 10 maps to key 0
+    hl.bind(mainMod .. " + " .. key,         hl.dsp.focus({ workspace = i }))
+    hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
+end
+
+-- Move current workspace to monitor N (numbered left-to-right, 1 = leftmost).
+-- Numbers past the monitor count just notify.
+for i = 1, 9 do
+    hl.bind(mainMod .. " + ALT + " .. i, hl.dsp.exec_cmd("$HOME/.config/hypr/move-ws-to-monitor.sh " .. i))
+end
+
+hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+
+hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
+hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
+
+hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
+hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+
+hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
+hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
+
+hl.bind("Print",                   hl.dsp.exec_cmd("hyprshot -m output"))
+hl.bind(mainMod .. " + Print",     hl.dsp.exec_cmd("hyprshot -m region"))
+-- GB layouts turn Shift+Print into Sys_Req, so both spellings pick a window
+hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind(mainMod .. " + Sys_Req",       hl.dsp.exec_cmd("hyprshot -m window"))
+
+
+--------------------------------
+---- WINDOWS AND WORKSPACES ----
+--------------------------------
+
+-- See https://wiki.hypr.land/Configuring/Basics/Window-Rules/
+
+-- Ignore maximize requests from apps, and hold off the idle lock during
+-- fullscreen video, for every window.
+hl.window_rule({
+    name  = "all-windows",
+    match = { class = ".*" },
+    suppress_event = "maximize",
+    idle_inhibit   = "fullscreen",
+    -- Firefox's surface counts as translucent, so it was blurred at 4K on
+    -- every animated frame and missed vblanks; blur is kept for bar/launcher
+    no_blur = true,
+})
+
+hl.window_rule({
+    name  = "pavucontrol",
+    match = { class = "^(pavucontrol|org.pulseaudio.pavucontrol)$" },
+    float = true,
+    size  = { 800, 500 },
+    center = true,
+})
+
+hl.window_rule({
+    name  = "blueman",
+    match = { class = "^(blueman-manager|.blueman-manager-wrapped)$" },
+    float = true,
+    size  = { 800, 500 },
+    center = true,
+})
+
+-- Monitor layout editor (the "Monitor layout" launcher entry). Sized by ghostty's
+-- own --window-width/--window-height, so no size rule here.
+hl.window_rule({
+    name  = "monitor-profile",
+    match = { class = "^(dev.archey.monitor-profile)$" },
+    float = true,
+    center = true,
+})
+
+-- Picture-in-picture: float and pin above everything, so it survives workspace
+-- switches. Firefox titles the window "Picture-in-Picture"; Chromium-family
+-- browsers use "Picture in picture" — hence both spellings.
+hl.window_rule({
+    name  = "pip-firefox",
+    match = { title = "^(Picture-in-Picture)$" },
+    float = true,
+    pin   = true,
+    size  = { 640, 360 },
+})
+
+hl.window_rule({
+    name  = "pip-chromium",
+    match = { title = "^(Picture in picture)$" },
+    float = true,
+    pin   = true,
+})
+
+hl.window_rule({
+    name  = "file-dialogs",
+    match = { title = "^(Open|Open File|Open Folder|Save|Save As|Save File|Print)( .*)?$" },
+    float = true,
+    center = true,
+})
+
+hl.window_rule({
+    name  = "portal-gtk",
+    match = { class = "^(xdg-desktop-portal-gtk)$" },
+    float = true,
+    center = true,
+})
+
+-- Fix some dragging issues with XWayland
+hl.window_rule({
+    name  = "xwayland-drag",
+    match = {
+        class      = "^$",
+        title      = "^$",
+        xwayland   = true,
+        float      = true,
+        fullscreen = false,
+        pin        = false,
+    },
+    no_focus = true,
+})
+
+hl.layer_rule({
+    name  = "wofi",
+    match = { namespace = "wofi" },
+    blur  = true,
+    ignore_alpha = 0,
+})
+
+hl.layer_rule({
+    name  = "waybar",
+    match = { namespace = "waybar" },
+    blur  = true,
+    ignore_alpha = 0.1,
+})

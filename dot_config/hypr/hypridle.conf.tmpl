@@ -11,7 +11,7 @@ general {
     before_sleep_cmd = loginctl lock-session
     # Wake the displays on resume — otherwise you get a black screen after lid
     # open until you move the mouse.
-    after_sleep_cmd = hyprctl dispatch dpms on
+    after_sleep_cmd = hyprctl dispatch 'hl.dsp.dpms({ action = "enable" })'
 }
 
 # Lock the screen.
@@ -24,8 +24,8 @@ listener {
 # lock screen is briefly visible before the panels go dark.
 listener {
     timeout = {{ add (index . "lock_timeout" | default 300) 60 }}
-    on-timeout = hyprctl dispatch dpms off
-    on-resume = hyprctl dispatch dpms on
+    on-timeout = hyprctl dispatch 'hl.dsp.dpms({ action = "disable" })'
+    on-resume = hyprctl dispatch 'hl.dsp.dpms({ action = "enable" })'
 }
 {{- if index . "1984" | default false }}
 

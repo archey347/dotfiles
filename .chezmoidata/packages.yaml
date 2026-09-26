@@ -18,6 +18,7 @@ packages:
         - "grim"
         - "hypridle"
         - "hyprland"
+        - "hyprland-guiutils"
         - "hyprlock"
         - "hyprpaper"
         - "ImageMagick"

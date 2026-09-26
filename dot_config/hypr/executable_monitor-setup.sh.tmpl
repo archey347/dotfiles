@@ -23,11 +23,29 @@ APPLIED_MARKER="${XDG_RUNTIME_DIR}/hypr-monitor-applied"
 # emits when it connects.
 GRACE=5
 
+# Applies a legacy `output,mode,position,scale[,key,value...]` rule (or
+# `output,disable`) — the format profiles are stored in — as hl.monitor().
+apply_monitor_rule() {
+    local -a f
+    IFS=',' read -ra f <<< "$1"
+    local spec="output = \"${f[0]}\""
+    if [[ "${f[1]}" == disable ]]; then
+        spec+=", disabled = true"
+    else
+        spec+=", mode = \"${f[1]}\", position = \"${f[2]}\", scale = ${f[3]}"
+        local k
+        for (( k = 4; k + 1 < ${#f[@]}; k += 2 )); do
+            spec+=", ${f[k]} = ${f[k+1]}"
+        done
+    fi
+    hyprctl eval "hl.monitor({ ${spec} })"
+}
+
 # Selects a profile whose desc: entries exactly match the connected monitor set,
-# then applies each rule in that profile via hyprctl keyword. When the focus
+# then applies each rule in that profile. When the focus
 # state file exists, non-focus monitors in the matched profile are emitted as
 # `desc:<desc>,disable` instead of their normal rule.
-# If no profile matches, hyprland.conf's fallback (preferred,auto,1) stays in effect.
+# If no profile matches, hyprland.lua's fallback (preferred,auto,1) stays in effect.
 apply_layout() {
     local connected connected_count
     connected=$(hyprctl monitors all -j 2>/dev/null | jq -r '.[].description' 2>/dev/null)
@@ -119,7 +137,7 @@ apply_layout() {
             fi
 
             # Before disconnecting, move every non-focus monitor's workspaces onto
-            # the focus monitor. moveworkspacetomonitor is a graceful move between
+            # the focus monitor. workspace.move is a graceful move between
             # live outputs, so GPU apps (e.g. Ghostty) re-attach to the focus output
             # cleanly instead of being yanked off a destroyed one. By the time the
             # rule loop below disables them, the other monitors are empty, so nothing
@@ -146,7 +164,7 @@ apply_layout() {
                             [[ -z "$src_name" || "$src_name" == "$focus_name" ]] && continue
                             for ws in $(hyprctl workspaces -j 2>/dev/null \
                                 | jq -r --arg m "$src_name" '.[] | select(.monitor == $m and .id > 0) | .id' 2>/dev/null); do
-                                hyprctl dispatch moveworkspacetomonitor "$ws" "$focus_name"
+                                hyprctl dispatch "hl.dsp.workspace.move({ workspace = \"$ws\", monitor = \"$focus_name\" })"
                             done
                         fi
                     done
@@ -158,9 +176,9 @@ apply_layout() {
                 if [[ "$focus_on" == true && "${is_focus[$i]}" -eq 0 && "${clean_rules[$i]}" == desc:* ]]; then
                     desc="${clean_rules[$i]#desc:}"
                     desc="${desc%%,*}"
-                    hyprctl keyword monitor "desc:${desc},disable"
+                    apply_monitor_rule "desc:${desc},disable"
                 else
-                    hyprctl keyword monitor "${clean_rules[$i]}"
+                    apply_monitor_rule "${clean_rules[$i]}"
                 fi
             done
             return
@@ -178,7 +196,7 @@ disable_dead_outputs() {
     local name
     for name in $(hyprctl monitors all -j 2>/dev/null \
             | jq -r '.[] | select(.disabled == false and .width == 0) | .name' 2>/dev/null); do
-        hyprctl keyword monitor "${name},disable"
+        apply_monitor_rule "${name},disable"
     done
 }
 
@@ -255,14 +273,14 @@ touch "$APPLIED_MARKER"
 
 socket="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
 # -U is unidirectional socket->stdout, so socat never reads its own stdin.
-# Without it, Hyprland's `exec =` starts us with no stdin, socat hits EOF on `-`
+# Without it, Hyprland's autostart starts us with no stdin, socat hits EOF on `-`
 # immediately and exits 0, taking the read loop with it — no hotplug handling.
 socat -U - "UNIX-CONNECT:${socket}" 2>/dev/null | while IFS= read -r line; do
     if [[ "$line" == monitoradded* ]] || [[ "$line" == monitorremoved* ]]; then
         recently_applied && continue
         sleep 1
         change_layout --if-stale
-    # A reload re-applies hyprland.conf's fallback monitor rule, dropping the
+    # A reload re-applies hyprland.lua's fallback monitor rule, dropping the
     # profile's scaling — and chezmoi apply triggers one whenever it rewrites it.
     elif [[ "$line" == configreloaded* ]]; then
         change_layout

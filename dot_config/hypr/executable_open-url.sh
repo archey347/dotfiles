@@ -56,7 +56,7 @@ if [[ -z "$addr" ]]; then
     exec "${firefox[@]}" --new-window "$@"
 fi
 
-hyprctl dispatch focuswindow "address:$addr" >/dev/null
+hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null
 
 # Firefox chooses its target from its own focus bookkeeping, which only updates
 # once the compositor has actually handed the window keyboard focus.

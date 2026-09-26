@@ -25,6 +25,8 @@ echo "hyprfocusd: 1984 is off, not recording"
 # hypridle only reads its config at startup.
 if pgrep -x hypridle >/dev/null; then
     pkill -x hypridle
-    hyprctl dispatch exec hypridle >/dev/null
+    # A session still on the old .conf config rejects Lua dispatchers
+    hyprctl dispatch 'hl.dsp.exec_cmd("hypridle")' | grep -qx ok \
+        || hyprctl dispatch exec hypridle >/dev/null
 fi
 {{ end -}}
