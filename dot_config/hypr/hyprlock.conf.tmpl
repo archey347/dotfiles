@@ -14,13 +14,7 @@
 # reload itself — even returning the unchanged photo — caused a brief
 # vertical squash/recover glitch. Simplest fix: no reload, no glitch. The
 # next photo is picked on the next lock.)
-# $CLOCK_X/$CLOCK_Y and $DATE_X/$DATE_Y come from ~/bin/lock, which reads a
-# `__clockpos_X_Y` tag off the chosen photo's filename (n prefixes a negative
-# number) so a photo can move the clock off its subject; untagged photos fall
-# back to the original position. ~/bin/lock also rescales for the current
-# monitor's aspect ratio. See ~/bin/lock for the tag format.
 source = {{ .chezmoi.homeDir }}/.cache/hyprlock-primary.conf
-source = {{ .chezmoi.homeDir }}/.cache/hyprlock-clock-position.conf
 
 general {
     hide_cursor = true
@@ -58,39 +52,43 @@ background {
     color = rgba(000000ff)
 }
 
-# Understated field: a translucent light-grey fill lets the photo show through
-# (hyprlock can't blur behind a single widget, only the whole background), with
-# a thin, faint border so it sits back rather than grabbing attention. White
-# text keeps it legible over the photo.
+# Styled like the wofi search field (see THEMES.md): inputs stay flat.
 input-field {
     monitor = $PRIMARY
     size = 280, 55
-    rounding = 12
+    rounding = 8
     outline_thickness = 1
-    outer_color = rgba(ffffff33)
-    inner_color = rgba(50505066)
-    font_color = rgba(ffffffff)
+    outer_color = rgba({{ .theme.text_rgb }}, 0.3)
+    inner_color = rgb({{ .theme.surface }})
+    font_color = rgb({{ .theme.text }})
+    font_family = Montserrat SemiBold
+    check_color = rgb({{ .theme.accent }})
+    fail_color = rgb({{ .theme.error }})
+    capslock_color = rgb({{ .theme.info }})
     position = 0, -20
 }
 
-# Clock — sits roughly one third down from the top by default (offsets are
-# from centre, tuned for the laptop's 1200px-tall panel); moves per-photo via
-# $CLOCK_X/$CLOCK_Y, see the source comment above.
+# Shadow keeps the white text legible over bright photos.
 label {
     monitor = $PRIMARY
     text = cmd[update:1000] echo "$(date +'%H:%M')"
-    color = rgba(ffffffff)
+    color = rgb(255, 255, 255)
+    shadow_passes = 2
+    shadow_size = 4
+    shadow_color = rgba(0, 0, 0, 0.45)
     font_size = 48
-    font_family = Iosevka
-    position = $CLOCK_X, $CLOCK_Y
+    font_family = Montserrat SemiBold
+    position = 0, 200
 }
 
-# Date — rides 65px below the clock, wherever that lands.
 label {
     monitor = $PRIMARY
     text = cmd[update:60000] echo "$(date +'%A, %d %B')"
-    color = rgba(ffffffcc)
+    color = rgba(255, 255, 255, 0.8)
+    shadow_passes = 2
+    shadow_size = 4
+    shadow_color = rgba(0, 0, 0, 0.45)
     font_size = 15
-    font_family = Iosevka
-    position = $DATE_X, $DATE_Y
+    font_family = Montserrat SemiBold
+    position = 0, 135
 }

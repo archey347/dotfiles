@@ -1,6 +1,6 @@
 # Desktop themes
 
-The desktop palette (shared by **waybar**, **mako**, **wofi** and **ghostty**) lives
+The desktop palette (shared by **waybar**, **mako**, **wofi**, **ghostty** and **hyprlock**) lives
 per-machine in `[data.theme]` of the local `~/.config/chezmoi/chezmoi.toml`, so each
 laptop can run a different theme. On a Hyprland machine `chezmoi init` seeds the
 default (Gruvbox dark) block; edit it there to reskin.

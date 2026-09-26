@@ -19,7 +19,7 @@
     monitor_profiles  = {{ if hasKey . "monitor_profiles" }}{{ .monitor_profiles | toJson }}{{ else }}[]{{ end }}
     1984              = {{ promptBoolOnce . "1984" "Record which desktop has focus, for workday metrics (hyprfocusd; window titles are logged locally)" false }}
 
-# Desktop theme — palette consumed by waybar, mako, wofi and ghostty.
+# Desktop theme — palette consumed by waybar, mako, wofi, ghostty and hyprlock.
 # Edit the values below to reskin this machine; copy a ready-made block from
 # THEMES.md in the chezmoi source dir to switch to a different theme.
 # Seeded default is the "Gruvbox dark" profile.
