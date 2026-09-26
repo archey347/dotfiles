@@ -2,28 +2,58 @@
 <interface>
   <object class="GtkMenu" id="menu">
     <child>
-      <object class="GtkMenuItem" id="logout">
-        <property name="label">  Log out</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="shutdown">
-        <property name="label">  Shut down</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="reboot">
-        <property name="label">  Restart</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkMenuItem" id="suspend">
-        <property name="label">  Suspend</property>
+        <child>
+          <object class="GtkBox">
+            <child><object class="GtkLabel"><property name="label">&#xf186;</property><style><class name="icon"/></style></object></child>
+            <child><object class="GtkLabel"><property name="label">Suspend</property></object></child>
+          </object>
+        </child>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="hibernate">
-        <property name="label">  Hibernate</property>
+        <child>
+          <object class="GtkBox">
+            <child><object class="GtkLabel"><property name="label">&#xf2dc;</property><style><class name="icon"/></style></object></child>
+            <child><object class="GtkLabel"><property name="label">Hibernate</property></object></child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="logout">
+        <child>
+          <object class="GtkBox">
+            <child><object class="GtkLabel"><property name="label">&#xf2f5;</property><style><class name="icon"/></style></object></child>
+            <child><object class="GtkLabel"><property name="label">Log out</property></object></child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="reboot">
+        <style><class name="destructive"/></style>
+        <child>
+          <object class="GtkBox">
+            <child><object class="GtkLabel"><property name="label">&#xf2f9;</property><style><class name="icon"/></style></object></child>
+            <child><object class="GtkLabel"><property name="label">Restart</property></object></child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="shutdown">
+        <style><class name="destructive"/></style>
+        <child>
+          <object class="GtkBox">
+            <child><object class="GtkLabel"><property name="label">&#xf011;</property><style><class name="icon"/></style></object></child>
+            <child><object class="GtkLabel"><property name="label">Shut down</property></object></child>
+          </object>
+        </child>
       </object>
     </child>
   </object>

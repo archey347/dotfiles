@@ -189,18 +189,43 @@ menu {
     color: #{{ .theme.text }};
 }
 
+/* The hover shadow must fit inside the item's margin; menu padding lies outside the clip */
 menuitem {
     border: 1px solid transparent;
     border-radius: 6px;
-    margin: 1px 3px 4px 0;
-    padding: 6px 14px;
+    margin: 1px 3px 3px 0;
+    padding: 3px 12px 3px 8px;
+    min-width: 0;
     color: #{{ .theme.text }};
+}
+
+/* Font Awesome glyphs vary in width; a fixed column keeps the labels aligned */
+menuitem label.icon {
+    min-width: 14px;
+    margin-right: 8px;
+    color: rgba({{ .theme.text_rgb }}, 0.7);
 }
 
 menuitem:hover {
     background-color: rgba({{ .theme.accent_rgb }}, 0.35);
     border-color: #{{ .theme.accent }};
     box-shadow: 3px 3px 0 0 #{{ .theme.accent }};
+}
+
+menuitem.destructive:hover {
+    background-color: rgba({{ .theme.error_rgb }}, 0.45);
+    border-color: #{{ .theme.error }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.error }};
+}
+
+menuitem:hover label.icon {
+    color: #{{ .theme.text }};
+}
+
+menu separator {
+    background-color: rgba({{ .theme.text_rgb }}, 0.2);
+    min-height: 1px;
+    margin: 2px 6px 4px;
 }
 
 /* Power mode is a state, so its colour stays on */
