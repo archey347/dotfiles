@@ -8,9 +8,9 @@
     font-feature-settings: "tnum";
 }
 
-/* Floats, rounded like the windows */
+/* Opaque so the wallpaper can't tint it a different material from the windows */
 window#waybar {
-    background-color: rgba({{ .theme.background_rgb }}, 0.7);
+    background-color: #{{ .theme.background }};
     border: none;
     border-radius: 8px;
     color: #{{ .theme.text }};
@@ -70,7 +70,7 @@ button {
     color: #{{ .theme.text }};
     border: 1px solid rgba({{ .theme.text_rgb }}, 0.3);
     border-radius: 6px;
-    box-shadow: 3px 3px 0 0 #{{ .theme.accent_strong }};
+    box-shadow: 3px 3px 0 0 rgba({{ .theme.text_rgb }}, 0.35);
     margin: 5px 4px 8px 1px;
     padding: 2px 8px;
 }
@@ -232,9 +232,9 @@ menu separator {
 
 /* Power mode is a state, so its colour stays on */
 #power-profiles-daemon.performance {
-    background-color: rgba({{ .theme.error_rgb }}, 0.45);
-    border-color: #{{ .theme.error }};
-    box-shadow: 3px 3px 0 0 #{{ .theme.error }};
+    background-color: rgba({{ .theme.info_rgb }}, 0.35);
+    border-color: #{{ .theme.info }};
+    box-shadow: 3px 3px 0 0 #{{ .theme.info }};
 }
 
 #power-profiles-daemon.power-saver {
@@ -244,7 +244,7 @@ menu separator {
 }
 
 #power-profiles-daemon.performance:hover {
-    background-color: rgba({{ .theme.error_rgb }}, 0.65);
+    background-color: rgba({{ .theme.info_rgb }}, 0.55);
 }
 
 #power-profiles-daemon.power-saver:hover {
