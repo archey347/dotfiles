@@ -8,7 +8,7 @@
     "frontend-design@claude-plugins-official": true
   },
   "spinnerVerbs": {
-    "mode": "append",
+    "mode": "replace",
     "verbs": [
       "Scouting",
       "Jibbling",
@@ -37,10 +37,5 @@
 {{- end -}}
 {{- if ne .claude_subagent_model "inherit" -}}
 {{-   $_ := set $settings "env" (dict "CLAUDE_CODE_SUBAGENT_MODEL" .claude_subagent_model) -}}
-{{- end -}}
-{{- /* Claude Code has no user-level local settings file, so per-machine extras live in an untracked one merged here */ -}}
-{{- $machine := joinPath .chezmoi.homeDir ".claude/settings.machine.json" -}}
-{{- if stat $machine -}}
-{{-   $settings = mergeOverwrite $settings (include $machine | fromJson) -}}
 {{- end -}}
 {{ toPrettyJson "  " $settings -}}

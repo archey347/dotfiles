@@ -33,6 +33,25 @@ Machine-specific settings live in `~/.config/chezmoi/chezmoi.toml`:
 | `aq_drm_devices` | DRM device order for GPU selection |
 | `libva_driver_name` | VA-API driver name |
 
+## Claude Code settings
+
+Claude Code reads exactly one user-level settings file, `~/.claude/settings.json`; there is
+no user-level `settings.local.json` (that name only resolves inside a project). To allow
+multiple config files, `bin/claude-settings-merge` rebuilds it from the numbered fragments in
+`~/.claude/settings.json.d/` after every apply.
+
+| Fragment | Owner |
+|---|---|
+| `10-personal.json` | this repo — model, statusline, plugins, notification hook |
+| `90-machine.json` | untracked, for per-machine extras |
+
+Fragments apply in filename order. Objects merge key by key and arrays concatenate and
+drop duplicates, so `permissions.allow`, `spinnerVerbs.verbs` and per-event hooks stack
+across fragments rather than one winning; anything else the later fragment replaces.
+Wrap a value as `{"$replace": ...}` to override instead of merge.
+
+`~/.claude/settings.json` is generated, and chezmoi ignores it — edit a fragment instead.
+
 ## Workday metrics (`1984`)
 
 `bin/hyprfocusd` records which Hyprland workspace has focus and what is running on each

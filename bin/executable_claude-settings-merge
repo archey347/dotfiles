@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""Merge ~/.claude/settings.json.d/*.json into ~/.claude/settings.json.
+
+Claude Code reads exactly one user-level settings file, so this rebuilds it from
+numbered fragments to allow multiple config files. Fragments apply in sorted
+filename order.
+
+Objects merge key by key; arrays concatenate and drop duplicates, which is what
+keeps permissions.allow, spinnerVerbs.verbs and per-event hooks additive across
+fragments. Anything else is replaced by the later fragment. To replace an array or
+object outright instead of merging into it, wrap the value:
+
+    {"permissions": {"allow": {"$replace": ["Bash(ls:*)"]}}}
+"""
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+REPLACE_KEY = "$replace"
+
+
+def merge(base, overlay):
+    if isinstance(overlay, dict) and set(overlay) == {REPLACE_KEY}:
+        return overlay[REPLACE_KEY]
+    if isinstance(base, dict) and isinstance(overlay, dict):
+        out = dict(base)
+        for key, value in overlay.items():
+            out[key] = merge(out[key], value) if key in out else value
+        return out
+    if isinstance(base, list) and isinstance(overlay, list):
+        return dedupe(base + overlay)
+    return overlay
+
+
+def dedupe(items):
+    seen, out = set(), []
+    for item in items:
+        # Fragments hold hook and permission objects, which are unhashable.
+        key = json.dumps(item, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            out.append(item)
+    return out
+
+
+def load(path):
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        sys.exit(f"{path}: invalid JSON: {exc}")
+    if not isinstance(data, dict):
+        sys.exit(f"{path}: a settings fragment must be a JSON object")
+    return data
+
+
+def main():
+    home = Path(os.environ.get("HOME", Path.home()))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dir", type=Path, default=home / ".claude/settings.json.d")
+    parser.add_argument("--out", type=Path, default=home / ".claude/settings.json")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="exit 1 if the output is stale, without writing it",
+    )
+    args = parser.parse_args()
+
+    fragments = sorted(args.dir.glob("*.json")) if args.dir.is_dir() else []
+    if not fragments:
+        sys.exit(f"{args.dir}: no *.json fragments found")
+
+    settings = {}
+    for fragment in fragments:
+        settings = merge(settings, load(fragment))
+
+    rendered = json.dumps(settings, indent=2, ensure_ascii=False) + "\n"
+    current = args.out.read_text() if args.out.exists() else None
+
+    if args.check:
+        if current != rendered:
+            sys.exit(f"{args.out} is out of date; run {parser.prog}")
+        return
+    if current == rendered:
+        return
+
+    tmp = args.out.with_suffix(".json.tmp")
+    tmp.write_text(rendered)
+    tmp.replace(args.out)
+    names = ", ".join(f.name for f in fragments)
+    print(f"{args.out}: rebuilt from {names}")
+
+
+if __name__ == "__main__":
+    main()
