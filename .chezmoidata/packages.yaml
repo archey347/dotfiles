@@ -32,6 +32,7 @@ packages:
         - "slurp"
         - "socat"
         - "swaylock"
+        - "system-config-printer"
         - "waybar"
         - "wl-clipboard"
         - "wofi"
