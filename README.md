@@ -38,7 +38,9 @@ Machine-specific settings live in `~/.config/chezmoi/chezmoi.toml`:
 Claude Code reads exactly one user-level settings file, `~/.claude/settings.json`; there is
 no user-level `settings.local.json` (that name only resolves inside a project). To allow
 multiple config files, `bin/claude-settings-merge` rebuilds it from the numbered fragments in
-`~/.claude/settings.json.d/` after every apply.
+`~/.claude/settings.json.d/`, run by `run_onchange_after_merge-claude-settings.sh.tmpl` when a
+fragment this repo owns changes. A fragment owned elsewhere is another repo's job to notice;
+run `claude-settings-merge` by hand after editing an untracked one.
 
 | Fragment | Owner |
 |---|---|

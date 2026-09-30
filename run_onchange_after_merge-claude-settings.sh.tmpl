@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# The hashes below re-run the merge whenever a fragment this repo owns changes; the
+# repos owning the other fragments carry their own copy of this script.
+# claude-settings-merge: {{ include "bin/executable_claude-settings-merge" | sha256sum }}
+{{ range (glob (joinPath .chezmoi.sourceDir "dot_claude/settings.json.d/*")) -}}
+# {{ base . }}: {{ include . | sha256sum }}
+{{ end -}}
+set -euo pipefail
+exec "${HOME}/bin/claude-settings-merge"
