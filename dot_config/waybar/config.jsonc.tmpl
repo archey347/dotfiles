@@ -28,7 +28,7 @@
   // Groups only exist to put breathing room between clusters (see style.css).
   "group/io": {
     "orientation": "horizontal",
-    "modules": ["pulseaudio", "custom/network", "custom/vpn", "custom/bluetooth"],
+    "modules": ["pulseaudio", "custom/network", "custom/vpn", "custom/bluetooth", "custom/printer"],
   },
   "group/system": {
     "orientation": "horizontal",
@@ -227,6 +227,13 @@
     "return-type": "json",
     "interval": 5,
     "on-click": "blueman-manager",
+    "tooltip": true,
+  },
+  "custom/printer": {
+    "exec": "$HOME/.config/waybar/printer.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "system-config-printer",
     "tooltip": true,
   },
   "custom/vpn": {
