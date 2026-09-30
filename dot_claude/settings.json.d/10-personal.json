@@ -1,4 +1,5 @@
-{{- $settings := `{
+{
+  "model": "claude-opus-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -30,12 +31,8 @@
         ]
       }
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
   }
-}` | fromJson -}}
-{{- if ne .claude_default_model "default" -}}
-{{-   $_ := set $settings "model" .claude_default_model -}}
-{{- end -}}
-{{- if ne .claude_subagent_model "inherit" -}}
-{{-   $_ := set $settings "env" (dict "CLAUDE_CODE_SUBAGENT_MODEL" .claude_subagent_model) -}}
-{{- end -}}
-{{ toPrettyJson "  " $settings -}}
+}
