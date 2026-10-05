@@ -51,6 +51,17 @@ hl.on("hyprland.start", function()
     -- graphical-session.target; this only covers a session started another way.
     hl.exec_cmd("systemctl --user start hyprpaper.service")
     hl.exec_cmd("~/.config/hypr/wallpaper-slideshow.sh")
+{{- if hasKey . "autostart" }}
+
+    -- Per-machine apps, from [[data.autostart]] in chezmoi.toml.
+{{- range .autostart }}
+{{- if hasKey . "workspace" }}
+    hl.exec_cmd({{ .cmd | quote }}, { workspace = {{ printf "%v silent" .workspace | quote }} })
+{{- else }}
+    hl.exec_cmd({{ .cmd | quote }})
+{{- end }}
+{{- end }}
+{{- end }}
 end)
 
 

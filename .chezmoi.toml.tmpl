@@ -53,4 +53,14 @@
     {{ $name | quote }} = {{ $layout | quote }}
 {{- end }}
 {{- end }}
+{{- if hasKey . "autostart" }}
+{{- range .autostart }}
+
+[[data.autostart]]
+    cmd = {{ .cmd | quote }}
+{{- if hasKey . "workspace" }}
+    workspace = {{ .workspace | toString | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
