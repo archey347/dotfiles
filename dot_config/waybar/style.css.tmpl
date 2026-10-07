@@ -2,15 +2,14 @@
    Groups are separated by spacing only. */
 * {
     font-family: 'Montserrat', 'Font Awesome 6 Free Solid', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     min-height: 0;
     font-feature-settings: "tnum";
 }
 
-/* Opaque so the wallpaper can't tint it a different material from the windows */
 window#waybar {
-    background-color: #{{ .theme.background }};
+    background-color: transparent;
     border: none;
     border-radius: 8px;
     color: #{{ .theme.text }};
@@ -44,8 +43,21 @@ button {
     padding: 0;
 }
 
+/* Opaque and styled like a tiled window, so the wallpaper can't tint it a different material */
+.modules-left,
+.modules-right {
+    background-color: #{{ .theme.background }};
+    border: 1px solid rgba({{ .theme.text_rgb }}, 0.16);
+    border-radius: 8px;
+}
+
+/* Keycaps at the ends of a box keep the same 5px inset from its edge as above and below them */
 #workspaces {
-    margin-left: 6px;
+    margin-left: 4px;
+}
+
+#io {
+    margin-left: 4px;
 }
 
 /* Keycaps */
@@ -101,6 +113,11 @@ button {
     margin-right: 12px;
 }
 
+#mpris {
+    margin-left: 5px;
+    margin-right: 16px;
+}
+
 #tray {
     padding: 2px 6px;
     margin-left: 9px;
@@ -137,10 +154,17 @@ button {
     color: #{{ .theme.text }};
 }
 
+/* Optically centred between the keycap faces and their ledges; either one alone looks off */
 #window {
     color: #{{ .theme.text }};
-    margin: 5px 0 8px 0;
-    padding: 0 8px;
+    margin: 6px 9px 7px 0;
+    padding: 0 6px;
+}
+
+/* An empty title would otherwise leave a blank stretch inside the left box */
+window#waybar.empty #window {
+    margin: 0;
+    padding: 0;
 }
 
 /* States */
