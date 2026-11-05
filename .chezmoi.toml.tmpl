@@ -63,4 +63,13 @@
 {{- end }}
 {{- end }}
 {{- end }}
+{{- if hasKey . "world_clocks" }}
+{{- range .world_clocks }}
+
+[[data.world_clocks]]
+    label = {{ .label | quote }}
+    timezone = {{ .timezone | quote }}
+    name = {{ .name | quote }}
+{{- end }}
+{{- end }}
 {{- end }}

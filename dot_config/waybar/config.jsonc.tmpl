@@ -20,7 +20,7 @@
     "mpris",
     "group/io",
     "group/system",
-    "clock",
+    "group/clocks",
     "group/toggles",
     "tray",
     "custom/power",
@@ -33,6 +33,16 @@
   "group/system": {
     "orientation": "horizontal",
     "modules": ["cpu", "memory", "temperature", "backlight", "battery"],
+  },
+  "group/clocks": {
+    "orientation": "horizontal",
+    // West to east, with the local clock placed by its UTC offset (as of chezmoi apply)
+    {{- $here := now | date "-0700" | atoi }}
+    "modules": [
+{{- range .world_clocks | default list }}{{ if lt (dateInZone "-0700" now .timezone | atoi) $here }}"clock#{{ .label | lower }}", {{ end }}{{ end -}}
+"clock"
+{{- range .world_clocks | default list }}{{ if ge (dateInZone "-0700" now .timezone | atoi) $here }}, "clock#{{ .label | lower }}"{{ end }}{{ end -}}
+],
   },
   "group/toggles": {
     "orientation": "horizontal",
@@ -130,6 +140,13 @@
     "format-alt": "{:%Y-%m-%d}",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
   },
+{{- range .world_clocks | default list }}
+  "clock#{{ .label | lower }}": {
+    "timezone": "{{ .timezone }}",
+    "format": "<span fgalpha='60%'>{{ .label }}</span> {:%H:%M}",
+    "tooltip-format": "{{ .name }} · {:%a %d %b}",
+  },
+{{- end }}
   "cpu": {
     "states": { "busy": 60 },
     "format": "",

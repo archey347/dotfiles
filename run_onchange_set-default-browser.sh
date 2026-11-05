@@ -7,7 +7,7 @@ if ! command -v xdg-mime >/dev/null; then
     exit 0
 fi
 
-for mime in x-scheme-handler/http x-scheme-handler/https text/html application/xhtml+xml; do
+for mime in x-scheme-handler/http x-scheme-handler/https x-scheme-handler/about x-scheme-handler/unknown text/html application/xhtml+xml; do
     xdg-mime default firefox-workspace.desktop "$mime"
 done
 
